@@ -1,0 +1,45 @@
+{
+  "name": "@willram/router",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/router.cjs",
+  "module": "./dist/router.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/router.js",
+      "require": "./dist/router.cjs"
+    },
+    "./core": {
+      "types": "./dist/router-core/index.d.ts",
+      "import": "./dist/router-core.js",
+      "require": "./dist/router-core.cjs"
+    },
+    "./lit": {
+      "types": "./dist/router-lit/index.d.ts",
+      "import": "./dist/router-lit.js",
+      "require": "./dist/router-lit.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && node scripts/build.js && tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "peerDependencies": {
+    "lit": "^3.0.0"
+  },
+  "devDependencies": {
+    "jsdom": "^29.0.1",
+    "lit": "^3.3.2",
+    "typescript": "~5.9.3",
+    "vite": "^8.0.1",
+    "vitest": "^4.1.0"
+  }
+}

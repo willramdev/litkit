@@ -1,0 +1,28 @@
+{
+  "name": "@willram/kit",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/kit.js",
+  "module": "./dist/kit.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/kit.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -p tsconfig.build.json && vite build",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "lit": "^3.0.0"
+  },
+  "devDependencies": {
+    "lit": "^3.3.2",
+    "typescript": "~5.9.3",
+    "vite": "^8.0.1"
+  }
+}

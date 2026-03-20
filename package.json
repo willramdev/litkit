@@ -1,0 +1,18 @@
+{
+  "name": "litkit",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "dev:kit": "npm run dev -w @willram/kit",
+    "dev:router": "npm run dev -w @willram/router",
+    "dev:query": "npm run dev -w @willram/query",
+    "dev:forms": "npm run dev -w @willram/forms"
+  }
+}

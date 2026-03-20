@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(npx vite:*)",
+      "Bash(find /c/repos/forms -not -path */node_modules/* -not -path */.git/* -not -path */dist/* -type d)",
+      "Bash(wc:*)",
+      "Bash(cp -r src/lit-kit/* packages/kit/)",
+      "Bash(mv packages/kit/*.ts packages/kit/src/)",
+      "Bash(cp -r src/examples packages/kit/examples)",
+      "Bash(cd:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(for f:*)",
+      "Bash(do sed:*)",
+      "Bash(done)",
+      "Bash(npm test:*)"
+    ]
+  }
+}
