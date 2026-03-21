@@ -52,7 +52,6 @@ class BindDirective extends AsyncDirective {
   ) {
     const element = (part as unknown as { element: Element }).element;
 
-    // Re-attach listeners if element or path changed
     if (this._element !== element || this._path !== path) {
       this._cleanup();
       this._element = element;
@@ -60,15 +59,10 @@ class BindDirective extends AsyncDirective {
       this._attach(element, form, path, options);
     }
 
-    // Sync current value → element
     this._sync(element, form, path, options);
 
     return noChange;
   }
-
-  // -----------------------------------------------------------------------
-  // Attach event listeners
-  // -----------------------------------------------------------------------
 
   private _attach(
     el: Element,
@@ -79,11 +73,10 @@ class BindDirective extends AsyncDirective {
     const field = form.field(path);
 
     if (options?.event) {
-      // Custom element binding
       this._listen(el, options.event, (e: Event) => {
         const value = options.getValue
           ? options.getValue(e)
-          : (e as CustomEvent).detail?.value;
+          : this._readCustomValue(el, field.value, options, e);
         field.setValue(value);
       });
     } else if (el instanceof HTMLInputElement) {
@@ -100,20 +93,19 @@ class BindDirective extends AsyncDirective {
       this._listen(el, 'input', () => field.setValue(el.value));
     } else if (el instanceof HTMLSelectElement) {
       this._listen(el, 'change', () => field.setValue(el.value));
+    } else if (this._isCheckableElement(el)) {
+      this._listen(el, 'change', () => {
+        const value = this._readCheckableValue(el, field.value);
+        if (value !== undefined) {
+          field.setValue(value);
+        }
+      });
     } else {
-      // Fallback for unknown elements: assume .value + input
-      this._listen(el, 'input', () =>
-        field.setValue((el as any).value),
-      );
+      this._listen(el, 'input', () => field.setValue((el as any).value));
     }
 
-    // Always track blur for validation
-    this._listen(el, 'blur', () => field.onBlur());
+    this._listen(el, 'focusout', () => field.onBlur());
   }
-
-  // -----------------------------------------------------------------------
-  // Sync form state → element property
-  // -----------------------------------------------------------------------
 
   private _sync(
     el: Element,
@@ -140,11 +132,18 @@ class BindDirective extends AsyncDirective {
       if (el.value !== str) el.value = str;
     } else if (el instanceof HTMLSelectElement) {
       el.value = String(value ?? '');
+    } else if (this._isCheckableElement(el)) {
+      if (typeof value === 'boolean') {
+        el.checked = value;
+      } else if ('value' in el) {
+        el.checked = String((el as any).value) === String(value ?? '');
+      } else {
+        el.checked = !!value;
+      }
     } else {
       (el as any).value = value;
     }
 
-    // Accessibility: aria-invalid + aria-describedby
     if (f.errors.length > 0) {
       el.setAttribute('aria-invalid', 'true');
       el.setAttribute('aria-describedby', options?.errorId ?? fieldErrorId(path));
@@ -154,9 +153,44 @@ class BindDirective extends AsyncDirective {
     }
   }
 
-  // -----------------------------------------------------------------------
-  // Helpers
-  // -----------------------------------------------------------------------
+  private _isCheckableElement(el: Element): el is Element & { checked: boolean; value?: unknown } {
+    return 'checked' in (el as any) && typeof (el as any).checked === 'boolean';
+  }
+
+  private _readCheckableValue(
+    el: Element & { checked: boolean; value?: unknown },
+    currentValue: unknown,
+  ): unknown {
+    if (typeof currentValue === 'boolean') {
+      return el.checked;
+    }
+    if ('value' in el) {
+      return el.checked ? el.value : undefined;
+    }
+    return el.checked;
+  }
+
+  private _readCustomValue(
+    el: Element,
+    currentValue: unknown,
+    options: BindOptions,
+    event: Event,
+  ): unknown {
+    if (options.prop && options.prop in (el as any)) {
+      return (el as any)[options.prop];
+    }
+
+    const detailValue = (event as CustomEvent).detail?.value;
+    if (detailValue !== undefined) {
+      return detailValue;
+    }
+
+    if (this._isCheckableElement(el)) {
+      return this._readCheckableValue(el, currentValue);
+    }
+
+    return (el as any).value;
+  }
 
   private _listen(el: Element, event: string, handler: EventListener): void {
     el.addEventListener(event, handler);
