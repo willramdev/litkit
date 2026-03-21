@@ -1,3 +1,4 @@
+/** Dispatches a `CustomEvent` with `bubbles: true` and `composed: true` by default. */
 export function emit(
   el: EventTarget,
   name: string,

@@ -1,6 +1,15 @@
 {
   "name": "@willram/query",
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Lit controllers for TanStack Query — reactive data fetching and mutations",
+  "keywords": ["lit", "tanstack-query", "web-components", "reactive-controller", "data-fetching"],
+  "license": "MIT",
+  "author": "William Ramanand",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/willram/litkit.git",
+    "directory": "packages/query"
+  },
   "type": "module",
   "files": ["dist"],
   "main": "./dist/query.js",
@@ -16,7 +25,8 @@
     "dev": "vite",
     "build": "tsc -p tsconfig.build.json && vite build",
     "typecheck": "tsc --noEmit",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run"
   },
   "dependencies": {
     "@tanstack/query-core": "^5.91.0"
@@ -27,6 +37,7 @@
   "devDependencies": {
     "lit": "^3.3.2",
     "typescript": "~5.9.3",
-    "vite": "^8.0.1"
+    "vite": "^8.0.1",
+    "vitest": "^3.2.1"
   }
 }

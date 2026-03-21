@@ -73,6 +73,7 @@ class PersistedStateController<T> implements ReactiveController {
   };
 }
 
+/** Syncs a reactive value with `localStorage` (or custom storage). Responds to cross-tab `storage` events. */
 export function persistedState<T>(
   host: ReactiveElement,
   key: string,

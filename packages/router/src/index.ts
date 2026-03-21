@@ -55,6 +55,7 @@ export {
   link,
   type LinkOptions,
   RouteController,
+  routeController,
   route,
   type RoutableElement,
 } from "./router-lit/index.ts";

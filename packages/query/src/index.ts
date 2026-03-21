@@ -1,14 +1,19 @@
 import {
   QueryClient,
+  type DefaultError,
   type MutationObserverOptions,
   type QueryClientConfig,
   type QueryKey,
   type QueryObserverOptions,
 } from '@tanstack/query-core'
+import type { ReactiveControllerHost } from 'lit'
 
 export * from '@tanstack/query-core'
 export { MutationController, type MutationControllerConfig } from './mutation-controller'
 export { QueryController, type QueryControllerConfig } from './query-controller'
+
+import { QueryController, type QueryControllerConfig } from './query-controller'
+import { MutationController, type MutationControllerConfig } from './mutation-controller'
 export {
   LIT_QUERY_CLIENT_REQUEST,
   attachQueryClientProvider,
@@ -16,10 +21,12 @@ export {
 } from './query-client-context'
 export { LitQueryClientProvider } from './query-client-provider'
 
+/** Shorthand for `new QueryClient(config)`. */
 export function createQueryClient(config?: QueryClientConfig): QueryClient {
   return new QueryClient(config)
 }
 
+/** Identity function for type inference on query options. */
 export function queryOptions<
   TQueryFnData = unknown,
   TError = Error,
@@ -32,6 +39,7 @@ export function queryOptions<
   return options
 }
 
+/** Identity function for type inference on mutation options. */
 export function mutationOptions<
   TData = unknown,
   TError = Error,
@@ -41,4 +49,37 @@ export function mutationOptions<
   options: MutationObserverOptions<TData, TError, TVariables, TOnMutateResult>,
 ): MutationObserverOptions<TData, TError, TVariables, TOnMutateResult> {
   return options
+}
+
+/** Controller factory for `KitElement.use()` — creates a `QueryController`. */
+export function query<
+  TQueryFnData = unknown,
+  TError = DefaultError,
+  TData = TQueryFnData,
+  TQueryData = TQueryFnData,
+  TQueryKey extends QueryKey = QueryKey,
+>(
+  optionsInput:
+    | QueryObserverOptions<TQueryFnData, TError, TData, TQueryData, TQueryKey>
+    | (() => QueryObserverOptions<TQueryFnData, TError, TData, TQueryData, TQueryKey>),
+  config?: QueryControllerConfig,
+) {
+  return (host: ReactiveControllerHost & EventTarget) =>
+    new QueryController(host, optionsInput, config)
+}
+
+/** Controller factory for `KitElement.use()` — creates a `MutationController`. */
+export function mutation<
+  TData = unknown,
+  TError = DefaultError,
+  TVariables = void,
+  TOnMutateResult = unknown,
+>(
+  optionsInput:
+    | MutationObserverOptions<TData, TError, TVariables, TOnMutateResult>
+    | (() => MutationObserverOptions<TData, TError, TVariables, TOnMutateResult>),
+  config?: MutationControllerConfig,
+) {
+  return (host: ReactiveControllerHost & EventTarget) =>
+    new MutationController(host, optionsInput, config)
 }

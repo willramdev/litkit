@@ -13,6 +13,7 @@
     "dev:kit": "npm run dev -w @willram/kit",
     "dev:router": "npm run dev -w @willram/router",
     "dev:query": "npm run dev -w @willram/query",
-    "dev:forms": "npm run dev -w @willram/forms"
+    "dev:forms": "npm run dev -w @willram/forms",
+    "dev:store": "npm run dev -w @willram/store"
   }
 }

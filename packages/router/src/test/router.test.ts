@@ -128,6 +128,39 @@ describe("Router", () => {
     expect(router.current!.params).toEqual({ id: "99" });
   });
 
+  it("detects circular redirects", () => {
+    const circularRoutes = defineRoutes(
+      [
+        { path: "/a", name: "a", redirectTo: "/b" },
+        { path: "/b", name: "b", redirectTo: "/a" },
+        { path: "*", name: "not-found", component: "not-found-page" },
+      ],
+      factory,
+    );
+    const onError = vi.fn();
+    setLocation("/a");
+    router = createRouter({ routes: circularRoutes, onError });
+    expect(onError).toHaveBeenCalledOnce();
+    expect(onError.mock.calls[0][0].type).toBe("guard");
+    expect(onError.mock.calls[0][0].error.message).toMatch(/Circular redirect/);
+  });
+
+  it("follows redirect chains without cycles", () => {
+    const chainRoutes = defineRoutes(
+      [
+        { path: "/step1", name: "step1", redirectTo: "/step2" },
+        { path: "/step2", name: "step2", redirectTo: "/final" },
+        { path: "/final", name: "final", component: "final-page" },
+        { path: "*", name: "not-found", component: "not-found-page" },
+      ],
+      factory,
+    );
+    setLocation("/step1");
+    router = createRouter({ routes: chainRoutes });
+    expect(router.current!.name).toBe("final");
+    expect(window.location.pathname).toBe("/final");
+  });
+
   it("navigates with object target", () => {
     router = createRouter({ routes });
     router.navigate({ to: "/users/:id", params: { id: "7" } });

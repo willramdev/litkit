@@ -28,6 +28,7 @@ class MediaQueryController implements ReactiveController {
   }
 }
 
+/** Controller factory for reactive `matchMedia`. Exposes `.matches` boolean. */
 export function mediaQuery(
   query: string
 ): ControllerFactory<MediaQueryController> {

@@ -15,6 +15,7 @@ type MutationOptionsInput<TData, TError, TVariables, TOnMutateResult> =
   | MutationObserverOptions<TData, TError, TVariables, TOnMutateResult>
   | (() => MutationObserverOptions<TData, TError, TVariables, TOnMutateResult>)
 
+/** Configuration for `MutationController` — optionally provide a `QueryClient`. */
 export interface MutationControllerConfig {
   client?: QueryClient
 }
@@ -22,6 +23,7 @@ export interface MutationControllerConfig {
 const MISSING_QUERY_CLIENT_MESSAGE =
   'No QueryClient was found. Pass a client to the controller or wrap the host in <lit-query-client-provider>.'
 
+/** Reactive controller wrapping TanStack's `MutationObserver`. */
 export class MutationController<
   TData = unknown,
   TError = DefaultError,

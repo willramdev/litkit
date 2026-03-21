@@ -403,17 +403,34 @@ class RouterImpl implements Router {
   // =========================================================================
 
   private handleRedirect(): void {
-    const match = this._current;
-    if (!match?.route.redirectTo) return;
+    const seen = new Set<string>();
+    const MAX_REDIRECTS = 10;
 
-    const target =
-      typeof match.route.redirectTo === "function"
-        ? match.route.redirectTo(match)
-        : match.route.redirectTo;
+    for (let i = 0; i < MAX_REDIRECTS; i++) {
+      const match = this._current;
+      if (!match?.route.redirectTo) return;
 
-    const url = this.buildUrl(joinPaths(this.basePath, target));
-    window.history.replaceState(this.buildHistoryState(), "", url);
-    this._current = this.resolveCurrentLocation();
+      const target =
+        typeof match.route.redirectTo === "function"
+          ? match.route.redirectTo(match)
+          : match.route.redirectTo;
+
+      if (seen.has(target)) {
+        this.emitError("guard", new Error(`Circular redirect detected: ${target}`), match.route);
+        return;
+      }
+      seen.add(target);
+
+      const url = this.buildUrl(joinPaths(this.basePath, target));
+      window.history.replaceState(this.buildHistoryState(), "", url);
+      this._current = this.resolveCurrentLocation();
+    }
+
+    this.emitError(
+      "guard",
+      new Error(`Too many redirects (>${MAX_REDIRECTS})`),
+      this._current?.route,
+    );
   }
 
   // =========================================================================

@@ -1,6 +1,15 @@
 {
   "name": "@willram/kit",
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Ergonomic base class, helpers, and controllers for building Lit web components",
+  "keywords": ["lit", "web-components", "reactive-controller", "custom-elements"],
+  "license": "MIT",
+  "author": "William Ramanand",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/willram/litkit.git",
+    "directory": "packages/kit"
+  },
   "type": "module",
   "main": "./dist/kit.js",
   "module": "./dist/kit.js",
@@ -15,7 +24,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -p tsconfig.build.json && vite build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "peerDependencies": {
     "lit": "^3.0.0"
@@ -23,6 +33,7 @@
   "devDependencies": {
     "lit": "^3.3.2",
     "typescript": "~5.9.3",
-    "vite": "^8.0.1"
+    "vite": "^8.0.1",
+    "vitest": "^3.2.1"
   }
 }

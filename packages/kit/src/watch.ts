@@ -5,6 +5,7 @@ export interface WatchEntry {
   method: string;
 }
 
+/** Decorator that calls the method when any of the specified reactive properties change. */
 export function watch(...propNames: string[]) {
   return function (proto: object, methodName: string) {
     const p = proto as Record<symbol, WatchEntry[]>;

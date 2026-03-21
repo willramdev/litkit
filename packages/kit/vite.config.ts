@@ -14,4 +14,7 @@ export default defineConfig({
     copyPublicDir: false,
     sourcemap: true,
   },
+  test: {
+    environment: 'jsdom',
+  },
 })

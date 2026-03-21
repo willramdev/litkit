@@ -36,6 +36,7 @@ class IntersectionObserverController implements ReactiveController {
   }
 }
 
+/** Controller factory that observes the host element's intersection. Exposes `.isIntersecting` and `.entry`. */
 export function intersectionObserver(
   callback?: (entries: IntersectionObserverEntry[]) => void,
   options?: IntersectionObserverInit

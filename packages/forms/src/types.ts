@@ -35,7 +35,9 @@ export type FieldArrayItem<T, P extends string> =
 // Validator
 // ---------------------------------------------------------------------------
 
+/** Synchronous field validator. Returns an error message or `undefined` if valid. */
 export type Validator<T = unknown> = (value: T) => string | undefined;
+/** Asynchronous field validator. Returns a promise resolving to an error message or `undefined`. */
 export type AsyncValidator<T = unknown> = (value: T) => Promise<string | undefined>;
 
 /** When to run field validators. */
@@ -77,6 +79,7 @@ export interface BindOptions {
 // FieldInstance — per-field state & actions
 // ---------------------------------------------------------------------------
 
+/** Per-field state and actions: value, errors, touched, dirty, and validation. */
 export interface FieldInstance<V = unknown> {
   readonly value: V;
   readonly error: string | undefined;
@@ -104,6 +107,7 @@ export interface FieldInstance<V = unknown> {
 // ArrayInstance — array-field helpers
 // ---------------------------------------------------------------------------
 
+/** Array-field helpers for dynamic lists: push, remove, swap, move, and iteration. */
 export interface ArrayInstance<Item = unknown> {
   readonly items: Item[];
   readonly length: number;
@@ -186,6 +190,7 @@ export type FormValidator<T> = (
   values: T,
 ) => string | Record<string, string> | undefined;
 
+/** Async form-level validator (same return shape as `FormValidator`). */
 export type AsyncFormValidator<T> = (
   values: T,
 ) => Promise<string | Record<string, string> | undefined>;

@@ -1,6 +1,15 @@
 {
   "name": "@willram/forms",
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Type-safe form management for Lit with validation, binding, and array fields",
+  "keywords": ["lit", "forms", "web-components", "validation", "reactive-controller"],
+  "license": "MIT",
+  "author": "William Ramanand",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/willram/litkit.git",
+    "directory": "packages/forms"
+  },
   "type": "module",
   "main": "./dist/forms.js",
   "module": "./dist/forms.js",
@@ -22,7 +31,8 @@
     "dev": "vite demo",
     "build": "vite build && tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run"
   },
   "dependencies": {
     "@tanstack/form-core": "^1.28.5"
@@ -40,6 +50,7 @@
     "lit": "^3.3.2",
     "typescript": "~5.9.3",
     "vite": "^8.0.1",
+    "vitest": "^3.2.1",
     "zod": "^4.3.6"
   }
 }

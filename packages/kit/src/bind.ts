@@ -1,3 +1,4 @@
+/** Decorator that auto-binds a method to its instance. The bound function is cached on first access. */
 export function bind() {
   return function (
     _target: object,

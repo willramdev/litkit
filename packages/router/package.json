@@ -1,6 +1,15 @@
 {
   "name": "@willram/router",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "description": "Client-side router for Lit with guards, lazy loading, nested routes, and scroll management",
+  "keywords": ["lit", "router", "web-components", "spa", "client-side-routing"],
+  "license": "MIT",
+  "author": "William Ramanand",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/willram/litkit.git",
+    "directory": "packages/router"
+  },
   "type": "module",
   "main": "./dist/router.cjs",
   "module": "./dist/router.js",

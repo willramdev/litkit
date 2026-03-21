@@ -10,6 +10,7 @@ function makeStateProp(type: unknown, extra?: PropOptions): PropertyDeclaration 
   return { type, state: true, attribute: false, ...extra };
 }
 
+/** Helpers for creating Lit `PropertyDeclaration` objects with ergonomic shorthand. */
 export const prop = {
   string: (opts?: PropOptions): PropertyDeclaration => makeProp(String, opts),
   number: (opts?: PropOptions): PropertyDeclaration => makeProp(Number, opts),
@@ -27,6 +28,7 @@ export const prop = {
 
 const CONSTRUCTORS = new Set<unknown>([String, Number, Boolean, Object, Array]);
 
+/** Normalizes a shorthand type constructor (e.g. `String`) or full `PropertyDeclaration` into a `PropertyDeclaration`. */
 export function normalizeProp(def: unknown): PropertyDeclaration {
   if (CONSTRUCTORS.has(def)) {
     return { type: def as PropertyDeclaration['type'] };

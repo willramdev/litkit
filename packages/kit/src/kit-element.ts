@@ -23,6 +23,7 @@ export class KitElement extends LitElement {
 
   // ── Controller ergonomics ────────────────────────────────────────────
 
+  /** Register a controller from either an instance or a factory function `(host) => controller`. */
   use<T extends ReactiveController>(controllerOrFactory: T | ControllerFactory<T>): T {
     if (typeof controllerOrFactory === 'function') {
       return (controllerOrFactory as ControllerFactory<T>)(this);
@@ -32,6 +33,7 @@ export class KitElement extends LitElement {
 
   // ── Event ergonomics ─────────────────────────────────────────────────
 
+  /** Dispatch a `CustomEvent` with `bubbles: true` and `composed: true` by default. */
   emit(name: string, detail?: unknown, options?: Partial<CustomEventInit>): boolean {
     return this.dispatchEvent(
       new CustomEvent(name, {
@@ -41,26 +43,6 @@ export class KitElement extends LitElement {
         ...options,
       })
     );
-  }
-
-  // ── Shadow DOM query helpers ─────────────────────────────────────────
-
-  $<T extends Element = Element>(selector: string): T | null {
-    return this.renderRoot?.querySelector<T>(selector) ?? null;
-  }
-
-  $$<T extends Element = Element>(selector: string): T[] {
-    return [...(this.renderRoot?.querySelectorAll<T>(selector) ?? [])];
-  }
-
-  // ── Update helpers ───────────────────────────────────────────────────
-
-  invalidate(): void {
-    this.requestUpdate();
-  }
-
-  afterRender(callback: () => void): void {
-    this.updateComplete.then(callback);
   }
 
   // ── @watch integration ───────────────────────────────────────────────

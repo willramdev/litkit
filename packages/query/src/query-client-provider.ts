@@ -5,6 +5,7 @@ import type { QueryClient } from '@tanstack/query-core'
 import { attachQueryClientProvider } from './query-client-context'
 import { createQueryClient } from './index'
 
+/** Custom element that provides a `QueryClient` to descendant components via DOM context. */
 @customElement('lit-query-client-provider')
 export class LitQueryClientProvider extends LitElement {
   @property({ attribute: false })

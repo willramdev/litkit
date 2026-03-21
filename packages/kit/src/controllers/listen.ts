@@ -40,6 +40,7 @@ class ListenController implements ReactiveController {
   }
 }
 
+/** Controller factory that manages an event listener with automatic cleanup on disconnect. */
 export function listen(
   target: EventTargetRef,
   event: string,

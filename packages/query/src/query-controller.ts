@@ -23,6 +23,7 @@ type QueryOptionsInput<
   | QueryObserverOptions<TQueryFnData, TError, TData, TQueryData, TQueryKey>
   | (() => QueryObserverOptions<TQueryFnData, TError, TData, TQueryData, TQueryKey>)
 
+/** Configuration for `QueryController` — optionally provide a `QueryClient`. */
 export interface QueryControllerConfig {
   client?: QueryClient
 }
@@ -30,6 +31,7 @@ export interface QueryControllerConfig {
 const MISSING_QUERY_CLIENT_MESSAGE =
   'No QueryClient was found. Pass a client to the controller or wrap the host in <lit-query-client-provider>.'
 
+/** Reactive controller wrapping TanStack's `QueryObserver`. Syncs query options on every host update. */
 export class QueryController<
   TQueryFnData = unknown,
   TError = DefaultError,

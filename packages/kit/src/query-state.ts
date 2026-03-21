@@ -70,6 +70,7 @@ class QueryStateController<T> implements ReactiveController {
   };
 }
 
+/** Syncs a reactive value with a URL query parameter. Responds to `popstate` events. */
 export function queryState<T>(
   host: ReactiveElement,
   param: string,

@@ -1,0 +1,39 @@
+{
+  "name": "@willram/store",
+  "version": "1.0.0",
+  "description": "Lightweight reactive store for shared state in Lit applications",
+  "keywords": ["lit", "state-management", "web-components", "reactive-controller", "store"],
+  "license": "MIT",
+  "author": "William Ramanand",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/willram/litkit.git",
+    "directory": "packages/store"
+  },
+  "type": "module",
+  "files": ["dist"],
+  "main": "./dist/store.js",
+  "module": "./dist/store.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/store.js"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -p tsconfig.build.json && vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "peerDependencies": {
+    "lit": "^3.0.0"
+  },
+  "devDependencies": {
+    "lit": "^3.3.2",
+    "typescript": "~5.9.3",
+    "vite": "^8.0.1",
+    "vitest": "^3.2.1"
+  }
+}

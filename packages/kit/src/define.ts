@@ -1,3 +1,4 @@
+/** Idempotent `customElements.define` — safe to call multiple times with the same tag. */
 export function define(
   tag: string,
   ctor: CustomElementConstructor,

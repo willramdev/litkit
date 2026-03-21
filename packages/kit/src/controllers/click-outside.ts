@@ -27,6 +27,7 @@ class ClickOutsideController implements ReactiveController {
   }
 }
 
+/** Controller factory that calls `callback` when a pointer event occurs outside the host element. */
 export function clickOutside(
   callback: () => void
 ): ControllerFactory<ClickOutsideController> {

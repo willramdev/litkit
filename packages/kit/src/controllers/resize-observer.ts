@@ -36,6 +36,7 @@ class ResizeObserverController implements ReactiveController {
   }
 }
 
+/** Controller factory that observes the host element's size. Exposes `.entries` and `.contentRect`. */
 export function resizeObserver(
   callback?: (entries: ResizeObserverEntry[]) => void,
   options?: ResizeObserverOptions
