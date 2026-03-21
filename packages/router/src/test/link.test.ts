@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { createMockRouter, mockMatch } from '../router-core/testing.ts';
 import { link } from '../router-lit/link.ts';
 import { html, render } from 'lit';

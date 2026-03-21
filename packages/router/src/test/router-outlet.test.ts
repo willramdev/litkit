@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { createMockRouter, mockMatch } from '../router-core/testing.ts';
 import '../router-lit/router-outlet.ts';
 import type { RouterOutlet } from '../router-lit/router-outlet.ts';
