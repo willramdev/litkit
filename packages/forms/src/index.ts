@@ -2,10 +2,15 @@ import type { ReactiveControllerHost } from 'lit';
 import type { FormConfig, FormInstance } from './types.ts';
 import { FormController } from './form-controller.ts';
 
-// Public API
 export { FormController } from './form-controller.ts';
 export { bind, fieldErrorId } from './bind.ts';
 export { field } from './field.ts';
+export {
+  LIT_FORM_REQUEST,
+  attachFormProvider,
+  requestFormContext,
+} from './form-context.ts';
+export { LitForm } from './lit-form.ts';
 
 /** Controller factory — creates a form instance bound to the host. */
 export function form<T extends Record<string, unknown>>(
@@ -15,7 +20,6 @@ export function form<T extends Record<string, unknown>>(
     new FormController(host, config) as unknown as FormInstance<T>;
 }
 
-// Validators
 export {
   required,
   email,
@@ -26,7 +30,6 @@ export {
   pattern,
 } from './validators.ts';
 
-// Types
 export type {
   FormConfig,
   FormInstance,

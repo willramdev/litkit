@@ -76,6 +76,46 @@ class LoginForm extends KitElement {
 }
 ```
 
+
+### Provider Element (`lit-form`)
+
+Use `lit-form` when you want to provide form context to descendant bindings and field helpers so you can write `bind('email')` and `field('email', ...)` instead of passing the form instance each time.
+
+```ts
+import { LitElement, html } from 'lit';
+import { FormController, bind, field, required, email } from '@willram/forms';
+
+class LoginForm extends LitElement {
+  form = new FormController(this, {
+    initialValues: { email: '', password: '' },
+    validators: {
+      email: [required(), email()],
+      password: [required()],
+    },
+    onSubmit: async ({ value }) => {
+      await login(value.email, value.password);
+    },
+  });
+
+  render() {
+    return html`
+      <lit-form .form=${this.form}>
+        <form>
+          <input ${bind('email')} placeholder="Email" />
+          ${field('email', (f) => f.error ? html`<span>${f.error}</span>` : '')}
+
+          <input type="password" ${bind('password')} placeholder="Password" />
+
+          <button type="submit">Log in</button>
+        </form>
+      </lit-form>
+    `;
+  }
+}
+```
+
+`lit-form` provides context and wires submit/reset for the descendant native `<form>`, but it does not replace the real form element. Keep using a real `<form>` inside it so native form semantics still work.
+
 ## API Reference
 
 ### FormController
@@ -229,3 +269,5 @@ const myForm = new FormController(this, {
 ## License
 
 MIT
+
+

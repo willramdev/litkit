@@ -2,12 +2,11 @@ import { LitElement, css, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import type { AsyncValidator } from '../src/index.ts';
 import { createForm, bind, field, required, email, minLength } from '../src/index.ts';
+import '../src/lit-form.ts';
 
-// Example async validator — simulates a server-side uniqueness check
 function uniqueEmail(): AsyncValidator {
   return async (value: unknown) => {
     if (typeof value !== 'string' || !value) return undefined;
-    // Simulate network delay
     await new Promise((r) => setTimeout(r, 500));
     return value === 'taken@example.com' ? 'Email already in use' : undefined;
   };
@@ -37,37 +36,39 @@ export class DemoForm extends LitElement {
 
   render() {
     return html`
-      <form @submit=${this.form.handleSubmit}>
-        <h2>Login</h2>
+      <lit-form .form=${this.form}>
+        <form>
+          <h2>Login</h2>
 
-        <label>
-          Email
-          <input type="email" ${bind(this.form, 'email')} />
-        </label>
-        ${field(this.form, 'email', (f) => html`
-          ${f.validating ? html`<p class="hint">Checking...</p>` : ''}
-          ${f.error ? html`<p class="error">${f.error}</p>` : ''}
-        `)}
+          <label>
+            Email
+            <input type="email" ${bind('email')} />
+          </label>
+          ${field('email', (f) => html`
+            ${f.validating ? html`<p class="hint">Checking...</p>` : ''}
+            ${f.error ? html`<p class="error">${f.error}</p>` : ''}
+          `)}
 
-        <label>
-          Password
-          <input type="password" ${bind(this.form, 'password')} />
-        </label>
-        ${field(this.form, 'password', (f) =>
-          f.error ? html`<p class="error">${f.error}</p>` : '',
-        )}
+          <label>
+            Password
+            <input type="password" ${bind('password')} />
+          </label>
+          ${field('password', (f) =>
+            f.error ? html`<p class="error">${f.error}</p>` : '',
+          )}
 
-        <label class="checkbox">
-          <input type="checkbox" ${bind(this.form, 'remember')} />
-          Remember me
-        </label>
+          <label class="checkbox">
+            <input type="checkbox" ${bind('remember')} />
+            Remember me
+          </label>
 
-        <button type="submit" ?disabled=${this.form.submitting}>
-          ${this.form.submitting ? 'Submitting...' : 'Log in'}
-        </button>
+          <button type="submit" ?disabled=${this.form.submitting}>
+            ${this.form.submitting ? 'Submitting...' : 'Log in'}
+          </button>
 
-        <pre>${JSON.stringify(this.form.value, null, 2)}</pre>
-      </form>
+          <pre>${JSON.stringify(this.form.value, null, 2)}</pre>
+        </form>
+      </lit-form>
     `;
   }
 
@@ -139,3 +140,4 @@ declare global {
     'demo-form': DemoForm;
   }
 }
+

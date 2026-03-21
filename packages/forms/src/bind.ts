@@ -4,19 +4,19 @@ import { noChange } from 'lit';
 import type { Part, PartInfo } from 'lit/directive.js';
 import type { BindOptions } from './types.ts';
 import type { FormInstance } from './types.ts';
+import { requestFormContext } from './form-context.ts';
 
 /**
  * Element directive that two-way-binds a form field to a native or custom
  * element.
  *
  * ```html
- * <input type="email"  ${bind(this.form, 'email')} />
- * <input type="checkbox" ${bind(this.form, 'remember')} />
- * <my-date-picker ${bind(this.form, 'startDate', {
- *   prop: 'value',
- *   event: 'value-changed',
- *   getValue: (e) => e.detail.value,
- * })} />
+ * <input type="email" ${bind(this.form, 'email')} />
+ * <lit-form .form=${this.form}>
+ *   <form>
+ *     <input type="email" ${bind('email')} />
+ *   </form>
+ * </lit-form>
  * ```
  */
 export function fieldErrorId(path: string): string {
@@ -25,6 +25,7 @@ export function fieldErrorId(path: string): string {
 
 class BindDirective extends AsyncDirective {
   private _element: Element | null = null;
+  private _form: FormInstance<any> | null = null;
   private _path = '';
   private _listeners: Array<[string, EventListener]> = [];
 
@@ -37,24 +38,18 @@ class BindDirective extends AsyncDirective {
     }
   }
 
-  // The render() return is unused for element directives.
-  override render(
-    _form: FormInstance<any>,
-    _path: string,
-    _options?: BindOptions,
-  ) {
+  override render(..._args: unknown[]) {
     return noChange;
   }
 
-  override update(
-    part: Part,
-    [form, path, options]: [FormInstance<any>, string, BindOptions | undefined],
-  ) {
+  override update(part: Part, args: unknown[]) {
     const element = (part as unknown as { element: Element }).element;
+    const [form, path, options] = this._resolveArgs(element, args);
 
-    if (this._element !== element || this._path !== path) {
+    if (this._element !== element || this._form !== form || this._path !== path) {
       this._cleanup();
       this._element = element;
+      this._form = form;
       this._path = path;
       this._attach(element, form, path, options);
     }
@@ -62,6 +57,29 @@ class BindDirective extends AsyncDirective {
     this._sync(element, form, path, options);
 
     return noChange;
+  }
+
+  private _resolveArgs(
+    element: Element,
+    args: unknown[],
+  ): [FormInstance<any>, string, BindOptions | undefined] {
+    const [formOrPath, pathOrOptions, maybeOptions] = args;
+
+    if (typeof formOrPath === 'string') {
+      const form = requestFormContext(element);
+      if (!form) {
+        throw new Error(
+          `bind('${formOrPath}') could not resolve a form context. Wrap this control in <lit-form .form=${'${form}'}><form>...</form></lit-form> or use bind(form, '${formOrPath}').`,
+        );
+      }
+      return [form, formOrPath, pathOrOptions as BindOptions | undefined];
+    }
+
+    return [
+      formOrPath as FormInstance<any>,
+      pathOrOptions as string,
+      maybeOptions as BindOptions | undefined,
+    ];
   }
 
   private _attach(
@@ -215,4 +233,29 @@ class BindDirective extends AsyncDirective {
   }
 }
 
-export const bind = directive(BindDirective);
+const bindDirective = directive(BindDirective);
+
+export function bind(
+  form: FormInstance<any>,
+  path: string,
+  options?: BindOptions,
+): ReturnType<typeof bindDirective>;
+export function bind(
+  path: string,
+  options?: BindOptions,
+): ReturnType<typeof bindDirective>;
+export function bind(
+  formOrPath: FormInstance<any> | string,
+  pathOrOptions?: string | BindOptions,
+  maybeOptions?: BindOptions,
+): ReturnType<typeof bindDirective> {
+  if (typeof formOrPath === 'string') {
+    return bindDirective(formOrPath, pathOrOptions as BindOptions | undefined);
+  }
+
+  return bindDirective(
+    formOrPath,
+    pathOrOptions as string,
+    maybeOptions,
+  );
+}
