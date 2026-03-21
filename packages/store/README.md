@@ -94,6 +94,65 @@ batch(() => {
 
 Works across multiple stores and supports nesting.
 
+### derived(store, fn, options?) / derived(stores, fn, options?)
+
+Creates a read-only store whose value is computed from one or more source stores. Recomputes when sources change, and only notifies subscribers when the derived value actually changes.
+
+```ts
+import { createStore, derived } from '@willram/store';
+
+// Single source
+const count = createStore(0);
+const doubled = derived(count, c => c * 2);
+
+doubled.get(); // 0
+count.set(3);
+doubled.get(); // 6
+
+// Multiple sources
+const firstName = createStore('Jane');
+const lastName = createStore('Doe');
+const fullName = derived(
+  [firstName, lastName],
+  ([first, last]) => `${first} ${last}`,
+);
+
+fullName.get(); // 'Jane Doe'
+```
+
+Subscribe to derived stores just like regular stores:
+
+```ts
+const unsub = doubled.subscribe((value, prev) => {
+  console.log(`${prev} -> ${value}`);
+});
+```
+
+#### Custom equality
+
+By default, `Object.is` is used to compare derived values. Pass a custom `equal` function for selectors that produce new object references:
+
+```ts
+const activeUsers = derived(store, s => s.users.filter(u => u.active), {
+  equal: (a, b) => a.length === b.length && a.every((v, i) => v === b[i]),
+});
+```
+
+#### Chaining
+
+Derived stores can be used as inputs to other derived stores:
+
+```ts
+const count = createStore(2);
+const doubled = derived(count, c => c * 2);
+const quadrupled = derived(doubled, d => d * 2);
+quadrupled.get(); // 8
+```
+
+#### Lazy evaluation
+
+When a derived store has no subscribers, it recomputes lazily on `get()`. When it has subscribers, it eagerly recomputes on every source change for immediate notification.
+
 ### storeSlice(host, store, selector, options?)
 
 Lit reactive controller that subscribes to a slice of the store. Only triggers `requestUpdate()` when the selected value changes (`Object.is` by default).
@@ -141,6 +200,17 @@ interface Store<T> {
   get(): T;
   set(state: T): void;
   update(fn: (state: T) => T): void;
+  subscribe(listener: (state: T, prev: T) => void): () => void;
+}
+```
+
+### DerivedStore\<T\>
+
+TypeScript interface for derived (read-only) stores:
+
+```ts
+interface DerivedStore<T> {
+  get(): T;
   subscribe(listener: (state: T, prev: T) => void): () => void;
 }
 ```

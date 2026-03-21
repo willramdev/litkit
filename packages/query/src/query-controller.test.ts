@@ -131,4 +131,53 @@ describe('QueryController', () => {
     ctrl.hostDisconnected();
     cleanup(host);
   });
+
+  it('cancel() cancels in-flight queries', async () => {
+    const client = new QueryClient();
+    const host = createMockHost();
+    let aborted = false;
+
+    const ctrl = new QueryController(
+      host,
+      {
+        queryKey: ['cancel-test'],
+        queryFn: ({ signal }) =>
+          new Promise((resolve, reject) => {
+            signal.addEventListener('abort', () => {
+              aborted = true;
+              reject(new DOMException('Aborted', 'AbortError'));
+            });
+          }),
+      },
+      { client },
+    );
+
+    ctrl.hostConnected();
+
+    // Let the query start
+    await new Promise((r) => setTimeout(r, 10));
+
+    await ctrl.cancel();
+    expect(aborted).toBe(true);
+
+    ctrl.hostDisconnected();
+    cleanup(host);
+  });
+
+  it('cancel() is a no-op when no queryKey', async () => {
+    const client = new QueryClient();
+    const host = createMockHost();
+    const ctrl = new QueryController(
+      host,
+      { queryKey: undefined as any, queryFn: () => 'data', enabled: false },
+      { client },
+    );
+
+    ctrl.hostConnected();
+    // Should not throw
+    await ctrl.cancel();
+
+    ctrl.hostDisconnected();
+    cleanup(host);
+  });
 });

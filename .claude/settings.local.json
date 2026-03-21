@@ -14,7 +14,18 @@
       "Bash(for f:*)",
       "Bash(do sed:*)",
       "Bash(done)",
-      "Bash(npm test:*)"
+      "Bash(npm test:*)",
+      "Bash(npx vitest:*)",
+      "Bash(ls:*)",
+      "Bash(find /c/repos/litkit/packages/forms/src -type f -name *.ts -not -name *.test.ts)",
+      "Bash(grep -E \"\\\\.ts$\")",
+      "Bash(grep -n \"addEventListener\\\\|removeEventListener\" /c/repos/litkit/packages/router/src/router-core/router.ts /c/repos/litkit/packages/router/src/router-lit/*.ts)",
+      "Bash(grep:*)",
+      "Bash(npm ls:*)",
+      "Bash(tsc -p tsconfig.build.json --listFiles)",
+      "Bash(node -e \"const pkg = require\\(''./package.json''\\); console.log\\(JSON.stringify\\(pkg.exports, null, 2\\)\\)\")",
+      "Bash(/tmp/audit_notes.txt:*)",
+      "Read(//tmp/**)"
     ]
   }
 }

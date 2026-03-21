@@ -23,9 +23,11 @@ export class LitForm extends LitElement {
     this.#syncForms();
   });
 
+  #detachProvider?: () => void;
+
   constructor() {
     super();
-    attachFormProvider(this, () => this.form);
+    this.#detachProvider = attachFormProvider(this, () => this.form);
     this.addEventListener('submit', this.#handleSubmit as EventListener);
     this.addEventListener('reset', this.#handleReset as EventListener);
   }
@@ -41,6 +43,9 @@ export class LitForm extends LitElement {
 
   disconnectedCallback(): void {
     this.#observer.disconnect();
+    this.#detachProvider?.();
+    this.removeEventListener('submit', this.#handleSubmit as EventListener);
+    this.removeEventListener('reset', this.#handleReset as EventListener);
     super.disconnectedCallback();
   }
 

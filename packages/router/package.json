@@ -11,6 +11,7 @@
     "directory": "packages/router"
   },
   "type": "module",
+  "sideEffects": false,
   "main": "./dist/router.cjs",
   "module": "./dist/router.js",
   "types": "./dist/index.d.ts",

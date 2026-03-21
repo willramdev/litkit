@@ -1,5 +1,5 @@
 import type { ReactiveController, ReactiveControllerHost } from 'lit';
-import type { Store } from './store.ts';
+import type { ReadableStore } from './store.ts';
 
 /** Options for `storeSlice`. */
 export interface StoreSliceOptions<S> {
@@ -10,10 +10,12 @@ export interface StoreSliceOptions<S> {
 /**
  * Reactive controller that subscribes to a slice of a store.
  * Only triggers `requestUpdate()` when the selected value changes.
+ *
+ * Accepts any `ReadableStore` — works with both `Store` and `DerivedStore`.
  */
 export class StoreSliceController<T, S> implements ReactiveController {
   host: ReactiveControllerHost;
-  private _store: Store<T>;
+  private _store: ReadableStore<T>;
   private _selector: (state: T) => S;
   private _equal: (a: S, b: S) => boolean;
   private _unsubscribe: (() => void) | undefined;
@@ -21,7 +23,7 @@ export class StoreSliceController<T, S> implements ReactiveController {
 
   constructor(
     host: ReactiveControllerHost,
-    store: Store<T>,
+    store: ReadableStore<T>,
     selector: (state: T) => S,
     options?: StoreSliceOptions<S>,
   ) {
@@ -53,10 +55,10 @@ export class StoreSliceController<T, S> implements ReactiveController {
   }
 }
 
-/** Creates a reactive controller that subscribes to a slice of a store. */
+/** Creates a reactive controller that subscribes to a slice of a store or derived store. */
 export function storeSlice<T, S>(
   host: ReactiveControllerHost,
-  store: Store<T>,
+  store: ReadableStore<T>,
   selector: (state: T) => S,
   options?: StoreSliceOptions<S>,
 ): StoreSliceController<T, S> {

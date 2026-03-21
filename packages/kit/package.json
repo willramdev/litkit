@@ -11,6 +11,7 @@
     "directory": "packages/kit"
   },
   "type": "module",
+  "sideEffects": false,
   "main": "./dist/kit.js",
   "module": "./dist/kit.js",
   "types": "./dist/index.d.ts",
@@ -23,7 +24,7 @@
   "files": ["dist"],
   "scripts": {
     "dev": "vite",
-    "build": "tsc -p tsconfig.build.json && vite build",
+    "build": "vite build && tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },

@@ -107,7 +107,22 @@ ctrl.result;     // QueryObserverResult — { data, error, isLoading, ... }
 ctrl.client;     // QueryClient
 ctrl.observer;   // QueryObserver (advanced)
 ctrl.refetch();  // manually refetch
+ctrl.cancel();   // cancel in-flight query
 ctrl.setOptions(newOptions);
+```
+
+#### Query cancellation
+
+Cancel in-flight queries programmatically. The `AbortSignal` passed to your `queryFn` is signalled, allowing you to abort fetch requests or other async work:
+
+```ts
+const ctrl = new QueryController(this, {
+  queryKey: ['users'],
+  queryFn: ({ signal }) => fetch('/api/users', { signal }).then(r => r.json()),
+}, { client });
+
+// Later — cancel the in-flight request:
+await ctrl.cancel();
 ```
 
 Options can be static or a function for dynamic queries:

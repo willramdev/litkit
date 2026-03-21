@@ -157,6 +157,7 @@ const myForm = new FormController(this, {
 | `destroyField(path)` | Remove a field from the form |
 | `field(path)` | Get a `FieldInstance` |
 | `array(path)` | Get an `ArrayInstance` |
+| `group(...paths)` | Get a `GroupInstance` for aggregate state |
 
 ### bind(form, path, options?)
 
@@ -199,6 +200,57 @@ ${field(form, 'email', f => html`
 | `dirty` | `boolean` | Value differs from initial |
 | `valid` | `boolean` | No errors |
 | `validating` | `boolean` | Async validation in progress |
+
+### GroupInstance
+
+Logical grouping of fields with aggregate state. Useful for multi-step forms or validating/checking a section at a time.
+
+```ts
+const address = form.group('street', 'city', 'zip');
+
+address.valid;    // true when all three fields are valid
+address.dirty;    // true when any of the three is dirty
+address.touched;  // true when any has been touched
+address.errors;   // { city: ['Required'] } — only errors for group fields
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `valid` | `boolean` | All group fields valid |
+| `dirty` | `boolean` | Any group field changed |
+| `touched` | `boolean` | Any group field touched |
+| `errors` | `Record<string, string[]>` | Errors for group fields only |
+
+| Method | Description |
+|--------|-------------|
+| `field(path)` | Get a `FieldInstance` within the group |
+| `validate()` | Validate only the group's fields, returns errors |
+
+#### Multi-step form example
+
+```ts
+class CheckoutForm extends LitElement {
+  form = new FormController(this, {
+    initialValues: { street: '', city: '', zip: '', cardNumber: '', expiry: '' },
+    validators: {
+      street: [required()],
+      city: [required()],
+      zip: [required()],
+      cardNumber: [required()],
+    },
+  });
+
+  step = 0;
+
+  async nextStep() {
+    const address = this.form.group('street', 'city', 'zip');
+    const errors = await address.validate();
+    if (Object.keys(errors).length === 0) {
+      this.step++;
+    }
+  }
+}
+```
 
 ### ArrayInstance
 

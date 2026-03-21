@@ -1,80 +1,82 @@
+import {
+  type ReactiveNode,
+  nodeInfoMap,
+  markDirty,
+  triggerFlush,
+  batch,
+} from './scheduler.ts';
+
+export { batch };
+
 type Listener<T> = (state: T, prev: T) => void;
 
-let batchDepth = 0;
-const batchQueue = new Map<object, () => void>();
-
-/**
- * Batch multiple store updates into a single notification per store.
- * Subscribers are notified once when the batch completes, with the
- * final state and the state before the batch began.
- */
-export function batch(fn: () => void): void {
-  batchDepth++;
-  try {
-    fn();
-  } finally {
-    batchDepth--;
-    if (batchDepth === 0) {
-      const fns = [...batchQueue.values()];
-      batchQueue.clear();
-      for (const f of fns) f();
-    }
-  }
+/** Minimal read-only store interface — shared by `Store` and `DerivedStore`. */
+export interface ReadableStore<T> {
+  /** Returns the current state. */
+  get(): T;
+  /** Subscribe to state changes. Returns an unsubscribe function. */
+  subscribe(listener: Listener<T>): () => void;
 }
 
 /** Reactive store with get/set/update/subscribe API. */
-export interface Store<T> {
-  /** Returns the current state. */
-  get(): T;
+export interface Store<T> extends ReadableStore<T> {
   /** Replaces the state and notifies all subscribers. */
   set(state: T): void;
   /** Updates the state using a function and notifies all subscribers. */
   update(fn: (state: T) => T): void;
-  /** Subscribe to state changes. Returns an unsubscribe function. */
-  subscribe(listener: Listener<T>): () => void;
 }
 
 /** Creates a reactive store with the given initial state. */
 export function createStore<T>(initialState: T): Store<T> {
   let state = initialState;
+  let prev = initialState;
+  let prevCaptured = false;
   const listeners = new Set<Listener<T>>();
 
-  function doNotify(next: T, prev: T): void {
-    for (const fn of listeners) {
-      try {
-        fn(next, prev);
-      } catch (e) {
-        console.error('Store listener error:', e);
+  const node: ReactiveNode = {
+    depth: 0,
+    dirty: false,
+    dependents: new Set(),
+    update() {
+      // Store nodes always "changed" — the value was already set eagerly.
+      return true;
+    },
+    notify() {
+      const notifyPrev = prev;
+      prevCaptured = false;
+      for (const fn of listeners) {
+        try {
+          fn(state, notifyPrev);
+        } catch (e) {
+          console.error('Store listener error:', e);
+        }
       }
-    }
-  }
+    },
+  };
 
-  function notify(next: T, prev: T): void {
-    if (batchDepth > 0) {
-      if (!batchQueue.has(listeners)) {
-        const originalPrev = prev;
-        batchQueue.set(listeners, () => doNotify(state, originalPrev));
-      }
-      return;
-    }
-    doNotify(next, prev);
-  }
-
-  return {
+  const store: Store<T> = {
     get() {
       return state;
     },
 
     set(next: T) {
-      const prev = state;
+      if (!prevCaptured) {
+        prev = state;
+        prevCaptured = true;
+      }
       state = next;
-      notify(state, prev);
+      markDirty(node);
+      triggerFlush();
     },
 
     update(fn: (current: T) => T) {
-      const prev = state;
-      state = fn(prev);
-      notify(state, prev);
+      if (!prevCaptured) {
+        prev = state;
+        prevCaptured = true;
+      }
+      state = fn(state);
+      markDirty(node);
+      triggerFlush();
     },
 
     subscribe(listener: Listener<T>) {
@@ -84,4 +86,7 @@ export function createStore<T>(initialState: T): Store<T> {
       };
     },
   };
+
+  nodeInfoMap.set(store, { node });
+  return store;
 }

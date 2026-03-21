@@ -1,5 +1,6 @@
 import {
   QueryObserver,
+  type CancelOptions,
   type DefaultError,
   type QueryClient,
   type QueryKey,
@@ -141,6 +142,14 @@ export class QueryController<
 
   refetch(options?: RefetchOptions): Promise<QueryObserverResult<TData, TError>> {
     return this.observer.refetch(options)
+  }
+
+  /** Cancel the in-flight query for this controller's exact query key. */
+  async cancel(options?: CancelOptions): Promise<void> {
+    const queryKey = this.#readOptions().queryKey
+    if (queryKey) {
+      await this.#resolveClient().cancelQueries({ queryKey, exact: true }, options)
+    }
   }
 
   #syncObserver(): void {

@@ -11,6 +11,7 @@
     "directory": "packages/query"
   },
   "type": "module",
+  "sideEffects": false,
   "files": ["dist"],
   "main": "./dist/query.js",
   "module": "./dist/query.js",

@@ -3,6 +3,7 @@ import type { FormConfig, FormInstance } from './types.ts';
 import { FormController } from './form-controller.ts';
 
 export { FormController } from './form-controller.ts';
+export { createForm } from './create-form.ts';
 export { bind, fieldErrorId } from './bind.ts';
 export { field } from './field.ts';
 export {
@@ -35,6 +36,7 @@ export type {
   FormInstance,
   FieldInstance,
   ArrayInstance,
+  GroupInstance,
   FieldValidatorConfig,
   BindOptions,
   Validator,

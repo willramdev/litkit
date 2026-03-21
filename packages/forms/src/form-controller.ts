@@ -2,6 +2,7 @@ import type { ReactiveController, ReactiveControllerHost } from 'lit';
 import type {
   FieldInstance,
   ArrayInstance,
+  GroupInstance,
   FormConfig,
   FieldValidatorConfig,
   FieldValue,
@@ -11,6 +12,7 @@ import { FormEngine } from './internal/engine.ts';
 import type { FieldConfig } from './internal/engine.ts';
 import { FieldController } from './field-controller.ts';
 import { ArrayController } from './array-controller.ts';
+import { GroupController } from './group-controller.ts';
 
 /**
  * Core form controller.  Implements both Lit's `ReactiveController` (for
@@ -25,6 +27,7 @@ export class FormController<T extends Record<string, unknown>>
   private _host: ReactiveControllerHost;
   private _fields = new Map<string, FieldController<any>>();
   private _arrays = new Map<string, ArrayController<any>>();
+  private _groups = new Map<string, GroupController<any>>();
   private _unsubscribe: (() => void) | null = null;
 
   constructor(host: ReactiveControllerHost, config: FormConfig<T>) {
@@ -129,6 +132,7 @@ export class FormController<T extends Record<string, unknown>>
     this._engine.reset(values);
     this._fields.clear();
     this._arrays.clear();
+    this._groups.clear();
   }
 
   setValues(partial: Partial<T>): void {
@@ -186,6 +190,14 @@ export class FormController<T extends Record<string, unknown>>
       this._arrays.set(path, new ArrayController(this._engine, path));
     }
     return this._arrays.get(path) as ArrayInstance<FieldArrayItem<T, P>>;
+  }
+
+  group<P extends string & keyof T>(...paths: P[]): GroupInstance<Pick<T, P>> {
+    const key = paths.slice().sort().join('\0');
+    if (!this._groups.has(key)) {
+      this._groups.set(key, new GroupController(this._engine, paths));
+    }
+    return this._groups.get(key) as GroupInstance<Pick<T, P>>;
   }
 }
 

@@ -51,7 +51,7 @@ Items to complete before each package can be considered v1.
 
 ### Nice-to-have
 
-- [ ] Query cancellation support (AbortSignal)
+- [x] Query cancellation support (AbortSignal) — `cancel()` method on `QueryController`
 - [ ] DevTools integration
 
 ---
@@ -65,7 +65,7 @@ Items to complete before each package can be considered v1.
 
 ### Nice-to-have
 
-- [ ] Field groups (validate/reset a section)
+- [x] Field groups (validate/reset a section) — `group(...paths)` method on `FormInstance` with aggregate state
 - [ ] Serialization / hydration of form state
 - [ ] Debounced sync validators
 - [ ] SSR considerations
@@ -83,4 +83,13 @@ Items to complete before each package can be considered v1.
 
 - [x] Custom equality option for `storeSlice` (for selectors that return new objects)
 - [x] Batch updates (single notification for multiple mutations)
-- [ ] Derived/computed stores
+- [x] Derived/computed stores — `derived()` from single or multiple sources with custom equality
+
+
+## litkit
+
+### Future Enhancements
+  - [] Engine subscribe() only supports one caller (fine — it's internal, only FormController calls it)
+  - [] Kit controller classes aren't exported as types (DX inconvenience, not a bug)
+  - [] No SSR guards in kit/forms (expected for a Lit-first browser library)
+  - [] Router query params don't serialize arrays (document the limitation)

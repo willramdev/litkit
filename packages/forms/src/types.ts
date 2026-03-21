@@ -125,6 +125,28 @@ export interface ArrayInstance<Item = unknown> {
 }
 
 // ---------------------------------------------------------------------------
+// GroupInstance — aggregate state for a subset of fields
+// ---------------------------------------------------------------------------
+
+/** A logical group of fields with aggregate state and validation. */
+export interface GroupInstance<T extends Record<string, unknown> = Record<string, unknown>> {
+  /** Per-field errors for fields in this group. */
+  readonly errors: Record<string, string[]>;
+  /** True when all fields in the group are valid. */
+  readonly valid: boolean;
+  /** True when any field in the group is dirty. */
+  readonly dirty: boolean;
+  /** True when any field in the group has been touched. */
+  readonly touched: boolean;
+
+  /** Access a field within this group. */
+  field<P extends string & keyof T>(path: P): FieldInstance<T[P]>;
+
+  /** Validate all fields in this group. Returns errors per field path. */
+  validate(): Promise<Record<string, string[]>>;
+}
+
+// ---------------------------------------------------------------------------
 // FormInstance — top-level form state & actions
 // ---------------------------------------------------------------------------
 
@@ -174,6 +196,18 @@ export interface FormInstance<T extends Record<string, unknown> = Record<string,
   field<P extends string>(path: P): FieldInstance<FieldValue<T, P>>;
 
   array<P extends string>(path: P): ArrayInstance<FieldArrayItem<T, P>>;
+
+  /**
+   * Create a logical group of fields for aggregate state and validation.
+   *
+   * ```ts
+   * const address = form.group('street', 'city', 'zip');
+   * address.valid;   // true when all three are valid
+   * address.dirty;   // true when any of the three is dirty
+   * address.errors;  // { city: ['Required'] }
+   * ```
+   */
+  group<P extends string & keyof T>(...paths: P[]): GroupInstance<Pick<T, P>>;
 }
 
 // ---------------------------------------------------------------------------

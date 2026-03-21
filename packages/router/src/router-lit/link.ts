@@ -1,5 +1,6 @@
 import { noChange } from "lit";
-import { type AttributePart, Directive, type PartInfo, PartType, directive } from "lit/directive.js";
+import { type AttributePart, type PartInfo, PartType, directive } from "lit/directive.js";
+import { AsyncDirective } from "lit/async-directive.js";
 import type { NavigationInput, Router } from "../router-core/types.ts";
 
 /**
@@ -36,7 +37,7 @@ const DEFAULT_EXACT_ACTIVE_CLASS = "exact-active";
  *   - cross-origin links are not intercepted
  *   - download links are not intercepted
  */
-class LinkDirective extends Directive {
+class LinkDirective extends AsyncDirective {
   private _input: NavigationInput | undefined;
   private _router: Router | undefined;
   private _options: LinkOptions = {};
@@ -98,6 +99,31 @@ class LinkDirective extends Directive {
     _options?: LinkOptions,
   ) {
     return noChange;
+  }
+
+  override disconnected(): void {
+    this._cleanup();
+  }
+
+  override reconnected(): void {
+    // Re-subscribe to router on reconnect
+    if (this._router) {
+      this._unsubscribe = this._router.subscribe(() => {
+        this.updateActiveClasses();
+      });
+    }
+    // Re-attach click handler
+    if (this._element && this._clickHandler) {
+      this._element.addEventListener("click", this._clickHandler);
+    }
+  }
+
+  private _cleanup(): void {
+    if (this._element && this._clickHandler) {
+      this._element.removeEventListener("click", this._clickHandler);
+    }
+    this._unsubscribe?.();
+    this._unsubscribe = undefined;
   }
 
   private updateActiveClasses(): void {
