@@ -11,7 +11,7 @@ npm install @willram/kit lit
 ## Quick Start
 
 ```ts
-import { KitElement, prop, define, computed, watch, bind } from '@willram/kit';
+import { KitElement, prop, define, computed, watch, bind, debounce, throttle } from '@willram/kit';
 import { html } from 'lit';
 
 class MyCounter extends KitElement {
@@ -136,6 +136,48 @@ Auto-bind a method to its instance. The bound function is cached on first access
 handleClick() { /* `this` is always the instance */ }
 ```
 
+### @debounce(ms)
+
+Debounce a method — delays invocation until `ms` milliseconds after the last call.
+
+```ts
+@debounce(300)
+handleInput() { this.performSearch(this.query); }
+```
+
+### @throttle(ms)
+
+Throttle a method — fires immediately, then at most once per `ms` milliseconds.
+
+```ts
+@throttle(100)
+handleScroll() { this.updatePosition(); }
+```
+
+### @clickOutside
+
+Call the decorated method when a pointer event occurs outside the host element.
+
+```ts
+@clickOutside
+close() { this.open = false; }
+```
+
+### @listen(target, event, options?)
+
+Call the decorated method when the specified event fires. Automatically cleaned up on disconnect.
+
+```ts
+@listen('window', 'resize')
+onResize(e: Event) { /* ... */ }
+
+@listen('document', 'keydown')
+onKeydown(e: Event) { /* ... */ }
+
+@listen('window', 'scroll', { passive: true })
+onScroll(e: Event) { /* ... */ }
+```
+
 ### emit(el, name, detail?, options?)
 
 Standalone function version of `KitElement.emit()`.
@@ -155,7 +197,7 @@ All controllers are factory functions compatible with `this.use()`.
 
 #### `listen(target, event, handler, options?)`
 
-Manages an event listener with automatic cleanup.
+Manages an event listener with automatic cleanup. Also works as a [method decorator](#listentarget-event-options).
 
 ```ts
 this.use(listen('window', 'resize', this.onResize));
@@ -181,7 +223,7 @@ Observes the host element's intersection. Exposes `.isIntersecting` and `.entry`
 
 #### `clickOutside(callback)`
 
-Calls `callback` when a pointer event occurs outside the host element. Uses `composedPath()` for shadow DOM compatibility.
+Calls `callback` when a pointer event occurs outside the host element. Uses `composedPath()` for shadow DOM compatibility. Also works as a [method decorator](#clickoutside-1).
 
 ### State Helpers
 

@@ -52,10 +52,17 @@ export {
 
 export {
   RouterOutlet,
+  RouterProvider,
+  RouterLink,
   link,
   type LinkOptions,
   RouteController,
-  routeController,
+  SearchParamsController,
+  routeState,
+  searchParams,
+  LIT_ROUTER_REQUEST,
+  requestRouter,
+  attachRouterProvider,
   route,
   type RoutableElement,
 } from "./router-lit/index.ts";

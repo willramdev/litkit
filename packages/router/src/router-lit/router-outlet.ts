@@ -1,6 +1,7 @@
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import type { Router, RouteMatch, MatchedRoute } from "../router-core/types.ts";
+import { requestRouter } from "./router-context.ts";
 
 /**
  * <router-outlet> renders the currently matched route at this outlet's depth.
@@ -48,12 +49,14 @@ export class RouterOutlet extends LitElement {
   }
 
   /**
-   * The effective router: either the explicitly provided one,
-   * or inherited from the nearest parent outlet.
+   * The effective router: explicitly provided, inherited from a parent
+   * outlet, or resolved from a `<router-provider>` ancestor via context.
    */
   get effectiveRouter(): Router | undefined {
     if (this.router) return this.router;
-    return this.findParentOutlet()?.effectiveRouter;
+    const parent = this.findParentOutlet();
+    if (parent) return parent.effectiveRouter;
+    return requestRouter(this);
   }
 
   override connectedCallback(): void {
@@ -77,6 +80,13 @@ export class RouterOutlet extends LitElement {
     }
   }
 
+  /**
+   * Whether the outlet should move focus to rendered content after navigation
+   * for screen reader accessibility. Default: true.
+   */
+  @property({ type: Boolean })
+  manageFocus = true;
+
   private subscribeToRouter(): void {
     this._unsubscribe?.();
     this._error = null;
@@ -90,8 +100,36 @@ export class RouterOutlet extends LitElement {
     this._match = router.current;
     this._unsubscribe = router.subscribe((match) => {
       this._error = null;
+      const isNavigation = this._match !== match;
       this._match = match;
+      if (isNavigation && this.manageFocus) {
+        this._pendingFocus = true;
+      }
     });
+  }
+
+  private _pendingFocus = false;
+
+  override updated(changed: Map<string, unknown>): void {
+    super.updated(changed);
+    if (this._pendingFocus) {
+      this._pendingFocus = false;
+      this.moveFocus();
+    }
+  }
+
+  /**
+   * Move focus to the rendered content element after navigation.
+   * Uses tabindex="-1" so the element is focusable but not in the tab order.
+   */
+  private moveFocus(): void {
+    const el = this._renderedElement;
+    if (!el) return;
+
+    if (!el.hasAttribute("tabindex")) {
+      el.setAttribute("tabindex", "-1");
+    }
+    el.focus();
   }
 
   /**

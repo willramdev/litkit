@@ -31,10 +31,12 @@ Items to complete before each package can be considered v1.
 
 ### Nice-to-have
 
-- [ ] Route transition hooks — `onBeforeRouteUpdate` (same route, different params) vs `onBeforeRouteLeave` distinction
-- [ ] Concurrent navigation cancellation — if a guard or lazy load is async and the user navigates again mid-flight, the first navigation should be cancelled
-- [ ] Focus management — move focus to new content region after navigation for screen reader accessibility
-- [ ] `<router-link>` custom element — alternative to the `link()` directive for users who prefer a declarative element
+- [x] Global route hooks — `beforeEach` / `afterEach` in `RouterOptions` (6 tests)
+- [x] Document title support — `title` on `RouteDefinition` (static string or function) (4 tests)
+- [x] Search params controller — `SearchParamsController` + `searchParamsController` factory for reactive two-way search param access (11 tests)
+- [x] Concurrent navigation cancellation — already implemented via `navigationId`/`pendingNavId` staleness checks
+- [x] Focus management — `<router-outlet>` moves focus to rendered content after navigation for screen reader accessibility, opt-out via `manageFocus=false` (3 tests)
+- [x] `<router-link>` custom element — declarative alternative to `link()` directive with active classes, replace mode, slot-based content (11 tests)
 - [ ] Devtools / debug mode — console logging of route transitions, guard results, matcher decisions (opt-in, stripped in production)
 
 ---
@@ -79,6 +81,6 @@ Items to complete before each package can be considered v1.
 
 ### Nice-to-have
 
-- [ ] Custom equality option for `storeSlice` (for selectors that return new objects)
-- [ ] Batch updates (single notification for multiple mutations)
+- [x] Custom equality option for `storeSlice` (for selectors that return new objects)
+- [x] Batch updates (single notification for multiple mutations)
 - [ ] Derived/computed stores

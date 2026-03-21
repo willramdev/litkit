@@ -3,6 +3,12 @@ import type { ControllerFactory } from '../types.ts';
 
 type EventTargetRef = EventTarget | 'window' | 'document';
 
+function resolveTarget(target: EventTargetRef): EventTarget {
+  if (target === 'window') return window;
+  if (target === 'document') return document;
+  return target;
+}
+
 class ListenController implements ReactiveController {
   host: ReactiveElement;
   target: EventTargetRef;
@@ -25,18 +31,12 @@ class ListenController implements ReactiveController {
     host.addController(this);
   }
 
-  private resolveTarget(): EventTarget {
-    if (this.target === 'window') return window;
-    if (this.target === 'document') return document;
-    return this.target;
-  }
-
   hostConnected(): void {
-    this.resolveTarget().addEventListener(this.event, this.handler, this.options);
+    resolveTarget(this.target).addEventListener(this.event, this.handler, this.options);
   }
 
   hostDisconnected(): void {
-    this.resolveTarget().removeEventListener(this.event, this.handler, this.options);
+    resolveTarget(this.target).removeEventListener(this.event, this.handler, this.options);
   }
 }
 
@@ -45,7 +45,42 @@ export function listen(
   target: EventTargetRef,
   event: string,
   handler: EventListenerOrEventListenerObject,
-  options?: AddEventListenerOptions
-): ControllerFactory<ListenController> {
-  return (host) => new ListenController(host, target, event, handler, options);
+  options?: AddEventListenerOptions,
+): ControllerFactory<ListenController>;
+/** Method decorator that manages an event listener with automatic cleanup on disconnect. */
+export function listen(
+  target: EventTargetRef,
+  event: string,
+  options?: AddEventListenerOptions,
+): (proto: object, propertyKey: string, descriptor: PropertyDescriptor) => void;
+export function listen(
+  targetRef: EventTargetRef,
+  event: string,
+  handlerOrOptions?: EventListenerOrEventListenerObject | AddEventListenerOptions,
+  options?: AddEventListenerOptions,
+): ControllerFactory<ListenController> | ((proto: object, propertyKey: string, descriptor: PropertyDescriptor) => void) {
+  const isHandler =
+    typeof handlerOrOptions === 'function' ||
+    (handlerOrOptions != null && 'handleEvent' in handlerOrOptions);
+
+  if (isHandler) {
+    const handler = handlerOrOptions as EventListenerOrEventListenerObject;
+    return (host: ReactiveElement) => new ListenController(host, targetRef, event, handler, options);
+  }
+
+  const listenerOptions = handlerOrOptions as AddEventListenerOptions | undefined;
+  return (proto: object, propertyKey: string, _descriptor: PropertyDescriptor) => {
+    (proto.constructor as typeof ReactiveElement).addInitializer((instance) => {
+      const el = instance as ReactiveElement;
+      const handler = (e: Event) => (el as any)[propertyKey](e);
+      el.addController({
+        hostConnected() {
+          resolveTarget(targetRef).addEventListener(event, handler, listenerOptions);
+        },
+        hostDisconnected() {
+          resolveTarget(targetRef).removeEventListener(event, handler, listenerOptions);
+        },
+      });
+    });
+  };
 }

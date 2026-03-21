@@ -10,6 +10,8 @@ export { computed } from './computed.ts';
 // Decorators
 export { watch } from './watch.ts';
 export { bind } from './bind.ts';
+export { debounce } from './debounce.ts';
+export { throttle } from './throttle.ts';
 
 // State
 export { queryState } from './query-state.ts';

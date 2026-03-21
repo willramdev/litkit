@@ -71,4 +71,43 @@ describe('StoreSliceController', () => {
     expect(ctrl.value).toBe(42);
     expect(host.requestUpdate).toHaveBeenCalledOnce();
   });
+
+  it('uses custom equality to suppress updates', () => {
+    const store = createStore({ items: [1, 2, 3] });
+    const host = createMockHost();
+
+    // Selector returns a new array each time, but shallow-equal suppresses update
+    const shallowArrayEqual = (a: number[], b: number[]) =>
+      a.length === b.length && a.every((v, i) => v === b[i]);
+
+    const ctrl = new StoreSliceController(
+      host,
+      store,
+      (s) => s.items,
+      { equal: shallowArrayEqual },
+    );
+
+    ctrl.hostConnected();
+
+    // Set a new array with same contents
+    store.set({ items: [1, 2, 3] });
+    expect(host.requestUpdate).not.toHaveBeenCalled();
+
+    // Set a different array
+    store.set({ items: [1, 2, 4] });
+    expect(host.requestUpdate).toHaveBeenCalledOnce();
+    expect(ctrl.value).toEqual([1, 2, 4]);
+  });
+
+  it('triggers update without custom equality for new object references', () => {
+    const store = createStore({ items: [1, 2, 3] });
+    const host = createMockHost();
+    const ctrl = new StoreSliceController(host, store, (s) => s.items);
+
+    ctrl.hostConnected();
+
+    // Without custom equality, new array reference triggers update
+    store.set({ items: [1, 2, 3] });
+    expect(host.requestUpdate).toHaveBeenCalledOnce();
+  });
 });

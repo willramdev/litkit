@@ -206,4 +206,87 @@ describe('RouterOutlet', () => {
     expect(outlet.depth).toBe(0);
     cleanup(outlet);
   });
+
+  // =========================================================================
+  // Focus management
+  // =========================================================================
+
+  describe('focus management', () => {
+    it('moves focus to rendered element after navigation', async () => {
+      const match1 = mockMatch({
+        pathname: '/test',
+        route: { path: '/test', component: 'test-page' },
+        matched: [
+          { route: { path: '/test', component: 'test-page' }, params: {} },
+        ],
+      });
+      const router = createMockRouter({ current: match1 });
+      const outlet = createElement();
+      outlet.router = router;
+      await renderOutlet(outlet);
+
+      const match2 = mockMatch({
+        pathname: '/other',
+        route: { path: '/other', component: 'test-other-page' },
+        matched: [
+          { route: { path: '/other', component: 'test-other-page' }, params: {} },
+        ],
+      });
+      router.setCurrentMatch(match2);
+      await outlet.updateComplete;
+
+      const rendered = outlet.querySelector('test-other-page') as HTMLElement;
+      expect(rendered.getAttribute('tabindex')).toBe('-1');
+      expect(document.activeElement).toBe(rendered);
+      cleanup(outlet);
+    });
+
+    it('does not move focus on initial render', async () => {
+      const match = mockMatch({
+        pathname: '/test',
+        route: { path: '/test', component: 'test-page' },
+        matched: [
+          { route: { path: '/test', component: 'test-page' }, params: {} },
+        ],
+      });
+      const router = createMockRouter({ current: match });
+      const outlet = createElement();
+      outlet.router = router;
+      await renderOutlet(outlet);
+
+      const page = outlet.querySelector('test-page') as HTMLElement;
+      // Should NOT have tabindex or focus on initial render
+      expect(page.hasAttribute('tabindex')).toBe(false);
+      cleanup(outlet);
+    });
+
+    it('does not move focus when manageFocus is false', async () => {
+      const match1 = mockMatch({
+        pathname: '/test',
+        route: { path: '/test', component: 'test-page' },
+        matched: [
+          { route: { path: '/test', component: 'test-page' }, params: {} },
+        ],
+      });
+      const router = createMockRouter({ current: match1 });
+      const outlet = createElement();
+      outlet.router = router;
+      outlet.manageFocus = false;
+      await renderOutlet(outlet);
+
+      const match2 = mockMatch({
+        pathname: '/other',
+        route: { path: '/other', component: 'test-other-page' },
+        matched: [
+          { route: { path: '/other', component: 'test-other-page' }, params: {} },
+        ],
+      });
+      router.setCurrentMatch(match2);
+      await outlet.updateComplete;
+
+      const rendered = outlet.querySelector('test-other-page') as HTMLElement;
+      expect(rendered.hasAttribute('tabindex')).toBe(false);
+      cleanup(outlet);
+    });
+  });
 });

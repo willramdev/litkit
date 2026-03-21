@@ -33,6 +33,8 @@ class RouterImpl implements Router {
 
   private readonly scrollBehavior: ScrollBehaviorOption;
   private readonly errorHandler?: (error: RouterNavigationError) => void;
+  private readonly _beforeEach?: RouterOptions["beforeEach"];
+  private readonly _afterEach?: RouterOptions["afterEach"];
 
   private _current: RouteMatch | null = null;
   private readonly listeners = new Set<RouteChangeCallback>();
@@ -49,6 +51,8 @@ class RouterImpl implements Router {
     this.mode = options.mode ?? "history";
     this.scrollBehavior = options.scrollBehavior ?? "auto";
     this.errorHandler = options.onError;
+    this._beforeEach = options.beforeEach;
+    this._afterEach = options.afterEach;
 
     if (!isBrowser) {
       // SSR / non-browser: resolve nothing, attach no listeners
@@ -64,6 +68,7 @@ class RouterImpl implements Router {
     // Initial resolution (sync, no guards on first load)
     this._current = this.resolveCurrentLocation();
     this.handleRedirect();
+    this.applyTitle();
 
     // Listen for browser back/forward
     this.onLocationChange = () => {
@@ -181,6 +186,18 @@ class RouterImpl implements Router {
     const navId = ++navigationId;
     this.pendingNavId = navId;
 
+    // 0. Run global beforeEach guard
+    const beforeEachResult = await this.runGuard(
+      this._beforeEach,
+      targetMatch,
+      previous,
+    );
+    if (this.pendingNavId !== navId) return false; // stale
+    if (beforeEachResult === false) return false;
+    if (typeof beforeEachResult === "string") {
+      return this.navigate(beforeEachResult);
+    }
+
     // 1. Run beforeLeave guard on current route
     const leaveResult = await this.runGuard(
       previous?.route.beforeLeave,
@@ -237,7 +254,9 @@ class RouterImpl implements Router {
 
     this._current = targetMatch;
     this.handleRedirect();
+    this.applyTitle();
     this.notify(previous);
+    this._afterEach?.(this._current, previous);
 
     // Scroll handling
     if (this.scrollBehavior === "auto") {
@@ -258,13 +277,27 @@ class RouterImpl implements Router {
     if (!needsAsync) {
       this._current = newMatch;
       this.handleRedirect();
+      this.applyTitle();
       this.notify(previous);
+      this._afterEach?.(this._current, previous);
       this.restoreScrollPosition();
       return;
     }
 
     const navId = ++navigationId;
     this.pendingNavId = navId;
+
+    // Run global beforeEach
+    const beforeEachResult = await this.runGuard(
+      this._beforeEach,
+      newMatch,
+      previous,
+    );
+    if (this.pendingNavId !== navId) return;
+    if (beforeEachResult !== true) {
+      this.restoreUrl(previous);
+      return;
+    }
 
     // Run beforeLeave on current
     const leaveResult = await this.runGuard(
@@ -304,7 +337,9 @@ class RouterImpl implements Router {
 
     this._current = newMatch;
     this.handleRedirect();
+    this.applyTitle();
     this.notify(previous);
+    this._afterEach?.(this._current, previous);
     this.restoreScrollPosition();
   }
 
@@ -324,6 +359,7 @@ class RouterImpl implements Router {
   // =========================================================================
 
   private needsAsyncPipeline(target: RouteMatch | null, current: RouteMatch | null): boolean {
+    if (this._beforeEach) return true;
     if (current?.route.beforeLeave) return true;
     if (target?.route.beforeEnter) return true;
     if (target) {
@@ -372,6 +408,20 @@ class RouterImpl implements Router {
       }
     }
     return true;
+  }
+
+  // =========================================================================
+  // Document title
+  // =========================================================================
+
+  private applyTitle(): void {
+    if (!this._current) return;
+    const title = this._current.route.title;
+    if (typeof title === "string") {
+      document.title = title;
+    } else if (typeof title === "function") {
+      document.title = title(this._current);
+    }
   }
 
   // =========================================================================

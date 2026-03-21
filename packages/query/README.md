@@ -10,6 +10,8 @@ npm install @willram/query @tanstack/query-core lit
 
 ## Quick Start
 
+### LitElement
+
 ```ts
 import { LitElement, html } from 'lit';
 import { QueryController, createQueryClient } from '@willram/query';
@@ -37,6 +39,24 @@ class UserList extends LitElement {
 }
 ```
 
+### KitElement
+
+```ts
+import { KitElement, html } from '@willram/kit';
+import { query, createQueryClient } from '@willram/query';
+
+const client = createQueryClient();
+
+class UserList extends KitElement {
+  users = this.use(query({
+    queryKey: ['users'],
+    queryFn: () => fetch('/api/users').then(r => r.json()),
+  }, { client }));
+
+  // render() is the same as above
+}
+```
+
 ## Providing a QueryClient
 
 ### Option 1: Direct injection
@@ -44,7 +64,7 @@ class UserList extends LitElement {
 ```ts
 const client = createQueryClient();
 
-new QueryController(host, options, { client });
+new QueryController(this, options, { client });
 ```
 
 ### Option 2: DOM context (provider pattern)
@@ -78,10 +98,10 @@ connectedCallback() {
 
 ### QueryController
 
-Wraps TanStack's `QueryObserver`. Syncs query options on every host update.
+Wraps TanStack's `QueryObserver` and syncs query options on every host update.
 
 ```ts
-const ctrl = new QueryController(host, options, config?);
+const ctrl = new QueryController(this, options, config?);
 
 ctrl.result;     // QueryObserverResult — { data, error, isLoading, ... }
 ctrl.client;     // QueryClient
@@ -93,7 +113,7 @@ ctrl.setOptions(newOptions);
 Options can be static or a function for dynamic queries:
 
 ```ts
-new QueryController(this, () => ({
+users = new QueryController(this, () => ({
   queryKey: ['user', this.userId],
   queryFn: () => fetchUser(this.userId),
   enabled: !!this.userId,
@@ -105,26 +125,13 @@ new QueryController(this, () => ({
 Wraps TanStack's `MutationObserver`.
 
 ```ts
-const ctrl = new MutationController(host, {
+const ctrl = new MutationController(this, {
   mutationFn: (data) => fetch('/api/save', { method: 'POST', body: JSON.stringify(data) }),
 }, { client });
 
 ctrl.result;          // MutationObserverResult — { data, error, isLoading, ... }
 ctrl.mutate(data);    // execute the mutation
 ctrl.reset();         // reset to idle state
-```
-
-### Factory Functions
-
-For use with `KitElement.use()`:
-
-```ts
-import { query, mutation } from '@willram/query';
-
-class MyEl extends KitElement {
-  users = this.use(query({ queryKey: ['users'], queryFn: fetchUsers }, { client }));
-  save = this.use(mutation({ mutationFn: saveData }, { client }));
-}
 ```
 
 ### Helpers

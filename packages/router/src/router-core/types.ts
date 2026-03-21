@@ -27,6 +27,8 @@ export interface RouteDefinition {
   redirectTo?: string | ((match: RouteMatch) => string);
   children?: RouteDefinition[];
   meta?: Record<string, unknown>;
+  /** Document title — set automatically after navigation. */
+  title?: string | ((match: RouteMatch) => string);
   beforeEnter?: (to: RouteMatch, from: RouteMatch | null) => GuardReturn;
   beforeLeave?: (to: RouteMatch | null, from: RouteMatch) => GuardReturn;
   load?: () => Promise<unknown>;
@@ -106,6 +108,10 @@ export interface RouterOptions {
   scrollBehavior?: ScrollBehaviorOption;
   onError?: (error: RouterNavigationError) => void;
   createMatcher?: MatcherFactory;
+  /** Global guard that runs before per-route guards on every navigation. */
+  beforeEach?: (to: RouteMatch | null, from: RouteMatch | null) => GuardReturn;
+  /** Callback that runs after every completed navigation. */
+  afterEach?: (to: RouteMatch | null, from: RouteMatch | null) => void;
 }
 
 /** Factory function that creates a `RouteMatcher` from a path pattern. */

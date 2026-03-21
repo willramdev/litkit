@@ -77,9 +77,26 @@ unsub(); // stop listening
 
 Subscribers are protected — if one throws, the rest still get notified.
 
-### storeSlice(host, store, selector)
+### batch(fn)
 
-Lit reactive controller that subscribes to a slice of the store. Only triggers `requestUpdate()` when the selected value changes (strict equality).
+Batch multiple store updates into a single notification per store. Subscribers are notified once when the batch completes, with the final state and the state before the batch began.
+
+```ts
+import { batch } from '@willram/store';
+
+batch(() => {
+  store.update(s => ({ ...s, loading: true }));
+  store.update(s => ({ ...s, data: newData }));
+  store.update(s => ({ ...s, loading: false }));
+});
+// subscribers notified once: prev={loading: false, data: old}, next={loading: false, data: newData}
+```
+
+Works across multiple stores and supports nesting.
+
+### storeSlice(host, store, selector, options?)
+
+Lit reactive controller that subscribes to a slice of the store. Only triggers `requestUpdate()` when the selected value changes (`Object.is` by default).
 
 ```ts
 class MyEl extends LitElement {
@@ -96,6 +113,16 @@ class MyEl extends LitElement {
 ```
 
 The controller automatically subscribes on `connectedCallback` and unsubscribes on `disconnectedCallback`.
+
+#### Custom equality
+
+Pass an `equal` function to control when updates trigger. Useful for selectors that return new object references:
+
+```ts
+const users = storeSlice(this, store, s => s.users, {
+  equal: (a, b) => a.length === b.length && a.every((v, i) => v === b[i]),
+});
+```
 
 ### StoreSliceController
 

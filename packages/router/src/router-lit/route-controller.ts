@@ -1,13 +1,18 @@
 import type { ReactiveController, ReactiveControllerHost } from "lit";
 import type { RouteMatch, Router } from "../router-core/types.ts";
+import { requestRouter } from "./router-context.ts";
 
 /**
  * A reactive controller that subscribes to router changes and triggers
  * host updates when the route changes.
  *
+ * If no router is provided, it will be resolved from context (via `<router-provider>`).
+ *
  * Usage:
  *   class MyPage extends LitElement {
  *     private routeCtrl = new RouteController(this, router);
+ *     // or, with context:
+ *     private routeCtrl = new RouteController(this);
  *
  *     render() {
  *       const match = this.routeCtrl.match;
@@ -19,12 +24,12 @@ import type { RouteMatch, Router } from "../router-core/types.ts";
 export class RouteController implements ReactiveController {
   private _match: RouteMatch | null = null;
   private _unsubscribe?: () => void;
-  private readonly host: ReactiveControllerHost;
-  private readonly router: Router;
+  private readonly host: ReactiveControllerHost & EventTarget;
+  private _router: Router | undefined;
 
-  constructor(host: ReactiveControllerHost, router: Router) {
+  constructor(host: ReactiveControllerHost & EventTarget, router?: Router) {
     this.host = host;
-    this.router = router;
+    this._router = router;
     this.host.addController(this);
   }
 
@@ -45,8 +50,13 @@ export class RouteController implements ReactiveController {
   }
 
   hostConnected(): void {
-    this._match = this.router.current;
-    this._unsubscribe = this.router.subscribe((match) => {
+    if (!this._router) {
+      this._router = requestRouter(this.host);
+    }
+    if (!this._router) return;
+
+    this._match = this._router.current;
+    this._unsubscribe = this._router.subscribe((match) => {
       this._match = match;
       this.host.requestUpdate();
     });

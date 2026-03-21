@@ -51,7 +51,7 @@ export function mutationOptions<
   return options
 }
 
-/** Controller factory for `KitElement.use()` — creates a `QueryController`. */
+/** Controller factory — creates a `QueryController` bound to the host. */
 export function query<
   TQueryFnData = unknown,
   TError = DefaultError,
@@ -68,7 +68,7 @@ export function query<
     new QueryController(host, optionsInput, config)
 }
 
-/** Controller factory for `KitElement.use()` — creates a `MutationController`. */
+/** Controller factory — creates a `MutationController` bound to the host. */
 export function mutation<
   TData = unknown,
   TError = DefaultError,

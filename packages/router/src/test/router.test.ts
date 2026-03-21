@@ -747,6 +747,218 @@ describe("Router", () => {
   });
 
   // =========================================================================
+  // Document title
+  // =========================================================================
+
+  describe("document title", () => {
+    it("sets document.title from a static string", () => {
+      const titledRoutes = defineRoutes(
+        [
+          { path: "/", name: "home", component: "home-page", title: "Home" },
+          { path: "/about", name: "about", component: "about-page", title: "About Us" },
+        ],
+        factory,
+      );
+
+      router = createRouter({ routes: titledRoutes });
+      expect(document.title).toBe("Home");
+
+      router.navigate("/about");
+      expect(document.title).toBe("About Us");
+    });
+
+    it("sets document.title from a function", () => {
+      const titledRoutes = defineRoutes(
+        [
+          { path: "/", name: "home", component: "home-page" },
+          {
+            path: "/users/:id",
+            name: "user",
+            component: "user-page",
+            title: (match) => `User ${match.params.id}`,
+          },
+        ],
+        factory,
+      );
+
+      setLocation("/users/42");
+      router = createRouter({ routes: titledRoutes });
+      expect(document.title).toBe("User 42");
+    });
+
+    it("does not change title when route has no title", () => {
+      document.title = "Original";
+      const titledRoutes = defineRoutes(
+        [
+          { path: "/", name: "home", component: "home-page" },
+          { path: "/other", name: "other", component: "other-page" },
+        ],
+        factory,
+      );
+
+      router = createRouter({ routes: titledRoutes });
+      expect(document.title).toBe("Original");
+    });
+
+    it("updates title on navigate", () => {
+      const titledRoutes = defineRoutes(
+        [
+          { path: "/", name: "home", component: "home-page", title: "Home" },
+          { path: "/about", name: "about", component: "about-page", title: "About" },
+        ],
+        factory,
+      );
+
+      router = createRouter({ routes: titledRoutes });
+      expect(document.title).toBe("Home");
+
+      router.navigate("/about");
+      expect(document.title).toBe("About");
+    });
+  });
+
+  // =========================================================================
+  // Global hooks (beforeEach / afterEach)
+  // =========================================================================
+
+  describe("global hooks", () => {
+    it("beforeEach can block navigation", async () => {
+      const hookedRoutes = defineRoutes(
+        [
+          { path: "/", name: "home", component: "home-page" },
+          { path: "/blocked", name: "blocked", component: "blocked-page" },
+        ],
+        factory,
+      );
+
+      router = createRouter({
+        routes: hookedRoutes,
+        beforeEach: () => false,
+      });
+
+      const result = await router.navigate("/blocked");
+      expect(result).toBe(false);
+      expect(router.current!.name).toBe("home");
+    });
+
+    it("beforeEach can redirect", async () => {
+      const hookedRoutes = defineRoutes(
+        [
+          { path: "/", name: "home", component: "home-page" },
+          { path: "/login", name: "login", component: "login-page" },
+          { path: "/dashboard", name: "dashboard", component: "dashboard-page" },
+        ],
+        factory,
+      );
+
+      router = createRouter({
+        routes: hookedRoutes,
+        beforeEach: (to) => {
+          if (to?.name === "dashboard") return "/login";
+          return true;
+        },
+      });
+
+      const result = await router.navigate("/dashboard");
+      expect(result).toBe(true);
+      expect(router.current!.name).toBe("login");
+    });
+
+    it("beforeEach runs before per-route guards", async () => {
+      const order: string[] = [];
+      const hookedRoutes = defineRoutes(
+        [
+          { path: "/", name: "home", component: "home-page" },
+          {
+            path: "/guarded",
+            name: "guarded",
+            component: "guarded-page",
+            beforeEnter: () => {
+              order.push("enter");
+              return true;
+            },
+          },
+        ],
+        factory,
+      );
+
+      router = createRouter({
+        routes: hookedRoutes,
+        beforeEach: () => {
+          order.push("beforeEach");
+          return true;
+        },
+      });
+
+      await router.navigate("/guarded");
+      expect(order).toEqual(["beforeEach", "enter"]);
+    });
+
+    it("afterEach is called after navigation", async () => {
+      const afterEach = vi.fn();
+      const hookedRoutes = defineRoutes(
+        [
+          { path: "/", name: "home", component: "home-page" },
+          { path: "/about", name: "about", component: "about-page" },
+        ],
+        factory,
+      );
+
+      router = createRouter({ routes: hookedRoutes, afterEach });
+
+      router.navigate("/about");
+      expect(afterEach).toHaveBeenCalledOnce();
+      expect(afterEach.mock.calls[0][0]!.name).toBe("about");
+      expect(afterEach.mock.calls[0][1]!.name).toBe("home");
+    });
+
+    it("afterEach is not called when navigation is blocked", async () => {
+      const afterEach = vi.fn();
+      const hookedRoutes = defineRoutes(
+        [
+          { path: "/", name: "home", component: "home-page" },
+          {
+            path: "/blocked",
+            name: "blocked",
+            component: "blocked-page",
+            beforeEnter: () => false,
+          },
+        ],
+        factory,
+      );
+
+      router = createRouter({ routes: hookedRoutes, afterEach });
+      await router.navigate("/blocked");
+      expect(afterEach).not.toHaveBeenCalled();
+    });
+
+    it("async beforeEach is awaited", async () => {
+      const hookedRoutes = defineRoutes(
+        [
+          { path: "/", name: "home", component: "home-page" },
+          { path: "/async", name: "async", component: "async-page" },
+        ],
+        factory,
+      );
+
+      router = createRouter({
+        routes: hookedRoutes,
+        beforeEach: async () => {
+          await new Promise((r) => setTimeout(r, 10));
+          return true;
+        },
+      });
+
+      const promise = router.navigate("/async");
+      expect(router.current!.name).toBe("home");
+
+      const result = await promise;
+      expect(result).toBe(true);
+      expect(router.current!.name).toBe("async");
+    });
+  });
+
+  // =========================================================================
   // Error handling
   // =========================================================================
 

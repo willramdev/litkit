@@ -16,7 +16,7 @@ import { ArrayController } from './array-controller.ts';
  * Core form controller.  Implements both Lit's `ReactiveController` (for
  * lifecycle integration) and our public `FormInstance` interface.
  *
- * Not exported publicly — consumers get a `FormInstance<T>` from `createForm`.
+ * Exported publicly as both the direct controller and via the `form()` factory.
  */
 export class FormController<T extends Record<string, unknown>>
   implements ReactiveController

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { RouteController } from '../router-lit/route-controller.ts';
-import { routeController } from '../router-lit/index.ts';
+import { routeState } from '../router-lit/index.ts';
 import { createMockRouter, mockMatch } from '../router-core/testing.ts';
 
 function createMockHost() {
@@ -98,13 +98,13 @@ describe('RouteController', () => {
   });
 });
 
-describe('routeController factory', () => {
+describe('routeState factory', () => {
   it('returns a factory function that creates a RouteController', () => {
     const host = createMockHost();
     const router = createMockRouter({
       current: mockMatch({ pathname: '/home' }),
     });
-    const factory = routeController(router);
+    const factory = routeState(router);
     const ctrl = factory(host as any);
 
     expect(ctrl).toBeInstanceOf(RouteController);

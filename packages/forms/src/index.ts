@@ -1,18 +1,18 @@
 import type { ReactiveControllerHost } from 'lit';
 import type { FormConfig, FormInstance } from './types.ts';
-import { createForm } from './create-form.ts';
+import { FormController } from './form-controller.ts';
 
 // Public API
-export { createForm } from './create-form.ts';
+export { FormController } from './form-controller.ts';
 export { bind, fieldErrorId } from './bind.ts';
 export { field } from './field.ts';
 
-/** Controller factory for `KitElement.use()` — creates a form instance. */
+/** Controller factory — creates a form instance bound to the host. */
 export function form<T extends Record<string, unknown>>(
   config: FormConfig<T>,
 ) {
   return (host: ReactiveControllerHost): FormInstance<T> =>
-    createForm(host, config);
+    new FormController(host, config) as unknown as FormInstance<T>;
 }
 
 // Validators

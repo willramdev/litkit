@@ -16,12 +16,14 @@ npm install zod
 
 ## Quick Start
 
+### LitElement
+
 ```ts
 import { LitElement, html } from 'lit';
-import { createForm, bind, field, required, email } from '@willram/forms';
+import { FormController, bind, field, required, email } from '@willram/forms';
 
 class LoginForm extends LitElement {
-  form = createForm(this, {
+  form = new FormController(this, {
     initialValues: { email: '', password: '' },
     validators: {
       email: [required(), email()],
@@ -52,14 +54,36 @@ class LoginForm extends LitElement {
 }
 ```
 
-## API Reference
-
-### createForm(host, config)
-
-Creates a form bound to a Lit host element. Returns a `FormInstance<T>`.
+### KitElement
 
 ```ts
-const form = createForm(this, {
+import { KitElement, html } from '@willram/kit';
+import { form, bind, field, required, email } from '@willram/forms';
+
+class LoginForm extends KitElement {
+  form = this.use(form({
+    initialValues: { email: '', password: '' },
+    validators: {
+      email: [required(), email()],
+      password: [required()],
+    },
+    onSubmit: async ({ value }) => {
+      await login(value.email, value.password);
+    },
+  }));
+
+  // render() is the same as above
+}
+```
+
+## API Reference
+
+### FormController
+
+Creates a form bound to a Lit host element.
+
+```ts
+const myForm = new FormController(this, {
   initialValues: { name: '', age: 0 },
   validators: { ... },
   validateOn: 'blur',          // 'blur' (default) | 'change' | 'submit'
@@ -67,18 +91,6 @@ const form = createForm(this, {
   onSubmit: ({ value }) => {}, // called when form is valid
   onSubmitInvalid: ({ errors }) => {}, // called when form has errors
 });
-```
-
-### form() factory
-
-For use with `KitElement.use()`:
-
-```ts
-import { form } from '@willram/forms';
-
-class MyEl extends KitElement {
-  myForm = this.use(form({ initialValues: { name: '' } }));
-}
 ```
 
 ### FormInstance
@@ -206,7 +218,7 @@ const schema = z.object({
   password: z.string().min(8),
 });
 
-const form = createForm(this, {
+const myForm = new FormController(this, {
   initialValues: { email: '', password: '' },
   validators: zodValidator(schema),
   // Or form-level:

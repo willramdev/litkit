@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { createStore } from './store.ts';
+import { createStore, batch } from './store.ts';
 
 describe('createStore', () => {
   it('returns initial state', () => {
@@ -115,5 +115,101 @@ describe('createStore', () => {
 
     expect(listener).toHaveBeenCalledOnce();
     expect(listener).toHaveBeenCalledWith(42, 42);
+  });
+});
+
+describe('batch', () => {
+  it('defers notifications until batch completes', () => {
+    const store = createStore({ a: 0, b: 0 });
+    const listener = vi.fn();
+    store.subscribe(listener);
+
+    batch(() => {
+      store.set({ a: 1, b: 0 });
+      store.set({ a: 1, b: 2 });
+      expect(listener).not.toHaveBeenCalled();
+    });
+
+    expect(listener).toHaveBeenCalledOnce();
+    expect(listener).toHaveBeenCalledWith({ a: 1, b: 2 }, { a: 0, b: 0 });
+  });
+
+  it('notifies with final state and original prev', () => {
+    const store = createStore(0);
+    const listener = vi.fn();
+    store.subscribe(listener);
+
+    batch(() => {
+      store.set(1);
+      store.set(2);
+      store.set(3);
+    });
+
+    expect(listener).toHaveBeenCalledOnce();
+    expect(listener).toHaveBeenCalledWith(3, 0);
+  });
+
+  it('works with multiple stores', () => {
+    const storeA = createStore(0);
+    const storeB = createStore('hello');
+    const listenerA = vi.fn();
+    const listenerB = vi.fn();
+    storeA.subscribe(listenerA);
+    storeB.subscribe(listenerB);
+
+    batch(() => {
+      storeA.set(1);
+      storeB.set('world');
+    });
+
+    expect(listenerA).toHaveBeenCalledOnce();
+    expect(listenerA).toHaveBeenCalledWith(1, 0);
+    expect(listenerB).toHaveBeenCalledOnce();
+    expect(listenerB).toHaveBeenCalledWith('world', 'hello');
+  });
+
+  it('supports nested batches', () => {
+    const store = createStore(0);
+    const listener = vi.fn();
+    store.subscribe(listener);
+
+    batch(() => {
+      store.set(1);
+      batch(() => {
+        store.set(2);
+        store.set(3);
+      });
+      expect(listener).not.toHaveBeenCalled();
+    });
+
+    expect(listener).toHaveBeenCalledOnce();
+    expect(listener).toHaveBeenCalledWith(3, 0);
+  });
+
+  it('does not notify if no updates happened', () => {
+    const store = createStore(0);
+    const listener = vi.fn();
+    store.subscribe(listener);
+
+    batch(() => {
+      // no updates
+    });
+
+    expect(listener).not.toHaveBeenCalled();
+  });
+
+  it('works with update() inside batch', () => {
+    const store = createStore({ count: 0 });
+    const listener = vi.fn();
+    store.subscribe(listener);
+
+    batch(() => {
+      store.update(s => ({ count: s.count + 1 }));
+      store.update(s => ({ count: s.count + 1 }));
+    });
+
+    expect(store.get()).toEqual({ count: 2 });
+    expect(listener).toHaveBeenCalledOnce();
+    expect(listener).toHaveBeenCalledWith({ count: 2 }, { count: 0 });
   });
 });
