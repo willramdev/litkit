@@ -1,26 +1,10 @@
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import type { Router, RouteMatch, MatchedRoute } from "../router-core/types.ts";
+import type { Router, RouteMatch, MatchedRoute, RouteDefinition } from "../router-core/types.ts";
 import { requestRouter } from "./router-context.ts";
 
-/**
- * <router-outlet> renders the currently matched route at this outlet's depth.
- *
- * Usage:
- *   html`<router-outlet .router=${router}></router-outlet>`
- *
- * Nested usage (inside a layout component):
- *   html`<router-outlet></router-outlet>`
- *   The nested outlet auto-discovers its parent outlet's router and depth.
- *
- * Behavior:
- *   - Subscribes to router changes
- *   - Determines its depth by walking up the DOM to find a parent outlet
- *   - Renders the matched route entry at its depth level
- *   - Reuses component elements when the tag name hasn't changed
- *   - Injects `route`, `params`, and `query` into rendered elements
- *   - Dispatches `router-error` event on rendering failures
- */
+const pendingRouteLoads = new WeakMap<RouteDefinition, Promise<unknown>>();
+
 @customElement("router-outlet")
 export class RouterOutlet extends LitElement {
   @property({ attribute: false })
@@ -35,23 +19,13 @@ export class RouterOutlet extends LitElement {
   private _unsubscribe?: () => void;
   private _previousRouter?: Router;
   private _depth = 0;
-
-  // Element reuse tracking
   private _renderedElement: HTMLElement | null = null;
   private _renderedTagName: string | null = null;
 
-  /**
-   * The resolved depth of this outlet in the nested outlet hierarchy.
-   * 0 = root outlet, 1 = first nested outlet, etc.
-   */
   get depth(): number {
     return this._depth;
   }
 
-  /**
-   * The effective router: explicitly provided, inherited from a parent
-   * outlet, or resolved from a `<router-provider>` ancestor via context.
-   */
   get effectiveRouter(): Router | undefined {
     if (this.router) return this.router;
     const parent = this.findParentOutlet();
@@ -80,10 +54,6 @@ export class RouterOutlet extends LitElement {
     }
   }
 
-  /**
-   * Whether the outlet should move focus to rendered content after navigation
-   * for screen reader accessibility. Default: true.
-   */
   @property({ type: Boolean })
   manageFocus = true;
 
@@ -118,10 +88,6 @@ export class RouterOutlet extends LitElement {
     }
   }
 
-  /**
-   * Move focus to the rendered content element after navigation.
-   * Uses tabindex="-1" so the element is focusable but not in the tab order.
-   */
   private moveFocus(): void {
     const el = this._renderedElement;
     if (!el) return;
@@ -132,10 +98,6 @@ export class RouterOutlet extends LitElement {
     el.focus();
   }
 
-  /**
-   * Walk up the DOM (crossing shadow boundaries) to find the nearest
-   * parent <router-outlet> and compute this outlet's depth.
-   */
   private computeDepth(): number {
     const parent = this.findParentOutlet();
     return parent ? parent._depth + 1 : 0;
@@ -147,7 +109,6 @@ export class RouterOutlet extends LitElement {
       if (node instanceof RouterOutlet) {
         return node;
       }
-      // Cross shadow DOM boundaries
       if (node instanceof ShadowRoot) {
         node = node.host;
       } else {
@@ -165,21 +126,18 @@ export class RouterOutlet extends LitElement {
     const match = this._match;
     if (!match) return nothing;
 
-    // Get the matched entry for this outlet's depth
     const entry = match.matched[this._depth];
     if (!entry) return nothing;
 
     try {
       const route = entry.route;
 
-      // Render function takes priority
       if (route.render) {
         return route.render(match);
       }
 
-      // Component string: create or reuse the element
       if (route.component) {
-        return this.renderComponent(route.component, match);
+        return this.renderComponent(entry, match);
       }
     } catch (err) {
       this.handleRenderError(err, entry);
@@ -188,31 +146,55 @@ export class RouterOutlet extends LitElement {
     return nothing;
   }
 
-  private renderComponent(tagName: string, match: RouteMatch) {
-    // Warn if the custom element is not defined
+  private renderComponent(entry: MatchedRoute, match: RouteMatch) {
+    const route = entry.route;
+    const tagName = route.component;
+    if (!tagName) {
+      return nothing;
+    }
+
     if (!customElements.get(tagName)) {
+      if (route.load) {
+        this.ensureRouteLoaded(route, entry);
+        return nothing;
+      }
+
       console.warn(
         `[router-outlet] Custom element "${tagName}" is not defined. ` +
-        `Ensure it is registered before navigation, or use the route's load() hook.`,
+          `Ensure it is registered before navigation, or use the route's load() hook.`,
       );
+      return nothing;
     }
 
     const el = this.getOrCreateElement(tagName, match);
     return html`${el}`;
   }
 
-  /**
-   * Reuse the existing element if the tag name matches, otherwise create new.
-   * Always update injected route properties.
-   */
+  private ensureRouteLoaded(route: RouteDefinition, entry: MatchedRoute): void {
+    const pendingLoad =
+      pendingRouteLoads.get(route) ??
+      route.load?.().then(
+        () => {
+          pendingRouteLoads.delete(route);
+          this.requestUpdate();
+        },
+        (err) => {
+          pendingRouteLoads.delete(route);
+          this.handleRenderError(err, entry);
+        },
+      );
+
+    if (pendingLoad) {
+      pendingRouteLoads.set(route, pendingLoad);
+    }
+  }
+
   private getOrCreateElement(tagName: string, match: RouteMatch): HTMLElement {
     if (this._renderedElement && this._renderedTagName === tagName) {
-      // Reuse: update properties
       this.injectRouteProps(this._renderedElement, match);
       return this._renderedElement;
     }
 
-    // Create new element
     const el = document.createElement(tagName);
     this.injectRouteProps(el, match);
 
@@ -240,7 +222,6 @@ export class RouterOutlet extends LitElement {
     );
   }
 
-  // No shadow DOM — the outlet is a transparent container
   override createRenderRoot() {
     return this;
   }

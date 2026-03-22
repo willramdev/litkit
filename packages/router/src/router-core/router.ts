@@ -65,10 +65,8 @@ class RouterImpl implements Router {
       history.scrollRestoration = "manual";
     }
 
-    // Initial resolution (sync, no guards on first load)
-    this._current = this.resolveCurrentLocation();
-    this.handleRedirect();
-    this.applyTitle();
+    // Initial resolution with guard support.
+    this.initializeCurrentRoute();
 
     // Listen for browser back/forward
     this.onLocationChange = () => {
@@ -157,6 +155,118 @@ class RouterImpl implements Router {
     this.listeners.clear();
   }
 
+  private initializeCurrentRoute(): void {
+    const initialResolution = this.tryResolveInitialNavigation(this.resolveCurrentLocation());
+    if (initialResolution.status === "resolved") {
+      this._current = initialResolution.match;
+      this.handleRedirect();
+      this.applyTitle();
+      return;
+    }
+
+    this._current = null;
+    void this.asyncNavigate(this.getCurrentBrowserUrl(), this.resolveCurrentLocation(), null, true);
+  }
+
+  private tryResolveInitialNavigation(
+    initialMatch: RouteMatch | null,
+  ): { status: "resolved"; match: RouteMatch | null } | { status: "pending" } {
+    const seenRedirects = new Set<string>();
+    let targetMatch = initialMatch;
+
+    for (let i = 0; i < 10; i++) {
+      const beforeEachResult = this.runGuardSync(this._beforeEach, targetMatch, null);
+      if (beforeEachResult.status === "pending") {
+        return { status: "pending" };
+      }
+      if (beforeEachResult.value === false) {
+        return { status: "resolved", match: null };
+      }
+      if (typeof beforeEachResult.value === "string") {
+        if (!this.applyInitialRedirect(beforeEachResult.value, seenRedirects)) {
+          return { status: "resolved", match: null };
+        }
+        targetMatch = this.resolveCurrentLocation();
+        continue;
+      }
+
+      const enterResult = this.runGuardSync(
+        targetMatch?.route.beforeEnter,
+        targetMatch,
+        null,
+        targetMatch?.route,
+      );
+      if (enterResult.status === "pending") {
+        return { status: "pending" };
+      }
+      if (enterResult.value === false) {
+        return { status: "resolved", match: null };
+      }
+      if (typeof enterResult.value === "string") {
+        if (!this.applyInitialRedirect(enterResult.value, seenRedirects)) {
+          return { status: "resolved", match: null };
+        }
+        targetMatch = this.resolveCurrentLocation();
+        continue;
+      }
+
+      if (targetMatch) {
+        for (const entry of targetMatch.matched) {
+          if (entry.route.load && !this.loadedRoutes.has(entry.route)) {
+            return { status: "pending" };
+          }
+        }
+      }
+
+      return { status: "resolved", match: targetMatch };
+    }
+
+    this.emitError("guard", new Error("Too many initial guard redirects (>10)"), targetMatch?.route);
+    return { status: "resolved", match: null };
+  }
+
+  private runGuardSync(
+    guard: RouteDefinition["beforeEnter"] | RouteDefinition["beforeLeave"] | RouterOptions["beforeEach"],
+    to: RouteMatch | null,
+    from: RouteMatch | null,
+    ownerRoute?: RouteDefinition,
+  ): { status: "resolved"; value: boolean | string } | { status: "pending" } {
+    if (!guard) {
+      return { status: "resolved", value: true };
+    }
+
+    try {
+      const result = guard(to as RouteMatch, from as RouteMatch);
+      if (result instanceof Promise) {
+        return { status: "pending" };
+      }
+
+      return { status: "resolved", value: result };
+    } catch (err) {
+      this.emitError("guard", err, ownerRoute);
+      return { status: "resolved", value: false };
+    }
+  }
+
+  private applyInitialRedirect(target: string, seenRedirects: Set<string>): boolean {
+    const url = this.resolveInput(target);
+    if (seenRedirects.has(url)) {
+      this.emitError("guard", new Error(`Circular initial guard redirect detected: ${target}`), this._current?.route);
+      return false;
+    }
+
+    seenRedirects.add(url);
+    window.history.replaceState(this.buildHistoryState(), "", url);
+    return true;
+  }
+
+  private getCurrentBrowserUrl(): string {
+    if (this.mode === "hash") {
+      return window.location.hash || "#/";
+    }
+
+    return `${window.location.pathname}${window.location.search}${window.location.hash}`;
+  }
   // =========================================================================
   // Core navigation pipeline
   // =========================================================================
@@ -195,7 +305,7 @@ class RouterImpl implements Router {
     if (this.pendingNavId !== navId) return false; // stale
     if (beforeEachResult === false) return false;
     if (typeof beforeEachResult === "string") {
-      return this.navigate(beforeEachResult);
+      return useReplace ? this.replace(beforeEachResult) : this.navigate(beforeEachResult);
     }
 
     // 1. Run beforeLeave guard on current route
@@ -208,7 +318,7 @@ class RouterImpl implements Router {
     if (this.pendingNavId !== navId) return false; // stale
     if (leaveResult === false) return false;
     if (typeof leaveResult === "string") {
-      return this.navigate(leaveResult);
+      return useReplace ? this.replace(leaveResult) : this.navigate(leaveResult);
     }
 
     // 2. Run beforeEnter guard on target route
@@ -221,7 +331,7 @@ class RouterImpl implements Router {
     if (this.pendingNavId !== navId) return false; // stale
     if (enterResult === false) return false;
     if (typeof enterResult === "string") {
-      return this.navigate(enterResult);
+      return useReplace ? this.replace(enterResult) : this.navigate(enterResult);
     }
 
     // 3. Run load() on all matched routes in the chain
@@ -584,3 +694,7 @@ function normalizePath(path: string): string {
   if (!path || path === "/") return "/";
   return path.endsWith("/") ? path.slice(0, -1) : path;
 }
+
+
+
+

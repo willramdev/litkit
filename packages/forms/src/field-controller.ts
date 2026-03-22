@@ -10,8 +10,6 @@ export class FieldController<V = unknown> implements FieldInstance<V> {
     this._path = path;
   }
 
-  // -- State ----------------------------------------------------------------
-
   get value(): V {
     return this._engine.getFieldValue(this._path) as V;
   }
@@ -40,8 +38,6 @@ export class FieldController<V = unknown> implements FieldInstance<V> {
     return this._engine.getFieldMeta(this._path).isValidating;
   }
 
-  // -- Actions --------------------------------------------------------------
-
   setValue(value: V): void {
     this._engine.setFieldValue(this._path, value);
   }
@@ -58,21 +54,21 @@ export class FieldController<V = unknown> implements FieldInstance<V> {
     return this._engine.validateField(this._path);
   }
 
-  onInput(event: Event): void {
+  onInput = (event: Event): void => {
     const target = event.target as HTMLInputElement;
     this.setValue(target.value as unknown as V);
-  }
+  };
 
-  onChange(event: Event): void {
+  onChange = (event: Event): void => {
     const target = event.target as HTMLInputElement;
     if (target.type === 'checkbox') {
       this.setValue(target.checked as unknown as V);
     } else {
       this.setValue(target.value as unknown as V);
     }
-  }
+  };
 
-  onBlur(): void {
+  onBlur = (): void => {
     this._engine.handleFieldBlur(this._path);
-  }
+  };
 }

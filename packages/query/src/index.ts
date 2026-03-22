@@ -6,7 +6,7 @@ import {
   type QueryKey,
   type QueryObserverOptions,
 } from '@tanstack/query-core'
-import type { ReactiveControllerHost } from 'lit'
+import type { ReactiveController, ReactiveElement } from 'lit'
 
 export * from '@tanstack/query-core'
 export { MutationController, type MutationControllerConfig } from './mutation-controller'
@@ -20,6 +20,8 @@ export {
   requestQueryClient,
 } from './query-client-context'
 export { LitQueryClientProvider } from './query-client-provider'
+
+type ControllerFactory<T extends ReactiveController> = (host: ReactiveElement) => T
 
 /** Shorthand for `new QueryClient(config)`. */
 export function createQueryClient(config?: QueryClientConfig): QueryClient {
@@ -63,8 +65,10 @@ export function query<
     | QueryObserverOptions<TQueryFnData, TError, TData, TQueryData, TQueryKey>
     | (() => QueryObserverOptions<TQueryFnData, TError, TData, TQueryData, TQueryKey>),
   config?: QueryControllerConfig,
-) {
-  return (host: ReactiveControllerHost & EventTarget) =>
+): ControllerFactory<
+  QueryController<TQueryFnData, TError, TData, TQueryData, TQueryKey>
+> {
+  return (host: ReactiveElement) =>
     new QueryController(host, optionsInput, config)
 }
 
@@ -79,7 +83,7 @@ export function mutation<
     | MutationObserverOptions<TData, TError, TVariables, TOnMutateResult>
     | (() => MutationObserverOptions<TData, TError, TVariables, TOnMutateResult>),
   config?: MutationControllerConfig,
-) {
-  return (host: ReactiveControllerHost & EventTarget) =>
+): ControllerFactory<MutationController<TData, TError, TVariables, TOnMutateResult>> {
+  return (host: ReactiveElement) =>
     new MutationController(host, optionsInput, config)
 }

@@ -1,5 +1,5 @@
 import { LitElement, css, html } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement } from 'lit/decorators.js';
 import type { FormInstance } from './types.ts';
 import { attachFormProvider } from './form-context.ts';
 
@@ -13,11 +13,13 @@ import { attachFormProvider } from './form-context.ts';
  */
 @customElement('lit-form')
 export class LitForm extends LitElement {
-  @property({ attribute: false })
-  accessor form: FormInstance<any> | null = null;
+  static properties = {
+    form: { attribute: false },
+    nativeValidation: { type: Boolean, attribute: 'native-validation' },
+  };
 
-  @property({ type: Boolean, attribute: 'native-validation' })
-  accessor nativeValidation = false;
+  declare form: FormInstance<any> | null;
+  declare nativeValidation: boolean;
 
   #observer = new MutationObserver(() => {
     this.#syncForms();
@@ -27,6 +29,8 @@ export class LitForm extends LitElement {
 
   constructor() {
     super();
+    this.form = null;
+    this.nativeValidation = false;
     this.#detachProvider = attachFormProvider(this, () => this.form);
     this.addEventListener('submit', this.#handleSubmit as EventListener);
     this.addEventListener('reset', this.#handleReset as EventListener);
@@ -102,6 +106,3 @@ declare global {
     'lit-form': LitForm;
   }
 }
-
-
-

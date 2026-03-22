@@ -567,6 +567,7 @@ describe("Router", () => {
 
       router = createRouter({ routes: guardedRoutes });
       // State should not update synchronously
+      expect(router.current!.name).toBe("home");
       const promise = router.navigate("/async");
       expect(router.current!.name).toBe("home");
 
@@ -833,7 +834,7 @@ describe("Router", () => {
 
       router = createRouter({
         routes: hookedRoutes,
-        beforeEach: () => false,
+        beforeEach: (to) => (to?.name === "blocked" ? false : true),
       });
 
       const result = await router.navigate("/blocked");
@@ -841,6 +842,28 @@ describe("Router", () => {
       expect(router.current!.name).toBe("home");
     });
 
+    it("beforeEach redirects on initial load", () => {
+      const hookedRoutes = defineRoutes(
+        [
+          { path: "/", name: "home", component: "home-page" },
+          { path: "/login", name: "login", component: "login-page" },
+          { path: "/dashboard", name: "dashboard", component: "dashboard-page" },
+        ],
+        factory,
+      );
+
+      setLocation("/dashboard");
+      router = createRouter({
+        routes: hookedRoutes,
+        beforeEach: (to) => {
+          if (to?.name === "dashboard") return "/login";
+          return true;
+        },
+      });
+
+      expect(router.current!.name).toBe("login");
+      expect(window.location.pathname).toBe("/login");
+    });
     it("beforeEach can redirect", async () => {
       const hookedRoutes = defineRoutes(
         [
@@ -890,6 +913,7 @@ describe("Router", () => {
         },
       });
 
+      order.length = 0;
       await router.navigate("/guarded");
       expect(order).toEqual(["beforeEach", "enter"]);
     });
@@ -943,14 +967,19 @@ describe("Router", () => {
 
       router = createRouter({
         routes: hookedRoutes,
-        beforeEach: async () => {
+        beforeEach: async (to) => {
+          if (to?.name !== "async") {
+            return true;
+          }
+
           await new Promise((r) => setTimeout(r, 10));
           return true;
         },
       });
 
+      expect(router.current).toBeNull();
       const promise = router.navigate("/async");
-      expect(router.current!.name).toBe("home");
+      expect(router.current).toBeNull();
 
       const result = await promise;
       expect(result).toBe(true);
@@ -1017,3 +1046,7 @@ describe("Router", () => {
     });
   });
 });
+
+
+
+

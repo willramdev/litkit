@@ -1,4 +1,4 @@
-import type { ReactiveControllerHost } from 'lit';
+import type { ReactiveElement } from 'lit';
 import type { FormConfig, FormInstance } from './types.ts';
 import { FormController } from './form-controller.ts';
 
@@ -13,12 +13,12 @@ export {
 } from './form-context.ts';
 export { LitForm } from './lit-form.ts';
 
-/** Controller factory — creates a form instance bound to the host. */
+/** Controller factory — creates a form controller bound to the host. */
 export function form<T extends Record<string, unknown>>(
   config: FormConfig<T>,
-) {
-  return (host: ReactiveControllerHost): FormInstance<T> =>
-    new FormController(host, config) as unknown as FormInstance<T>;
+): (host: ReactiveElement) => FormController<T> {
+  return (host: ReactiveElement): FormController<T> =>
+    new FormController(host, config);
 }
 
 export {
