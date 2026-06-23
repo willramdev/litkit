@@ -55,6 +55,51 @@ describe('QueryController', () => {
     cleanup(host);
   });
 
+  it('re-mounts the client on reconnect and balances mount/unmount', () => {
+    const client = new QueryClient();
+    const mountSpy = vi.spyOn(client, 'mount');
+    const unmountSpy = vi.spyOn(client, 'unmount');
+    const host = createMockHost();
+    const ctrl = new QueryController(
+      host,
+      { queryKey: ['reconnect'], queryFn: () => 'data', enabled: false },
+      { client },
+    );
+
+    ctrl.hostConnected();
+    expect(mountSpy).toHaveBeenCalledTimes(1);
+
+    ctrl.hostDisconnected();
+    expect(unmountSpy).toHaveBeenCalledTimes(1);
+
+    // Host moved in the DOM and reconnected — must mount again, not leave the
+    // client unmounted while still in use.
+    ctrl.hostConnected();
+    expect(mountSpy).toHaveBeenCalledTimes(2);
+
+    ctrl.hostDisconnected();
+    expect(unmountSpy).toHaveBeenCalledTimes(2);
+
+    cleanup(host);
+  });
+
+  it('does not mount the client before connect', () => {
+    const client = new QueryClient();
+    const mountSpy = vi.spyOn(client, 'mount');
+    const host = createMockHost();
+    const ctrl = new QueryController(
+      host,
+      { queryKey: ['no-mount'], queryFn: () => 'data', enabled: false },
+      { client },
+    );
+
+    // Accessing result syncs the observer but must not mount an unconnected host.
+    void ctrl.result;
+    expect(mountSpy).not.toHaveBeenCalled();
+
+    cleanup(host);
+  });
+
   it('resolves client from DOM context', () => {
     const client = new QueryClient();
     const host = createMockHost();
@@ -142,7 +187,7 @@ describe('QueryController', () => {
       {
         queryKey: ['cancel-test'],
         queryFn: ({ signal }) =>
-          new Promise((resolve, reject) => {
+          new Promise((_resolve, reject) => {
             signal.addEventListener('abort', () => {
               aborted = true;
               reject(new DOMException('Aborted', 'AbortError'));

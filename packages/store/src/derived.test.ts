@@ -177,3 +177,60 @@ describe('derived (multiple sources)', () => {
     expect(d.get()).toBe(220);
   });
 });
+
+describe('derived (shared sources / refcount)', () => {
+  it('keeps a shared inner derived active when one of two dependents unsubscribes', () => {
+    const a = createStore(1);
+    const inner = derived(a, (v) => v * 10);
+    const left = derived(inner, (v) => v + 1);
+    const right = derived(inner, (v) => v + 2);
+
+    const leftListener = vi.fn();
+    const rightListener = vi.fn();
+    const unsubLeft = left.subscribe(leftListener);
+    right.subscribe(rightListener);
+
+    // Drop one consumer; `inner` must stay subscribed to `a` for the other.
+    unsubLeft();
+
+    a.set(2); // inner -> 20, right -> 22
+    expect(rightListener).toHaveBeenCalledOnce();
+    expect(rightListener).toHaveBeenCalledWith(22, 12);
+    expect(right.get()).toBe(22);
+  });
+
+  it('keeps a derived active for its direct listener after a dependent unsubscribes', () => {
+    const a = createStore(1);
+    const inner = derived(a, (v) => v * 10);
+    const downstream = derived(inner, (v) => v + 1);
+
+    const directListener = vi.fn();
+    inner.subscribe(directListener);
+    const unsubDownstream = downstream.subscribe(vi.fn());
+
+    unsubDownstream();
+
+    a.set(2);
+    expect(directListener).toHaveBeenCalledOnce();
+    expect(directListener).toHaveBeenCalledWith(20, 10);
+  });
+
+  it('fully tears down only when both listeners and dependents are gone', () => {
+    const a = createStore(1);
+    const inner = derived(a, (v) => v * 10);
+    const downstream = derived(inner, (v) => v + 1);
+
+    const unsubDownstream = downstream.subscribe(vi.fn());
+    const directListener = vi.fn();
+    const unsubDirect = inner.subscribe(directListener);
+
+    unsubDownstream();
+    unsubDirect();
+
+    // No consumers left — inner is detached, but re-subscribing must recompute fresh.
+    a.set(5);
+    const reListener = vi.fn();
+    inner.subscribe(reListener);
+    expect(inner.get()).toBe(50);
+  });
+});

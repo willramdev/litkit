@@ -60,6 +60,8 @@ export class QueryController<
   #result?: QueryObserverResult<TData, TError>
   #unsubscribe?: () => void
   #connected = false
+  /** The client we currently hold a `mount()` reference on, if any. */
+  #mountedClient?: QueryClient
 
   constructor(
     host: QueryControllerHost,
@@ -121,10 +123,7 @@ export class QueryController<
   hostDisconnected(): void {
     this.#connected = false
     this.#unsubscribeObserver()
-
-    if (this.#client) {
-      this.#client.unmount()
-    }
+    this.#unmountClient()
   }
 
   setOptions(
@@ -156,6 +155,13 @@ export class QueryController<
     const client = this.#resolveClient()
     const options = this.#readOptions()
 
+    // Keep the mount reference paired with the connected lifetime, not the
+    // observer's existence — otherwise a disconnect/reconnect (e.g. the host
+    // moving in the DOM) leaves the client unmounted while still in use.
+    if (this.#connected) {
+      this.#mountClient(client)
+    }
+
     if (this.#observer && this.#client === client) {
       this.#observer.setOptions(options)
       this.#result = this.#observer.getOptimisticResult(
@@ -166,11 +172,6 @@ export class QueryController<
 
     this.#unsubscribeObserver()
 
-    if (this.#client && this.#client !== client) {
-      this.#client.unmount()
-    }
-
-    client.mount()
     this.#client = client
     this.#observer = new QueryObserver(client, options)
     this.#result = this.#observer.getOptimisticResult(
@@ -180,6 +181,20 @@ export class QueryController<
     if (this.#connected) {
       this.#subscribe()
     }
+  }
+
+  #mountClient(client: QueryClient): void {
+    if (this.#mountedClient === client) {
+      return
+    }
+    this.#mountedClient?.unmount()
+    client.mount()
+    this.#mountedClient = client
+  }
+
+  #unmountClient(): void {
+    this.#mountedClient?.unmount()
+    this.#mountedClient = undefined
   }
 
   #subscribe(): void {

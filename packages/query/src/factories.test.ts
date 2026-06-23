@@ -1,10 +1,11 @@
 import { describe, it, expect, vi } from 'vitest';
 import { QueryClient } from '@tanstack/query-core';
+import type { ReactiveElement } from 'lit';
 import { query, mutation, createQueryClient, queryOptions, mutationOptions } from './index';
 import { QueryController } from './query-controller';
 import { MutationController } from './mutation-controller';
 
-function createMockHost() {
+function createMockHost(): ReactiveElement {
   const el = document.createElement('div');
   document.body.appendChild(el);
   return Object.assign(el, {
@@ -12,7 +13,7 @@ function createMockHost() {
     removeController: vi.fn(),
     requestUpdate: vi.fn(),
     updateComplete: Promise.resolve(true),
-  });
+  }) as unknown as ReactiveElement;
 }
 
 describe('query factory', () => {

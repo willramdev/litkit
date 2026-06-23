@@ -68,6 +68,11 @@ export function derived(
   // Separate tracking for sources without scheduler nodes (external ReadableStores)
   let fallbackUnsubs: (() => void)[] = [];
   let active = false;
+  // Number of downstream deriveds currently depending on this node. The node
+  // must stay active (subscribed to its sources) while it has either direct
+  // listeners or active dependents — otherwise shared/diamond graphs tear down
+  // a source that another consumer still needs.
+  let dependentRefs = 0;
 
   // Compute the depth based on source nodes
   let maxSourceDepth = 0;
@@ -103,17 +108,18 @@ export function derived(
     },
   };
 
-  function activate(): void {
+  /** Active while there is any reason to be: direct listeners or active dependents. */
+  function ensureActive(): void {
     if (active) return;
     active = true;
 
     for (const src of sources) {
       const info = nodeInfoMap.get(src);
       if (info) {
-        // Activate the source if it has an activation hook (another derived)
-        info.activate?.();
-        // Register as a dependent in the graph
+        // Register as a dependent in the graph for dirty propagation, and bump
+        // the source's refcount so it stays active while we need it.
         info.node.dependents.add(node);
+        info.addDependent?.();
       } else {
         // Fallback: external ReadableStore without a scheduler node.
         // Use push-based subscription.
@@ -134,22 +140,31 @@ export function derived(
     }
   }
 
-  function deactivate(): void {
-    if (!active) return;
+  /** Tear down source subscriptions only when nothing depends on this node anymore. */
+  function maybeDeactivate(): void {
+    if (!active || listeners.size > 0 || dependentRefs > 0) return;
     active = false;
 
     for (const src of sources) {
       const info = nodeInfoMap.get(src);
       if (info) {
         info.node.dependents.delete(node);
-        // If this source is also a derived with no remaining dependents
-        // and no external listeners, deactivate it too
-        info.deactivate?.();
+        info.removeDependent?.();
       }
     }
 
     for (const unsub of fallbackUnsubs) unsub();
     fallbackUnsubs = [];
+  }
+
+  function addDependent(): void {
+    dependentRefs++;
+    ensureActive();
+  }
+
+  function removeDependent(): void {
+    dependentRefs--;
+    maybeDeactivate();
   }
 
   const derivedStore: DerivedStore<any> = {
@@ -162,18 +177,14 @@ export function derived(
 
     subscribe(listener: Listener<any>) {
       listeners.add(listener);
-      if (listeners.size === 1) {
-        activate();
-      }
+      ensureActive();
       return () => {
         listeners.delete(listener);
-        if (listeners.size === 0) {
-          deactivate();
-        }
+        maybeDeactivate();
       };
     },
   };
 
-  nodeInfoMap.set(derivedStore, { node, activate, deactivate });
+  nodeInfoMap.set(derivedStore, { node, addDependent, removeDependent });
   return derivedStore;
 }

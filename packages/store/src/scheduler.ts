@@ -11,8 +11,10 @@ export interface ReactiveNode {
 
 export interface NodeInfo {
   node: ReactiveNode;
-  activate?: () => void;
-  deactivate?: () => void;
+  /** Called when a downstream derived starts depending on this node. Refcounted. */
+  addDependent?: () => void;
+  /** Called when a downstream derived stops depending on this node. Refcounted. */
+  removeDependent?: () => void;
 }
 
 /** Maps store/derived objects to their graph nodes. */

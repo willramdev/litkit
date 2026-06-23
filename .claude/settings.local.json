@@ -25,7 +25,8 @@
       "Bash(tsc -p tsconfig.build.json --listFiles)",
       "Bash(node -e \"const pkg = require\\(''./package.json''\\); console.log\\(JSON.stringify\\(pkg.exports, null, 2\\)\\)\")",
       "Bash(/tmp/audit_notes.txt:*)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(git checkout *)"
     ]
   }
 }
