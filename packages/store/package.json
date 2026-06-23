@@ -2,7 +2,13 @@
   "name": "@willram/store",
   "version": "1.0.0",
   "description": "Lightweight reactive store for shared state in Lit applications",
-  "keywords": ["lit", "state-management", "web-components", "reactive-controller", "store"],
+  "keywords": [
+    "lit",
+    "state-management",
+    "web-components",
+    "reactive-controller",
+    "store"
+  ],
   "license": "MIT",
   "author": "William Ramanand",
   "repository": {
@@ -12,7 +18,9 @@
   },
   "type": "module",
   "sideEffects": false,
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "main": "./dist/store.js",
   "module": "./dist/store.js",
   "types": "./dist/index.d.ts",
@@ -33,8 +41,8 @@
   },
   "devDependencies": {
     "lit": "^3.3.2",
-    "typescript": "~5.9.3",
+    "typescript": "^6.0.3",
     "vite": "^8.0.1",
-    "vitest": "^3.2.1"
+    "vitest": "^4.1.9"
   }
 }

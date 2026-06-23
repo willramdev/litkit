@@ -2,7 +2,13 @@
   "name": "@willram/router",
   "version": "1.0.0",
   "description": "Client-side router for Lit with guards, lazy loading, nested routes, and scroll management",
-  "keywords": ["lit", "router", "web-components", "spa", "client-side-routing"],
+  "keywords": [
+    "lit",
+    "router",
+    "web-components",
+    "spa",
+    "client-side-routing"
+  ],
   "license": "MIT",
   "author": "William Ramanand",
   "repository": {
@@ -48,8 +54,8 @@
   "devDependencies": {
     "jsdom": "^29.0.1",
     "lit": "^3.3.2",
-    "typescript": "~5.9.3",
+    "typescript": "^6.0.3",
     "vite": "^8.0.1",
-    "vitest": "^4.1.0"
+    "vitest": "^4.1.9"
   }
 }

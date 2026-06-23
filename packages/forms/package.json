@@ -2,7 +2,13 @@
   "name": "@willram/forms",
   "version": "1.0.0",
   "description": "Type-safe form management for Lit with validation, binding, and array fields",
-  "keywords": ["lit", "forms", "web-components", "validation", "reactive-controller"],
+  "keywords": [
+    "lit",
+    "forms",
+    "web-components",
+    "validation",
+    "reactive-controller"
+  ],
   "license": "MIT",
   "author": "William Ramanand",
   "repository": {
@@ -49,9 +55,9 @@
   },
   "devDependencies": {
     "lit": "^3.3.2",
-    "typescript": "~5.9.3",
+    "typescript": "^6.0.3",
     "vite": "^8.0.1",
-    "vitest": "^3.2.1",
+    "vitest": "^4.1.9",
     "zod": "^4.3.6"
   }
 }
