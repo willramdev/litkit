@@ -1,7 +1,7 @@
 import type { ReactiveController, ReactiveElement } from 'lit';
 import type { ControllerFactory } from '../types.ts';
 
-class ClickOutsideController implements ReactiveController {
+export class ClickOutsideController implements ReactiveController {
   host: ReactiveElement;
   callback: () => void;
 

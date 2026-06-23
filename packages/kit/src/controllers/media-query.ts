@@ -1,7 +1,7 @@
 import type { ReactiveController, ReactiveElement } from 'lit';
 import type { ControllerFactory } from '../types.ts';
 
-class MediaQueryController implements ReactiveController {
+export class MediaQueryController implements ReactiveController {
   host: ReactiveElement;
   mql: MediaQueryList;
   matches: boolean;

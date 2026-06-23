@@ -83,7 +83,7 @@ export interface NavigationTarget {
   to?: string;
   name?: string;
   params?: Record<string, string>;
-  query?: Record<string, string>;
+  query?: Record<string, string | string[]>;
   hash?: string;
   replace?: boolean;
 }

@@ -7,7 +7,7 @@ interface PersistedStateOptions<T> {
   parse?: (raw: string) => T;
 }
 
-class PersistedStateController<T> implements ReactiveController {
+export class PersistedStateController<T> implements ReactiveController {
   host: ReactiveElement;
   key: string;
   options: PersistedStateOptions<T>;

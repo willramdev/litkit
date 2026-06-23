@@ -77,6 +77,34 @@ describe('queryState', () => {
     expect(state.value).toBe(true);
   });
 
+  it('removes param when an object value matches the object default', () => {
+    const def = { sort: 'asc', page: 1 };
+    window.history.replaceState({}, '', '?f=%7B%22sort%22%3A%22desc%22%7D');
+    const host = createMockHost();
+    const state = queryState<{ sort: string; page: number }>(host as any, 'f', {
+      default: def,
+      parse: JSON.parse,
+      serialize: JSON.stringify,
+    });
+
+    state.value = { sort: 'asc', page: 1 }; // equals default once serialized
+    const url = new URL(window.location.href);
+    expect(url.searchParams.has('f')).toBe(false);
+  });
+
+  it('keeps param when an object value differs from the object default', () => {
+    const host = createMockHost();
+    const state = queryState<{ sort: string }>(host as any, 'f', {
+      default: { sort: 'asc' },
+      parse: JSON.parse,
+      serialize: JSON.stringify,
+    });
+
+    state.value = { sort: 'desc' };
+    const url = new URL(window.location.href);
+    expect(url.searchParams.get('f')).toBe('{"sort":"desc"}');
+  });
+
   it('registers as a controller', () => {
     const host = createMockHost();
     const state = queryState(host as any, 'q', { default: '' });

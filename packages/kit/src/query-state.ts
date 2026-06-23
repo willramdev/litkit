@@ -6,7 +6,7 @@ interface QueryStateOptions<T> {
   serialize?: (value: T) => string;
 }
 
-class QueryStateController<T> implements ReactiveController {
+export class QueryStateController<T> implements ReactiveController {
   host: ReactiveElement;
   param: string;
   options: QueryStateOptions<T>;
@@ -52,16 +52,20 @@ class QueryStateController<T> implements ReactiveController {
 
   private write(): void {
     const url = new URL(window.location.href);
-    const serialized = this.options.serialize
-      ? this.options.serialize(this._value)
-      : String(this._value);
+    const serialized = this.serialize(this._value);
 
-    if (serialized === String(this.options.default)) {
+    // Compare against the serialized default so object/array defaults work
+    // (String({}) is "[object Object]" and would never match).
+    if (serialized === this.serialize(this.options.default)) {
       url.searchParams.delete(this.param);
     } else {
       url.searchParams.set(this.param, serialized);
     }
     window.history.replaceState({}, '', url.toString());
+  }
+
+  private serialize(value: T): string {
+    return this.options.serialize ? this.options.serialize(value) : String(value);
   }
 
   private onPopState = () => {

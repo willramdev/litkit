@@ -37,7 +37,7 @@
   "scripts": {
     "dev": "vite demo",
     "build": "vite build && tsc -p tsconfig.build.json",
-    "typecheck": "tsc -p tsconfig.build.json --noEmit",
+    "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "test": "vitest run"
   },

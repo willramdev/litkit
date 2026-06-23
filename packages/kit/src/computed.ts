@@ -1,6 +1,6 @@
 import type { ReactiveController, ReactiveElement } from 'lit';
 
-class ComputedController<T> implements ReactiveController {
+export class ComputedController<T> implements ReactiveController {
   host: ReactiveElement;
   private _depsFn: (() => readonly unknown[]) | undefined;
   private _computeFn: (deps: any) => T;

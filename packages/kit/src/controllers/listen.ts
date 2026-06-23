@@ -9,7 +9,7 @@ function resolveTarget(target: EventTargetRef): EventTarget {
   return target;
 }
 
-class ListenController implements ReactiveController {
+export class ListenController implements ReactiveController {
   host: ReactiveElement;
   target: EventTargetRef;
   event: string;

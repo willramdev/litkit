@@ -1,7 +1,7 @@
 import type { ReactiveController, ReactiveElement } from 'lit';
 import type { ControllerFactory } from '../types.ts';
 
-class ResizeObserverController implements ReactiveController {
+export class ResizeObserverController implements ReactiveController {
   host: ReactiveElement;
   callback?: (entries: ResizeObserverEntry[]) => void;
   observeOptions?: ResizeObserverOptions;

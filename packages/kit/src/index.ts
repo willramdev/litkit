@@ -6,6 +6,7 @@ export { emit } from './emit.ts';
 
 // Derived state
 export { computed } from './computed.ts';
+export type { ComputedController } from './computed.ts';
 
 // Decorators
 export { watch } from './watch.ts';
@@ -16,6 +17,8 @@ export { throttle } from './throttle.ts';
 // State
 export { queryState } from './query-state.ts';
 export { persistedState } from './persisted-state.ts';
+export type { QueryStateController } from './query-state.ts';
+export type { PersistedStateController } from './persisted-state.ts';
 
 // Controllers
 export {
@@ -24,6 +27,13 @@ export {
   resizeObserver,
   intersectionObserver,
   clickOutside,
+} from './controllers/index.ts';
+export type {
+  ListenController,
+  MediaQueryController,
+  ResizeObserverController,
+  IntersectionObserverController,
+  ClickOutsideController,
 } from './controllers/index.ts';
 
 // Types

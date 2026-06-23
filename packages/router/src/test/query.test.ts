@@ -37,4 +37,21 @@ describe("buildQueryString", () => {
   it("returns empty string for empty object", () => {
     expect(buildQueryString({})).toBe("");
   });
+
+  it("serializes array values as repeated keys", () => {
+    const qs = buildQueryString({ tag: ["a", "b", "c"] });
+    expect(qs).toBe("tag=a&tag=b&tag=c");
+  });
+
+  it("round-trips arrays through parseQuery", () => {
+    const qs = buildQueryString({ page: "1", tag: ["a", "b"] });
+    expect(parseQuery(new URLSearchParams(qs))).toEqual({
+      page: "1",
+      tag: ["a", "b"],
+    });
+  });
+
+  it("skips empty arrays", () => {
+    expect(buildQueryString({ tag: [] })).toBe("");
+  });
 });

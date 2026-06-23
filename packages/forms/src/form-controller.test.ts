@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createForm } from './create-form.ts';
-import { required, email } from './validators.ts';
+import { required } from './validators.ts';
 
 function createMockHost() {
   return {

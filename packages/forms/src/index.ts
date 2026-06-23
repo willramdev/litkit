@@ -1,5 +1,5 @@
 import type { ReactiveElement } from 'lit';
-import type { FormConfig, FormInstance } from './types.ts';
+import type { FormConfig } from './types.ts';
 import { FormController } from './form-controller.ts';
 
 export { FormController } from './form-controller.ts';

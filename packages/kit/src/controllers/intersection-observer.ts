@@ -1,7 +1,7 @@
 import type { ReactiveController, ReactiveElement } from 'lit';
 import type { ControllerFactory } from '../types.ts';
 
-class IntersectionObserverController implements ReactiveController {
+export class IntersectionObserverController implements ReactiveController {
   host: ReactiveElement;
   callback?: (entries: IntersectionObserverEntry[]) => void;
   options?: IntersectionObserverInit;

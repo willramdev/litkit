@@ -208,6 +208,10 @@ export interface FormInstance<T extends Record<string, unknown> = Record<string,
    * ```
    */
   group<P extends string & keyof T>(...paths: P[]): GroupInstance<Pick<T, P>>;
+
+  // Reactive controller lifecycle (the form registers itself with its host).
+  hostConnected(): void;
+  hostDisconnected(): void;
 }
 
 // ---------------------------------------------------------------------------
