@@ -9,5 +9,5 @@
     "types": [],
     "noEmit": true
   },
-  "include": ["consumer-router.ts"]
+  "include": ["*.ts"]
 }
