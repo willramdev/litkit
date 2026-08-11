@@ -2,18 +2,18 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 1
+current_phase: 01
 current_phase_name: Build & Typecheck Hardening
 status: executing
-stopped_at: Phase 1 context gathered
-last_updated: "2026-08-11T03:55:02.456Z"
-last_activity: 2026-08-10
-last_activity_desc: Roadmap created (5 phases, 27/27 requirements mapped)
+stopped_at: Completed 01-01-PLAN.md
+last_updated: "2026-08-11T22:01:13.491Z"
+last_activity: 2026-08-11
+last_activity_desc: Phase 01 execution started
 progress:
   total_phases: 1
   completed_phases: 0
   total_plans: 3
-  completed_plans: 0
+  completed_plans: 1
 ---
 
 # Project State
@@ -23,16 +23,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-10)
 
 **Core value:** All five packages install cleanly from GitHub Packages and work as documented — a consumer can `npm install @willram/*` and build a Lit app against a green, typed, tested, documented API.
-**Current focus:** Phase 1 — Build & Typecheck Hardening
+**Current focus:** Phase 01 — Build & Typecheck Hardening
 
 ## Current Position
 
-Phase: 1 of 5 (Build & Typecheck Hardening)
-Plan: 0 of TBD in current phase
+Phase: 01 (Build & Typecheck Hardening) — EXECUTING
+Plan: 2 of 3
 Status: Ready to execute
-Last activity: 2026-08-10 — Roadmap created (5 phases, 27/27 requirements mapped)
+Last activity: 2026-08-11 — Phase 01 execution started
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [███░░░░░░░] 33%
 
 ## Performance Metrics
 
@@ -54,6 +54,11 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: —
 
 *Updated after each plan completion*
+**Per-Plan Metrics:**
+
+| Plan | Duration | Tasks | Files |
+|------|----------|-------|-------|
+| Phase 01 P01 | 8 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -65,6 +70,7 @@ Recent decisions affecting current work:
 - Roadmap: Only hard serialization is green baseline → CI/automation → publish; docs (Phase 3) parallel to Phase 2 but must land before publish.
 - Roadmap: Correctness-config fixes (sideEffects, TanStack peers, module-format, `.d.ts` resolution) live in Phase 1 (not the release phase) so they can be tested in Phase 2 and verified in Phase 5.
 - Roadmap: Kit-first publish ordering is a non-blocker (no sibling imports `@willram/kit` in source) — no ordering machinery built.
+- [Phase ?]: Router: per-entry ESM Vite build kept (not single multi-entry) so @customElement registrations stay inside the sideEffects-allowlisted entries (D-03/BUILD-03); single multi-entry build hoists them into an un-allowlistable hash chunk.
 
 ### Pending Todos
 
@@ -85,6 +91,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-11T03:35:21.825Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-build-typecheck-hardening/01-CONTEXT.md
+Last session: 2026-08-11T22:01:13.484Z
+Stopped at: Completed 01-01-PLAN.md
+Resume file: None
