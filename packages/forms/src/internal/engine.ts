@@ -42,9 +42,17 @@ export interface EngineConfig<T extends Record<string, unknown>> {
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+// TanStack's FieldApi exposes 23 positional generic parameters; their precise
+// reconstruction is blocked under erasableSyntaxOnly, so the internal field
+// handle is aliased once here rather than repeating the generic-arity wall at
+// every use site. The `any` slots are a TanStack generic-arity limit.
+type EngineFieldApi = FieldApi<any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any>;
+
 export class FormEngine<T extends Record<string, unknown>> {
+  // FormApi's positional generic slots after the form value type `T` are a
+  // TanStack generic-arity limit — left as `any` per D-04.
   private _form: FormApi<T, any, any, any, any, any, any, any, any, any, any, any>;
-  private _fields = new Map<string, FieldApi<any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any>>();
+  private _fields = new Map<string, EngineFieldApi>();
   private _fieldConfigs: Map<string, FieldConfig>;
   private _serverErrors = new Map<string, string[]>();
   private _destroyed = new Set<string>();
@@ -61,8 +69,8 @@ export class FormEngine<T extends Record<string, unknown>> {
         config.defaultValidateOn,
       ),
       onSubmit: config.onSubmit
-        ? async ({ value }: { value: any }) => {
-            await config.onSubmit!(value as T);
+        ? async ({ value }: { value: T }) => {
+            await config.onSubmit!(value);
           }
         : undefined,
       onSubmitInvalid: config.onSubmitInvalid
@@ -171,7 +179,7 @@ export class FormEngine<T extends Record<string, unknown>> {
    * Lazily create & mount a TanStack FieldApi the first time a path is
    * accessed.  Subsequent calls for the same path return the cached instance.
    */
-  private _ensureField(path: string): FieldApi<any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any, any> {
+  private _ensureField(path: string): EngineFieldApi {
     this._destroyed.delete(path);
     let field = this._fields.get(path);
     if (!field) {
@@ -231,7 +239,7 @@ export class FormEngine<T extends Record<string, unknown>> {
 
   setFieldTouched(path: string, touched: boolean): void {
     const field = this._ensureField(path);
-    field.setMeta((prev: any) => ({ ...prev, isTouched: touched }));
+    field.setMeta((prev) => ({ ...prev, isTouched: touched }));
   }
 
   // -- Server errors --------------------------------------------------------
@@ -399,10 +407,10 @@ export class FormEngine<T extends Record<string, unknown>> {
     if (!sync.length && !async_.length) return result;
 
     if (sync.length) {
-      const validate = ({ value }: { value: any }) => {
+      const validate = ({ value }: { value: T }) => {
         const errors: string[] = [];
         for (const v of sync) {
-          const r = v(value as T);
+          const r = v(value);
           if (typeof r === 'string') {
             errors.push(r);
           } else if (r && typeof r === 'object') {
@@ -427,9 +435,9 @@ export class FormEngine<T extends Record<string, unknown>> {
     }
 
     if (async_.length) {
-      const validateAsync = async ({ value }: { value: any }) => {
+      const validateAsync = async ({ value }: { value: T }) => {
         const errors: string[] = [];
-        const results = await Promise.all(async_.map((v) => v(value as T)));
+        const results = await Promise.all(async_.map((v) => v(value)));
         for (const r of results) {
           if (typeof r === 'string') {
             errors.push(r);
