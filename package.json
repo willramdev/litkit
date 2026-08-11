@@ -9,6 +9,7 @@
   "scripts": {
     "build": "npm run build --workspaces",
     "typecheck": "npm run typecheck --workspaces --if-present",
+    "typecheck:smoke": "tsc -p tools/typecheck-smoke/tsconfig.node16.json && tsc -p tools/typecheck-smoke/tsconfig.bundler.json",
     "test": "npm run test --workspaces --if-present",
     "dev:kit": "npm run dev -w @willram/kit",
     "dev:router": "npm run dev -w @willram/router",
