@@ -77,21 +77,43 @@ Explicitly excluded — documented to prevent scope creep. Anti-features surface
 
 ## Traceability
 
-Populated during roadmap creation (each requirement maps to exactly one phase).
+Each v1 requirement maps to exactly one phase (see `.planning/ROADMAP.md`).
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BUILD-01..06 | TBD | Pending |
-| TEST-01..06 | TBD | Pending |
-| DOCS-01..04 | TBD | Pending |
-| RLS-01..07 | TBD | Pending |
-| VER-01..04 | TBD | Pending |
+| BUILD-01 | Phase 1 — Build & Typecheck Hardening | Pending |
+| BUILD-02 | Phase 1 — Build & Typecheck Hardening | Pending |
+| BUILD-03 | Phase 1 — Build & Typecheck Hardening | Pending |
+| BUILD-04 | Phase 1 — Build & Typecheck Hardening | Pending |
+| BUILD-05 | Phase 1 — Build & Typecheck Hardening | Pending |
+| BUILD-06 | Phase 1 — Build & Typecheck Hardening | Pending |
+| TEST-01 | Phase 2 — Tests & CI | Pending |
+| TEST-02 | Phase 2 — Tests & CI | Pending |
+| TEST-03 | Phase 2 — Tests & CI | Pending |
+| TEST-04 | Phase 2 — Tests & CI | Pending |
+| TEST-05 | Phase 2 — Tests & CI | Pending |
+| TEST-06 | Phase 2 — Tests & CI | Pending |
+| DOCS-01 | Phase 3 — Docs | Pending |
+| DOCS-02 | Phase 3 — Docs | Pending |
+| DOCS-03 | Phase 3 — Docs | Pending |
+| DOCS-04 | Phase 3 — Docs | Pending |
+| RLS-01 | Phase 4 — Release Automation & Publish | Pending |
+| RLS-02 | Phase 4 — Release Automation & Publish | Pending |
+| RLS-03 | Phase 4 — Release Automation & Publish | Pending |
+| RLS-04 | Phase 4 — Release Automation & Publish | Pending |
+| RLS-05 | Phase 4 — Release Automation & Publish | Pending |
+| RLS-06 | Phase 4 — Release Automation & Publish | Pending |
+| RLS-07 | Phase 4 — Release Automation & Publish | Pending |
+| VER-01 | Phase 5 — Consumer Install Verification | Pending |
+| VER-02 | Phase 5 — Consumer Install Verification | Pending |
+| VER-03 | Phase 5 — Consumer Install Verification | Pending |
+| VER-04 | Phase 5 — Consumer Install Verification | Pending |
 
 **Coverage:**
 - v1 requirements: 27 total
-- Mapped to phases: 0 (roadmap pending)
-- Unmapped: 27 ⚠️
+- Mapped to phases: 27 ✓
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-08-10*
-*Last updated: 2026-08-10 after initial definition*
+*Last updated: 2026-08-10 after roadmap creation (traceability populated)*
