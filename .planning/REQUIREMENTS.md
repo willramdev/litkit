@@ -12,7 +12,7 @@
 - [x] **BUILD-01**: All five packages pass `npm run typecheck` with zero errors (finishes the in-flight `fix/typecheck-query-derived` work)
 - [x] **BUILD-02**: All five packages produce a green `npm run build` with `dist/` emitted
 - [x] **BUILD-03**: Element-registering modules are exempt from `sideEffects` tree-shaking so `customElements.define` survives a consumer production build
-- [ ] **BUILD-04**: `@tanstack/query-core` and `@tanstack/form-core` are declared as `peerDependencies` (not `dependencies`) to prevent duplicate-instance breakage
+- [x] **BUILD-04**: `@tanstack/query-core` and `@tanstack/form-core` are declared as `peerDependencies` (not `dependencies`) to prevent duplicate-instance breakage
 - [x] **BUILD-05**: One documented module-format policy is applied across packages (ESM-only, or router dual ESM+CJS with the split documented)
 - [x] **BUILD-06**: Every `exports` subpath (incl. router `./core`/`./lit`, forms `./zod`) emits a `.d.ts` that resolves under `node16` and `bundler` resolution (verified with a `tsc` smoke consumer, not file-presence)
 
@@ -84,7 +84,7 @@ Each v1 requirement maps to exactly one phase (see `.planning/ROADMAP.md`).
 | BUILD-01 | Phase 1 — Build & Typecheck Hardening | Complete |
 | BUILD-02 | Phase 1 — Build & Typecheck Hardening | Complete |
 | BUILD-03 | Phase 1 — Build & Typecheck Hardening | Complete |
-| BUILD-04 | Phase 1 — Build & Typecheck Hardening | Pending |
+| BUILD-04 | Phase 1 — Build & Typecheck Hardening | Complete |
 | BUILD-05 | Phase 1 — Build & Typecheck Hardening | Complete |
 | BUILD-06 | Phase 1 — Build & Typecheck Hardening | Complete |
 | TEST-01 | Phase 2 — Tests & CI | Pending |
