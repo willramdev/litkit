@@ -1,0 +1,1 @@
+{"content":"changesets/action@v1 on push to main: runs publish script; opens/updates version PR or publishes when changesets applied. Provide publish: 'changeset publish'. Requires GITHUB_TOKEN + registry auth env. Two-phase PR then publish on merge.","source":"web","provider":"websearch","confidence":"HIGH","fetched_at":"2026-08-11T03:00:04.421Z","ttl":86400000,"kind":"web"}
