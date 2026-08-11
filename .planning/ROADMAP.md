@@ -36,7 +36,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. One documented module-format policy is applied across packages (ESM-only, or router dual ESM+CJS with the split documented) (BUILD-05)
   5. A `tsc` smoke consumer resolves a `.d.ts` for every `exports` subpath — including router `./core`/`./lit` and forms `./zod` — under both `node16` and `bundler` resolution (BUILD-06)
 
-**Plans**: 3/3 plans executed
+**Plans**: 4 plans (3 executed; 01-04 gap closure pending)
 **Wave 1**
 
 - [x] 01-01-PLAN.md — TRACER: router ESM-only (drop CJS/dual-build, D-01) + BUILD-06 smoke harness proving router `.`/`./core`/`./lit` under node16+bundler
@@ -48,6 +48,10 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Wave 3** *(blocked on Wave 2 completion)*
 
 - [x] 01-03-PLAN.md — kit/store stay sideEffects:false + full workspace build+typecheck green + smoke consumer extended to all eight subpaths
+
+**Wave 4** *(gap closure — blocked on Wave 3 completion)*
+
+- [ ] 01-04-PLAN.md — GAP CLOSURE: forms externalizes all `lit/*` via `/^lit\//` (CR-01) + router idempotent element registration guard so `@willram/router` + `/lit` don't double-register (CR-02), with a smoke test
 
 ### Phase 2: Tests & CI
 
