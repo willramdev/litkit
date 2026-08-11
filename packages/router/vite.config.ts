@@ -9,7 +9,7 @@ export default defineConfig({
         "router-core": resolve(__dirname, "src/router-core/index.ts"),
         "router-lit": resolve(__dirname, "src/router-lit/index.ts"),
       },
-      formats: ["es", "cjs"],
+      formats: ["es"],
     },
     rollupOptions: {
       external: ["lit", "lit/decorators.js", "lit/directive.js", /^lit\//],

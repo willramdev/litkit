@@ -17,25 +17,25 @@
     "directory": "packages/router"
   },
   "type": "module",
-  "sideEffects": false,
-  "main": "./dist/router.cjs",
+  "sideEffects": [
+    "dist/router.js",
+    "dist/router-lit.js"
+  ],
+  "main": "./dist/router.js",
   "module": "./dist/router.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/router.js",
-      "require": "./dist/router.cjs"
+      "import": "./dist/router.js"
     },
     "./core": {
       "types": "./dist/router-core/index.d.ts",
-      "import": "./dist/router-core.js",
-      "require": "./dist/router-core.cjs"
+      "import": "./dist/router-core.js"
     },
     "./lit": {
       "types": "./dist/router-lit/index.d.ts",
-      "import": "./dist/router-lit.js",
-      "require": "./dist/router-lit.cjs"
+      "import": "./dist/router-lit.js"
     }
   },
   "files": [
@@ -43,7 +43,7 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && node scripts/build.js && tsc -p tsconfig.build.json",
+    "build": "node scripts/build.js && tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
