@@ -36,7 +36,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. One documented module-format policy is applied across packages (ESM-only, or router dual ESM+CJS with the split documented) (BUILD-05)
   5. A `tsc` smoke consumer resolves a `.d.ts` for every `exports` subpath — including router `./core`/`./lit` and forms `./zod` — under both `node16` and `bundler` resolution (BUILD-06)
 
-**Plans**: 4 plans (3 executed; 01-04 gap closure pending)
+**Plans**: 4/4 plans executed (3 executed; 01-04 gap closure pending)
 **Wave 1**
 
 - [x] 01-01-PLAN.md — TRACER: router ESM-only (drop CJS/dual-build, D-01) + BUILD-06 smoke harness proving router `.`/`./core`/`./lit` under node16+bundler
@@ -51,7 +51,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Wave 4** *(gap closure — blocked on Wave 3 completion)*
 
-- [ ] 01-04-PLAN.md — GAP CLOSURE: forms externalizes all `lit/*` via `/^lit\//` (CR-01) + router idempotent element registration guard so `@willram/router` + `/lit` don't double-register (CR-02), with a smoke test
+- [x] 01-04-PLAN.md — GAP CLOSURE: forms externalizes all `lit/*` via `/^lit\//` (CR-01) + router idempotent element registration guard so `@willram/router` + `/lit` don't double-register (CR-02), with a smoke test
 
 ### Phase 2: Tests & CI
 
@@ -117,7 +117,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 (Phase 3 may run in p
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Build & Typecheck Hardening | 3/3 | In Progress|  |
+| 1. Build & Typecheck Hardening | 4/4 | In Progress|  |
 | 2. Tests & CI | 0/TBD | Not started | - |
 | 3. Docs | 0/TBD | Not started | - |
 | 4. Release Automation & Publish | 0/TBD | Not started | - |
