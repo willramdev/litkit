@@ -1,7 +1,8 @@
 import { LitElement, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { property } from "lit/decorators.js";
 import type { NavigationInput, Router, RouteChangeCallback } from "../router-core/types.ts";
 import { requestRouter } from "./router-context.ts";
+import { define } from "../define.ts";
 
 const DEFAULT_ACTIVE_CLASS = "active";
 const DEFAULT_EXACT_ACTIVE_CLASS = "exact-active";
@@ -21,7 +22,6 @@ const DEFAULT_EXACT_ACTIVE_CLASS = "exact-active";
  *   - ctrl/cmd+click opens in new tab
  *   - middle-click opens in new tab
  */
-@customElement("router-link")
 export class RouterLink extends LitElement {
   /** Router instance (required). */
   @property({ attribute: false })
@@ -130,6 +130,8 @@ export class RouterLink extends LitElement {
     ><slot></slot></a>`;
   }
 }
+
+define("router-link", RouterLink);
 
 declare global {
   interface HTMLElementTagNameMap {

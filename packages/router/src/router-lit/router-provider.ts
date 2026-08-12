@@ -1,7 +1,8 @@
 import { LitElement, css, html } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { property } from "lit/decorators.js";
 import type { Router } from "../router-core/types.ts";
 import { attachRouterProvider } from "./router-context.ts";
+import { define } from "../define.ts";
 
 /**
  * Provides a `Router` instance to all descendant components via DOM context.
@@ -17,7 +18,6 @@ import { attachRouterProvider } from "./router-context.ts";
  * it will be auto-resolved by `<router-outlet>`, `<router-link>`,
  * `RouteController`, and `SearchParamsController`.
  */
-@customElement("router-provider")
 export class RouterProvider extends LitElement {
   @property({ attribute: false })
   router?: Router;
@@ -50,6 +50,8 @@ export class RouterProvider extends LitElement {
     }
   `;
 }
+
+define("router-provider", RouterProvider);
 
 declare global {
   interface HTMLElementTagNameMap {

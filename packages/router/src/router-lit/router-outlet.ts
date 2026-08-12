@@ -1,11 +1,11 @@
 import { LitElement, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { property, state } from "lit/decorators.js";
 import type { Router, RouteMatch, MatchedRoute, RouteDefinition } from "../router-core/types.ts";
 import { requestRouter } from "./router-context.ts";
+import { define } from "../define.ts";
 
 const pendingRouteLoads = new WeakMap<RouteDefinition, Promise<unknown>>();
 
-@customElement("router-outlet")
 export class RouterOutlet extends LitElement {
   @property({ attribute: false })
   router?: Router;
@@ -226,6 +226,8 @@ export class RouterOutlet extends LitElement {
     return this;
   }
 }
+
+define("router-outlet", RouterOutlet);
 
 declare global {
   interface HTMLElementTagNameMap {
