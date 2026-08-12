@@ -2,26 +2,19 @@
 phase: 01-build-typecheck-hardening
 reviewed: 2026-08-11T00:00:00Z
 depth: standard
-files_reviewed: 13
+files_reviewed: 6
 files_reviewed_list:
-  - packages/router/package.json
-  - packages/router/vite.config.ts
-  - packages/router/scripts/build.js
-  - packages/query/package.json
-  - packages/forms/package.json
-  - packages/forms/src/internal/engine.ts
-  - packages/kit/package.json
-  - packages/store/package.json
-  - package.json
-  - tools/typecheck-smoke/consumer-router.ts
-  - tools/typecheck-smoke/consumer-rest.ts
-  - tools/typecheck-smoke/tsconfig.node16.json
-  - tools/typecheck-smoke/tsconfig.bundler.json
+  - packages/forms/vite.config.ts
+  - packages/router/src/define.ts
+  - packages/router/src/router-lit/router-link.ts
+  - packages/router/src/router-lit/router-outlet.ts
+  - packages/router/src/router-lit/router-provider.ts
+  - packages/router/src/test/no-double-register.test.ts
 findings:
-  critical: 2
-  warning: 4
-  info: 3
-  total: 9
+  critical: 0
+  warning: 2
+  info: 2
+  total: 4
 status: issues_found
 ---
 
@@ -29,201 +22,74 @@ status: issues_found
 
 **Reviewed:** 2026-08-11
 **Depth:** standard
-**Files Reviewed:** 13
+**Files Reviewed:** 6
 **Status:** issues_found
 
 ## Summary
 
-This is a library-packaging hardening phase; the packaging metadata (`exports`,
-`peerDependencies`, `sideEffects`) is mostly well-formed and the smoke-consumer
-harness is a genuinely good idea. However, two defects directly undermine the
-phase's own goals — a Vite externalization gap that bundles Lit into
-`@willram/forms`, and a custom-element double-registration hazard created by the
-router's per-entry bundling strategy combined with the aggregate re-export.
-Several correctness issues also exist in `forms/src/internal/engine.ts`, notably
-read methods that silently resurrect destroyed fields.
+Reviewed the gap-closure changes from plan 01-04 that closed two BLOCKER verification gaps:
 
-Cross-referenced against the other package configs: `@willram/query` externalizes
-`lit/decorators.js` correctly, which makes the forms omission a clear, isolable
-regression rather than a repo-wide convention.
+- **CR-01 (forms externalization):** `packages/forms/vite.config.ts` replaced the two hardcoded `lit/*` subpaths (`lit/directive.js`, `lit/async-directive.js`) with the regex `/^lit\//`. This is correct and necessary — I confirmed `packages/forms/src/lit-form.ts` imports `lit/decorators.js`, which the old externals list did NOT cover, so it was previously being bundled (the original BLOCKER). All lit specifiers actually used by forms (`lit`, `lit/directive.js`, `lit/async-directive.js`, `lit/decorators.js`) are now externalized, and no bare `lit-html` / `@lit/reactive-element` imports exist that would slip past `'lit'` + `/^lit\//`. `@tanstack/*` and `zod` remain externalized. This fix is sound.
 
-## Critical Issues
+- **CR-02 (idempotent registration):** A local `packages/router/src/define.ts` guard replaces `@customElement` on `RouterOutlet`, `RouterLink`, and `RouterProvider`. The guard is framework-neutral (DOM-only, no `@willram/kit` import), imports use `.ts` extensions, and there are no constructor parameter properties — all consistent with CLAUDE.md constraints. Combined with the per-entry `scripts/build.js` (each `dist/*.js` is self-contained with its own `define()` calls), the guard correctly prevents the duplicate-`customElements.define` DOMException when both `dist/router.js` and `dist/router-lit.js` load into the same registry. The mechanism works.
 
-### CR-01: `@willram/forms` bundles `lit/decorators.js` — Lit externalization bypass
-
-**File:** `packages/forms/vite.config.ts:15-23`
-**Issue:** The forms build externalizes `lit`, `lit/directive.js`,
-`lit/async-directive.js`, `/^@lit/`, `/^@tanstack/`, and `/^zod/`, but **not**
-`lit/decorators.js` and there is no `/^lit\//` catch-all. `/^@lit/` matches the
-`@lit/*` scope only — it does **not** match bare `lit/decorators.js`.
-`packages/forms/src/lit-form.ts:2` imports `customElement` from
-`lit/decorators.js`, so Rollup will inline Lit's decorators module (and any other
-un-listed `lit/*` subpath) into `dist/forms.js`. This violates the CLAUDE.md
-constraint "every Vite build must externalize `lit`, `lit/*`, and `@tanstack/*`"
-and reintroduces the exact bundle-duplication the phase is meant to prevent. For
-comparison, `packages/query/vite.config.ts:14` correctly lists
-`lit/decorators.js`.
-**Fix:** Replace the enumerated Lit subpaths with a catch-all so no `lit/*`
-import can ever be bundled:
-```ts
-rollupOptions: {
-  external: [
-    'lit',
-    /^lit\//,      // covers decorators.js, directive.js, async-directive.js, directives/*
-    /^@lit\//,
-    /^@tanstack\//,
-    /^zod/,
-  ],
-},
-```
-
-### CR-02: Router custom elements register twice — duplicate `customElements.define` crash
-
-**File:** `packages/router/scripts/build.js:20-24`, `packages/router/src/index.ts:53-68`, `packages/router/src/router-lit/router-outlet.ts:8`
-**Issue:** `build.js` emits three *self-contained* bundles (`router.js`,
-`router-lit.js`, `router-core.js`), each inlining its dependencies rather than
-sharing chunks. The aggregate entry `src/index.ts` re-exports `RouterOutlet`,
-`RouterProvider`, and `RouterLink` from `./router-lit`, and those classes are
-registered via the raw Lit `@customElement("router-outlet")` decorator (not the
-idempotent `defineElement` guard that exists in `packages/kit/src/define.ts`).
-As a result, `dist/router.js` and `dist/router-lit.js` **both** contain
-`customElements.define("router-outlet", …)`. A consumer that imports both
-`@willram/router` and `@willram/router/lit` (easy to do accidentally in a
-code-split app, or when one dependency imports the aggregate and another imports
-the subpath) will execute `define` twice for the same tag and throw a
-`DOMException: 'router-outlet' has already been defined`. Both files being in the
-`sideEffects` allowlist guarantees neither define is tree-shaken away.
-**Fix:** Route element registration through an idempotent guard so double import
-is safe, e.g. define elements via the existing `defineElement(tag, ctor)` helper
-(`if (!customElements.get(tag)) customElements.define(...)`) instead of the bare
-`@customElement` decorator, OR stop re-exporting the Lit element classes from the
-aggregate `src/index.ts` so the registration lives in exactly one shipped module.
-Guarding is the more robust option:
-```ts
-// router-outlet.ts — replace @customElement("router-outlet")
-import { defineElement } from '../define.ts';
-export class RouterOutlet extends LitElement { /* ... */ }
-defineElement('router-outlet', RouterOutlet);
-```
+No correctness or security BLOCKERS found. Two robustness WARNINGS and two INFO items follow — they concern the guard's failure mode and the regression test's coverage guarantee, not the correctness of the shipped fix.
 
 ## Warnings
 
-### WR-01: Reading a destroyed field silently resurrects it
+### WR-01: `define()` silently skips when the tag is already registered with a *different* constructor
 
-**File:** `packages/forms/src/internal/engine.ts:182-199, 201-229`
-**Issue:** `_ensureField(path)` unconditionally calls
-`this._destroyed.delete(path)` (line 183) and re-creates the `FieldApi` when it
-is missing. But the read accessors `getFieldValue` (201), `getFieldErrors` (205),
-and `getFieldMeta` (216) all funnel through `_ensureField`. So a *read* of a
-previously `destroyField`-ed path removes it from `_destroyed` and rebuilds the
-field. Because `getValues()` (117) and `getAllFieldErrors()` (303) rely on
-`_destroyed` to strip removed fields, a stray read (e.g. a Lit field control
-still rendering during teardown after array-item removal) will make the
-destroyed field reappear in submitted values and error aggregation.
-**Fix:** Do not treat a read as a re-registration. Guard reads against
-`_destroyed`, and only clear `_destroyed` on an explicit write path:
+**File:** `packages/router/src/define.ts:7-9`
+**Issue:** The guard only checks `if (!customElements.get(tag))`. It cannot distinguish "already registered by our own second bundle" (the intended idempotent case) from "already registered by a foreign/older constructor." Two real scenarios silently no-op:
+1. A consumer (or transitive dep) has already defined its own `<router-outlet>` / `<router-link>` / `<router-provider>` element — our class is silently never registered, and our controllers/outlet logic then operate against a foreign element implementation with no error and no warning.
+2. Two different versions of `@willram/router` load in one page (version skew) — whichever loads first wins; the other's (possibly newer) implementation is silently discarded. Because the winning bundle owns all DOM instances, `instanceof RouterOutlet` inside `findParentOutlet()` still works for the winner, but the losing bundle's exported `RouterOutlet` symbol will never match live DOM nodes.
+
+This trades a loud, debuggable DOMException for silent divergence — harder to diagnose than the bug it replaces.
+**Fix:** Compare the existing registration and warn on a genuine mismatch rather than blindly skipping:
 ```ts
-getFieldValue(path: string): unknown {
-  if (this._destroyed.has(path)) return undefined;
-  return this._peekField(path)?.state.value; // peek: create WITHOUT deleting from _destroyed
-}
-```
-Split `_ensureField` into a mutating `_ensureField` (used by writes/`mount`) and a
-non-resurrecting `_peekField` (used by reads).
-
-### WR-02: `getValues()` loses non-JSON data and returns inconsistent references
-
-**File:** `packages/forms/src/internal/engine.ts:116-123`
-**Issue:** Two problems. (1) When `_destroyed.size === 0` the method returns the
-live `this._form.state.values` object; when destroyed paths exist it returns a
-deep clone. Callers that mutate the result will corrupt internal form state in
-one branch but not the other. (2) The clone is produced by
-`JSON.parse(JSON.stringify(...))`, which silently drops `undefined` fields and
-destroys `Date`, `Map`, `Set`, `bigint`, and class instances — a data-loss bug
-for any form holding such values.
-**Fix:** Use `structuredClone` for the clone branch, and clone consistently in
-both branches (or document that the return is read-only and freeze it):
-```ts
-getValues(): T {
-  const values = structuredClone(this._form.state.values) as Record<string, unknown>;
-  for (const path of this._destroyed) deletePath(values, path);
-  return values as T;
-}
-```
-
-### WR-03: `router/vite.config.ts` build config is dead and contradicts `build.js`
-
-**File:** `packages/router/vite.config.ts:4-19`
-**Issue:** The package `build` script runs `node scripts/build.js`, not
-`vite build`, so the multi-entry `build.lib` block here is never exercised by the
-real build (it survives only to feed Vitest's `test` block). `build.js:11-19`
-explicitly documents that a single multi-entry `vite build` hoists shared code
-into hash-named chunks, moving `customElements.define` out of the `sideEffects`
-allowlist and breaking the tree-shaking guarantee. Yet running `vite build`
-directly against this config does exactly that. This is a latent trap: anyone who
-runs `vite build` (habit, CI misconfig, IDE task) produces a subtly broken
-artifact that passes a superficial glance.
-**Fix:** Strip the `build.lib`/`rollupOptions` block from `vite.config.ts` and
-keep only the `test` config, so there is a single source of truth for the build
-(`build.js`). If a Vite build block must remain, make it delegate to the same
-per-entry logic rather than defining a conflicting multi-entry build.
-
-### WR-04: `setValues()` bypasses server-error clearing and destroyed-state reset
-
-**File:** `packages/forms/src/internal/engine.ts:157-161`
-**Issue:** `setValues` writes each key via `this._form.setFieldValue(...)`
-directly, unlike the single-field `setFieldValue` (231-234) which first calls
-`this._serverErrors.delete(path)` and routes through `_ensureField`. So a bulk
-`setValues` leaves stale server errors attached to paths whose values just
-changed, and does not un-destroy a path that was previously removed — meaning a
-value you just set can still be stripped by `getValues()` because it remains in
-`_destroyed`.
-**Fix:** Delegate to the single-field path to preserve invariants:
-```ts
-setValues(partial: Partial<T>): void {
-  for (const [key, value] of Object.entries(partial)) {
-    this.setFieldValue(key, value);
+export function define(
+  tag: string,
+  ctor: CustomElementConstructor,
+  options?: ElementDefinitionOptions
+): void {
+  const existing = customElements.get(tag);
+  if (existing === ctor) return;         // already ours — idempotent no-op
+  if (existing) {
+    console.warn(`[router] "${tag}" is already registered by a different constructor; skipping.`);
+    return;
   }
+  customElements.define(tag, ctor, options);
 }
+```
+
+### WR-02: The double-registration regression test silently skips under the default `npm test`
+
+**File:** `packages/router/src/test/no-double-register.test.ts:10-19`, `packages/router/package.json:48`
+**Issue:** This test is the *only* automated guard for the CR-02 BLOCKER, but it imports built `dist/*.js` and uses `describe.skipIf(!((routerKey in built) && (routerLitKey in built)))`. The package `test` script is `vitest run` with no preceding build. On a fresh clone, after `git clean`, or any run where `dist/` is absent/stale, the test skips and the suite reports green — providing zero coverage while looking passing. A reintroduced registration bug (e.g., someone re-adding `@customElement` or removing the guard) would not be caught unless a build happened to run first. Silent-skip on a shipped-BLOCKER guard is a coverage gap.
+**Fix:** Make the guard's coverage non-optional in the path that matters. Either add a `pretest`/CI step that builds before this test runs, or fail loudly instead of skipping when the build artifacts are missing in CI:
+```jsonc
+// package.json — ensure artifacts exist before the guard runs
+"test": "npm run build && vitest run"
+```
+or gate the skip on an env flag so CI cannot silently skip:
+```ts
+const requireBuilt = !!process.env.CI;
+describe.skipIf(!requireBuilt && !(routerKey in built && routerLitKey in built))( /* ... */ );
 ```
 
 ## Info
 
-### IN-01: Router ESM-only build vs documented CJS artifact
+### IN-01: Externalization regexes lack a trailing package boundary (over-matching)
 
-**File:** `packages/router/package.json:27-40`
-**Issue:** `build.js:8` and the package are intentionally ESM-only (`formats:
-["es"]`, no `require` condition, no `dist/router.cjs`). CLAUDE.md's Platform
-Requirements still claims "CJS exports available for router package only
-(`dist/router.cjs`)". The package/exports map is internally consistent, but the
-stale doc will mislead consumers who attempt `require('@willram/router')`.
-**Fix:** Update the CLAUDE.md line to state router is ESM-only, or add a real
-`require`/`dist/router.cjs` output if a CJS consumer is actually required.
+**File:** `packages/forms/vite.config.ts:18-20`
+**Issue:** `/^@lit/`, `/^@tanstack/`, and `/^zod/` have no boundary after the name, so they also match unrelated packages such as `@litany`, `@tanstackx`, or `zodern`/`zod-mock`. `'lit'` + `/^lit\//` are precise, but these three are broader than intended. Impact is negligible today (no such deps), but a future dependency with a colliding prefix would be unexpectedly externalized.
+**Fix:** Anchor to a package boundary, e.g. `/^@lit(\/|$)/`, `/^@tanstack\//`, and `'zod'` + `/^zod\//`.
 
-### IN-02: `exports` maps omit a `default` condition
+### IN-02: `define()` (and the top-level `define(...)` calls) require the `customElements` global at import time
 
-**File:** `packages/router/package.json:28-39`, `packages/query/package.json:29-34`, `packages/forms/package.json:26-35`, `packages/kit/package.json:23-28`, `packages/store/package.json:27-32`
-**Issue:** Each subpath declares only `types` + `import`. Tooling that keys on the
-`default` condition (some bundlers, tools using `require`-style resolution against
-an ESM package) gets no match and can fall through to a resolution error. For a
-strictly-ESM package this is acceptable, but adding `default` is the standard
-belt-and-suspenders.
-**Fix:** Add `"default": "./dist/<name>.js"` as the last key in each subpath
-object (after `import`).
-
-### IN-03: `query`/`forms` fold pure factories into a single side-effectful entry
-
-**File:** `packages/query/package.json:20-22`, `packages/forms/package.json:20-22`
-**Issue:** Unlike router (which splits `core` vs `lit` so the pure engine stays
-tree-shakeable), `@willram/query` and `@willram/forms` register their provider
-elements (`lit-query-client-provider`, `lit-form`) in the same entry that exports
-the pure `query()`/`mutation()`/`form()` factories, and mark the whole entry
-side-effectful. A consumer importing only the factories cannot tree-shake away the
-custom-element registration. Not incorrect, but inconsistent with the router
-design and worth noting for the tree-shaking guarantee.
-**Fix:** Optional — consider a `./element` (or `./lit`) subpath for the provider
-elements, mirroring the router `core`/`lit` split, so factory-only imports stay
-side-effect-free.
+**File:** `packages/router/src/define.ts:7`, `packages/router/src/router-lit/router-outlet.ts:230` (and router-link.ts:134, router-provider.ts:54)
+**Issue:** Each Lit module runs `define("...", Class)` as a top-level side effect, dereferencing `customElements` on import. Importing the `@willram/router/lit` (or main) entry in a non-DOM/SSR context throws a `ReferenceError` before any code runs. This is not a regression — the previous `@customElement` decorator had identical behavior, and router-core remains the framework-neutral SSR-safe entry — so it is informational only. If SSR import-safety of the Lit entry is ever a goal, guard with `typeof customElements !== 'undefined'` inside `define()`.
+**Fix:** (Optional) `if (typeof customElements === 'undefined') return;` at the top of `define()`.
 
 ---
 
