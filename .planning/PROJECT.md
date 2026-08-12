@@ -20,12 +20,11 @@ All five packages install cleanly from GitHub Packages and work as documented �
 - ✓ `@willram/forms` — Lit FormController over TanStack Form Core with field/array sub-controllers, LitForm provider, optional `/zod` subexport — existing
 - ✓ `@willram/store` — closure-based reactive `Store<T>` with `StoreSliceController` for slice subscriptions — existing
 - ✓ Monorepo tooling — npm workspaces, shared `tsconfig.base.json` (`erasableSyntaxOnly`, strict, ES2023), per-package Vite library builds externalizing `lit`/`@tanstack/*`, Vitest + jsdom test setup — existing
+- ✓ All five packages typecheck and build green, correctly configured (sideEffects tree-shaking, TanStack required-peers, ESM module-format policy, `.d.ts` resolvable under node16 + bundler, forms externalizes all `lit/*`, router registers each element once) — Validated in Phase 1: Build & Typecheck Hardening
 
 ### Active
 
 <!-- v1 harden + ship. Hypotheses until shipped. -->
-
-- [ ] All five packages typecheck and build green (finish the hardening in progress on `fix/typecheck-query-derived`)
 - [ ] Critical-path test coverage per package; CI runs the full test suite on every push
 - [ ] README + API documentation per package, with usage examples that actually run
 - [ ] CI pipeline plus release automation (changesets-style versioning + publish)
@@ -41,7 +40,7 @@ All five packages install cleanly from GitHub Packages and work as documented �
 
 ## Context
 
-- **Current state:** All five packages are implemented and the architecture is mapped in `.planning/codebase/`. The repo is mid-hardening on branch `fix/typecheck-query-derived`; recent commits (`c24655f fix: typecheck/build hardening and DX improvements`) show typecheck/build cleanup is already underway but not finished.
+- **Current state:** Phase 1 complete — all five packages typecheck and build green with the correctness-config traps fixed (7/7 must-haves verified). Architecture mapped in `.planning/codebase/`. Next: Phase 2 (Tests & CI) encodes this baseline as an enforced gate.
 - **Dependency graph is acyclic:** `kit` depends on nothing internal; router/query/forms/store depend only on `kit` (and their TanStack cores). This must hold — it protects tree-shaking and CI type-checking.
 - **Publishing friction:** GitHub Packages requires the npm scope to equal the GitHub owner. The `willram` org must exist before publish; `@willram/*` names then resolve against it.
 - **No runtime env/config:** libraries need no env vars; the only external services are npm/GitHub Packages (publish) and CI.
@@ -82,4 +81,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-10 after initialization*
+*Last updated: 2026-08-11 after Phase 1 completion*
