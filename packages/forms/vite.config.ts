@@ -14,8 +14,7 @@ export default defineConfig({
     rollupOptions: {
       external: [
         'lit',
-        'lit/directive.js',
-        'lit/async-directive.js',
+        /^lit\//,
         /^@lit/,
         /^@tanstack/,
         /^zod/,
