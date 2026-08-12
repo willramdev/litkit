@@ -1,44 +1,28 @@
 ---
 phase: 01-build-typecheck-hardening
-verified: 2026-08-11T22:27:29Z
-status: gaps_found
-score: 5/7 must-haves verified
+verified: 2026-08-11T21:15:00Z
+status: passed
+score: 7/7 must-haves verified
 behavior_unverified: 0
 overrides_applied: 0
-gaps:
-  - truth: "Every Vite build externalizes `lit`, `lit/*`, and `@tanstack/*` (CLAUDE.md constraint — no bundle duplication for consumers)"
-    status: failed
-    reason: "`packages/forms/vite.config.ts` enumerates `lit`, `lit/directive.js`, `lit/async-directive.js`, `/^@lit/` but omits `lit/decorators.js` and has no `/^lit\\//` catch-all. `/^@lit/` matches the `@lit/*` scope, NOT bare `lit/*`. `src/lit-form.ts` imports `customElement` from `lit/decorators.js`, so Rollup inlines the lit/decorators shim into `dist/forms.js`. Empirically confirmed: dist/forms.js contains a `//#region ../../node_modules/lit/decorators.js` inlined block (line ~620) and NO external `from \"lit/decorators.js\"` import. This is the exact bundle-duplication the phase exists to prevent; the orchestrator directed this be treated as a phase gap even though `npm run build` exits 0. Contrast: `packages/query/vite.config.ts` externalizes `lit/decorators.js` correctly, proving this is an isolable forms regression, not a repo convention."
-    artifacts:
-      - path: "packages/forms/vite.config.ts"
-        issue: "external array omits lit/decorators.js and lacks a /^lit\\// catch-all"
-      - path: "packages/forms/dist/forms.js"
-        issue: "lit/decorators.js module body inlined (region marker present) instead of kept external"
-    missing:
-      - "Replace the enumerated lit subpaths in packages/forms/vite.config.ts with a `/^lit\\//` catch-all so no lit/* import can be bundled (mirror kit/store/router which already use ['lit', /^lit\\//])"
-      - "Rebuild @willram/forms and confirm dist/forms.js keeps `from \"lit/decorators.js\"` as an external import with no inlined lit/decorators region"
-  - truth: "Packages are correctly configured — no duplicate custom-element registration hazard in the router surface"
-    status: failed
-    reason: "`packages/router/scripts/build.js` emits three self-contained ESM bundles (router.js, router-lit.js, router-core.js), each inlining its dependencies. The aggregate entry `src/index.ts` (lines 53-68) re-exports RouterOutlet/RouterProvider/RouterLink from ./router-lit, and those classes register via the raw Lit `@customElement(...)` decorator (no idempotent guard). Empirically confirmed: BOTH `dist/router.js` (line 781: `...=G([a(\"router-outlet\")], J)`) AND `dist/router-lit.js` (line 214: `...=_([a(\"router-outlet\")], b)`) apply the customElement decorator for router-outlet/router-link/router-provider. Both files are in the `sideEffects` allowlist, so neither registration is tree-shaken. A consumer importing both `@willram/router` and `@willram/router/lit` (common in code-split apps or transitively) executes `customElements.define('router-outlet', …)` twice and throws `DOMException: 'router-outlet' has already been defined`. This is a defect introduced by this phase's BUILD-03 per-entry bundling design and undermines the phase goal's 'correctly configured' clause. Not covered by any later phase's success criteria (VER-02 checks registration survival, not double-registration)."
-    artifacts:
-      - path: "packages/router/src/index.ts"
-        issue: "aggregate entry re-exports the Lit element classes, duplicating their registration into dist/router.js"
-      - path: "packages/router/src/router-lit/router-outlet.ts"
-        issue: "uses bare @customElement decorator (no idempotent defineElement guard)"
-      - path: "packages/router/scripts/build.js"
-        issue: "self-contained per-entry bundles place the same registration in both dist/router.js and dist/router-lit.js"
-    missing:
-      - "Route element registration through an idempotent guard (e.g. the existing packages/kit/src/define.ts defineElement: `if (!customElements.get(tag)) customElements.define(...)`) instead of the bare @customElement decorator, OR stop re-exporting the Lit element classes from the aggregate src/index.ts so registration lives in exactly one shipped module"
-      - "Add a check (unit or smoke) that importing both @willram/router and @willram/router/lit does not throw a duplicate-definition DOMException"
+re_verification:
+  previous_status: gaps_found
+  previous_score: 5/7
+  gaps_closed:
+    - "CR-01 — @willram/forms externalizes lit/decorators.js (and all lit/*); no lit body inlined into dist/forms.js"
+    - "CR-02 — @willram/router registers each custom element exactly once across shipped entries; importing both entries no longer throws a duplicate-definition DOMException"
+  gaps_remaining: []
+  regressions: []
+gaps: []
 deferred: []
 ---
 
 # Phase 01: Build & Typecheck Hardening Verification Report
 
-**Phase Goal:** All five packages are green, correctly configured, and expose a resolvable typed surface.
-**Verified:** 2026-08-11T22:27:29Z
-**Status:** gaps_found
-**Re-verification:** No — initial verification
+**Phase Goal:** All five packages (@willram/kit, router, query, forms, store) are green, correctly configured, and expose a resolvable typed surface — including the correctness-config fixes and the gap-closure work (forms externalizing all lit/* subpaths + router registering each custom element exactly once).
+**Verified:** 2026-08-11T21:15:00Z
+**Status:** passed
+**Re-verification:** Yes — after gap closure (plan 01-04 closed CR-01 and CR-02)
 
 ## Goal Achievement
 
@@ -46,91 +30,87 @@ deferred: []
 
 | #   | Truth | Status | Evidence |
 | --- | ----- | ------ | -------- |
-| 1   | SC1 — `npm run typecheck` passes zero errors across all five packages | ✓ VERIFIED | Ran `npm run typecheck` → exit 0; all five (kit, store, query, forms, router) `tsc --noEmit` clean |
-| 2   | SC2 — `npm run build` emits dist/ for every package with no errors | ✓ VERIFIED | Ran `npm run build` → exit 0; every package emits its `dist/*.js`; `find packages/*/dist -name '*.cjs'` returns nothing |
-| 3   | SC3 — element-registering modules allowlisted out of `sideEffects`; `@tanstack/query-core`/`@tanstack/form-core` declared as `peerDependencies` in every consuming package | ✓ VERIFIED | query `sideEffects=["dist/query.js"]`, forms `["dist/forms.js"]`, router `["dist/router.js","dist/router-lit.js"]`; kit/store correctly `false` (grep found no top-level `@customElement`); query-core/form-core under `peerDependencies` (^5.0.0 / ^1.0.0), absent from `dependencies`, retained as devDeps (^5.91.0 / ^1.28.5); registrations grep-present in allowlisted entries; forms `dist/zod.js` has 0 `customElements` refs |
-| 4   | SC4 — one documented module-format policy applied (ESM-only) | ✓ VERIFIED | No `.cjs` in any dist; no `require` condition in any `exports` map; all `main` → `./dist/*.js` |
-| 5   | SC5 — tsc smoke consumer resolves a `.d.ts` for every `exports` subpath (router `./core`/`./lit`, forms `./zod`) under both `node16` and `bundler` | ✓ VERIFIED | Ran `npm run typecheck:smoke` → exit 0 (both node16 + bundler); consumer-router.ts + consumer-rest.ts cover all 8 subpaths; every subpath `.d.ts` present on disk |
-| 6   | CLAUDE.md constraint — every Vite build externalizes `lit`, `lit/*`, `@tanstack/*` (no bundle duplication) | ✗ FAILED | forms inlines `lit/decorators.js` into dist/forms.js (CR-01); see gaps |
-| 7   | Goal "correctly configured" — no duplicate custom-element registration hazard | ✗ FAILED | router-outlet/link/provider register in BOTH dist/router.js and dist/router-lit.js (CR-02); see gaps |
+| 1   | SC1 — `npm run typecheck` passes zero errors across all five packages | ✓ VERIFIED | Ran `npm run typecheck` → exit 0; kit, store, query, forms, router all `tsc --noEmit` clean |
+| 2   | SC2 — `npm run build` emits dist/ for every package with no errors | ✓ VERIFIED | Ran `npm run build` → exit 0; every package emits its `dist/*.js`; `find packages/*/dist -name '*.cjs'` returns 0 |
+| 3   | SC3 — element-registering modules allowlisted out of `sideEffects`; `@tanstack/*` cores declared as `peerDependencies` | ✓ VERIFIED | query `["dist/query.js"]`, forms `["dist/forms.js"]`, router `["dist/router.js","dist/router-lit.js"]`; kit/store `false`; query-core/form-core in `peerDependencies`, both `dependencies` empty `{}` |
+| 4   | SC4 — one documented module-format policy applied (ESM-only) | ✓ VERIFIED | 0 `.cjs` in any dist; no `require` condition in any package.json exports |
+| 5   | SC5 — tsc smoke consumer resolves a `.d.ts` for every `exports` subpath (router `./core`/`./lit`, forms `./zod`) under both node16 and bundler | ✓ VERIFIED | Ran `npm run typecheck:smoke` → exit 0 (node16 + bundler tsconfigs both pass) |
+| 6   | CR-01 (BUILD-02/03, CLAUDE.md) — every Vite build externalizes `lit`, `lit/*`, `@tanstack/*`; forms inlines no lit/* body | ✓ VERIFIED (was FAILED) | `packages/forms/vite.config.ts` external = `['lit', /^lit\//, /^@lit/, /^@tanstack/, /^zod/]`; rebuilt `dist/forms.js` imports `lit/decorators.js` externally (line 5) and contains no `node_modules/lit/` inlined region |
+| 7   | CR-02 (BUILD-03, "correctly configured") — router registers each custom element exactly once; importing both entries does not throw | ✓ VERIFIED (was FAILED) | 3 element files converted from `@customElement` to idempotent `define(...)`; `no-double-register.test.ts` imports both built dist entries in one jsdom registry and passes (1/1, not skipped); registration still present in BOTH `dist/router.js` and `dist/router-lit.js` (BUILD-03 unregressed) |
 
-**Score:** 5/7 truths verified (0 present, behavior-unverified)
+**Score:** 7/7 truths verified (0 present, behavior-unverified)
+
+Truth #7 is behavior-dependent (an idempotency/registration invariant that presence checks cannot prove). It is VERIFIED rather than PRESENT_BEHAVIOR_UNVERIFIED because a real behavioral test (`no-double-register.test.ts`) exercises the double-import path against the built dist and passes — the second `customElements.define` is a no-op instead of a throw.
 
 ### Required Artifacts
 
 | Artifact | Expected | Status | Details |
 | -------- | -------- | ------ | ------- |
-| `packages/router/package.json` | ESM-only exports, sideEffects allowlist, no require | ✓ VERIFIED | `main`→`./dist/router.js`; exports `.`/`./core`/`./lit`, no require; sideEffects `["dist/router.js","dist/router-lit.js"]` |
-| `packages/router/vite.config.ts` | formats `["es"]`, lit externalized | ⚠️ NOTE | ESM-only; but the real build runs `scripts/build.js`, not this config (see WR-03 in review — latent trap, not a phase-goal failure) |
-| `packages/router/scripts/build.js` | per-entry ESM build | ✓ EXISTS | Retained (deviation) to keep registrations in allowlisted entries; also the source of CR-02 double-registration |
-| `packages/query/package.json` | query-core peer, sideEffects `["dist/query.js"]` | ✓ VERIFIED | Confirmed |
-| `packages/forms/package.json` | form-core peer, sideEffects `["dist/forms.js"]` | ✓ VERIFIED | Confirmed; zod peer stays optional |
-| `packages/forms/vite.config.ts` | externalize all lit/* | ✗ STUB/BROKEN | Omits `lit/decorators.js`, no `/^lit\//` catch-all (CR-01) |
-| `packages/forms/src/internal/engine.ts` | reduced any, no public-type change | ✓ VERIFIED | typecheck/build/test green; no exported signature changed |
-| `packages/kit/package.json`, `packages/store/package.json` | sideEffects false | ✓ VERIFIED | Element-free, correctly `false` |
-| `tools/typecheck-smoke/consumer-router.ts`, `consumer-rest.ts`, `tsconfig.node16.json`, `tsconfig.bundler.json` | dual-resolution harness, 8 subpaths | ✓ VERIFIED | `typecheck:smoke` exit 0 |
+| `packages/forms/vite.config.ts` | external uses `/^lit\//` catch-all | ✓ VERIFIED | `['lit', /^lit\//, /^@lit/, /^@tanstack/, /^zod/]`; enumerated lit subpaths removed |
+| `packages/forms/dist/forms.js` | lit/decorators.js external, no inlined lit body | ✓ VERIFIED | External `import { customElement } from "lit/decorators.js"`; no `node_modules/lit/` region |
+| `packages/router/src/define.ts` | local idempotent guard, no @willram/kit dep | ✓ VERIFIED | Guards on `customElements.get(tag)`; router package.json has no `@willram/kit` dep |
+| `packages/router/src/router-lit/router-outlet.ts`, `router-link.ts`, `router-provider.ts` | register via `define(...)`, no `@customElement` | ✓ VERIFIED | 0 `@customElement` across the three; `define("router-outlet"/"router-link"/"router-provider", ...)` present |
+| `packages/router/src/test/no-double-register.test.ts` | smoke test importing both built dist entries | ✓ VERIFIED | Runs (not skipped), 1 passed; asserts all three tags truthy, throw-free |
+| `packages/router/dist/router.js`, `dist/router-lit.js` | each still registers all three tags | ✓ VERIFIED | `router-outlet` present in both |
+| `packages/query/package.json`, `packages/forms/package.json` | TanStack cores as peers | ✓ VERIFIED | query-core `^5.0.0`, form-core `^1.0.0` under peerDependencies; deps empty |
+| `tools/typecheck-smoke/*` | dual-resolution harness | ✓ VERIFIED | `typecheck:smoke` exit 0 |
 
 ### Key Link Verification
 
 | From | To | Via | Status | Details |
 | ---- | -- | --- | ------ | ------- |
-| `packages/*/package.json` exports `types` | emitted `.d.ts` | tsc smoke resolution | ✓ WIRED | All 8 subpaths resolve node16 + bundler |
+| forms `vite.config` `/^lit\//` external | `lit/decorators.js` import in lit-form.ts | Rollup externalization | ✓ WIRED | Import kept external in dist/forms.js (previously inlined — CR-01 closed) |
+| router element modules `define()` guard | second `customElements.define` across entries | idempotent `customElements.get(tag)` check | ✓ WIRED | Smoke test proves second import is a no-op, not a throw (CR-02 closed) |
+| `packages/*/package.json` exports `types` | emitted `.d.ts` | tsc smoke resolution | ✓ WIRED | All subpaths resolve node16 + bundler |
 | `sideEffects` allowlist paths | Vite-emitted entry filenames | grep-the-entry | ✓ WIRED | Registrations physically in allowlisted files |
-| forms `vite.config` external | `lit/decorators.js` import in lit-form.ts | Rollup externalization | ✗ NOT_WIRED | Import inlined, not externalized (CR-01) |
-| router aggregate `src/index.ts` | `./router-lit` element classes | re-export | ⚠️ HAZARD | Re-export duplicates registration into dist/router.js (CR-02) |
 
 ### Requirements Coverage
 
 | Requirement | Source Plan | Description | Status | Evidence |
 | ----------- | ----------- | ----------- | ------ | -------- |
-| BUILD-01 | 01-01, 01-02, 01-03 | typecheck zero errors, forms/query any reduction | ✓ SATISFIED | `npm run typecheck` exit 0 |
-| BUILD-02 | 01-01, 01-03 | green build, dist emitted | ✓ SATISFIED | `npm run build` exit 0, all dist present |
-| BUILD-03 | 01-01, 01-02, 01-03 | element modules exempt from sideEffects | ⚠️ PARTIAL | Allowlists correct and registrations survive; but the per-entry design chosen to satisfy this created the CR-02 double-registration defect |
-| BUILD-04 | 01-02 | TanStack cores as peerDependencies | ✓ SATISFIED | query-core/form-core peers, absent from deps, retained devDeps |
-| BUILD-05 | 01-01 | one documented module-format policy (ESM-only) | ✓ SATISFIED | No cjs, no require conditions anywhere |
-| BUILD-06 | 01-01, 01-03 | every subpath .d.ts resolves node16 + bundler | ✓ SATISFIED | `typecheck:smoke` exit 0, 8 subpaths |
+| BUILD-01 | 01-01, 01-02, 01-03 | typecheck zero errors | ✓ SATISFIED | `npm run typecheck` exit 0 |
+| BUILD-02 | 01-01, 01-03, 01-04 | green build, dist emitted, no bundle duplication | ✓ SATISFIED | `npm run build` exit 0; forms externalizes lit/* (CR-01 closed) |
+| BUILD-03 | 01-01, 01-02, 01-03, 01-04 | element modules exempt from sideEffects; single registration | ✓ SATISFIED | Allowlists correct; registration survives in both entries; double-register hazard removed via idempotent guard (CR-02 closed) |
+| BUILD-04 | 01-02 | TanStack cores as peerDependencies | ✓ SATISFIED | query-core/form-core peers, deps empty |
+| BUILD-05 | 01-01 | one documented module-format policy (ESM-only) | ✓ SATISFIED | No cjs, no require conditions |
+| BUILD-06 | 01-01, 01-03 | every subpath .d.ts resolves node16 + bundler | ✓ SATISFIED | `typecheck:smoke` exit 0 |
 
-All six declared requirement IDs (BUILD-01..06) are accounted for across the three plans and cross-referenced against REQUIREMENTS.md; none orphaned. No REQUIREMENTS.md IDs mapped to Phase 1 are missing from the plans.
-
-### Anti-Patterns Found
-
-| File | Line | Pattern | Severity | Impact |
-| ---- | ---- | ------- | -------- | ------ |
-| `packages/forms/vite.config.ts` | 15-23 | Incomplete externalization allowlist | 🛑 Blocker | Inlines lit/decorators.js → bundle duplication (CR-01) |
-| `packages/router/src/index.ts` | 53-68 | Aggregate re-export of registered elements | 🛑 Blocker | Double customElements.define across entries (CR-02) |
-| `packages/router/src/router-lit/router-outlet.ts` | 8 | Bare `@customElement` w/o idempotent guard | 🛑 Blocker | Enables the double-registration crash (CR-02) |
-| `packages/router/vite.config.ts` | 4-19 | Dead multi-entry build block (build uses scripts/build.js) | ⚠️ Warning | Running `vite build` directly produces a subtly broken artifact (WR-03) |
-| `packages/forms/src/internal/engine.ts` | 182-229 | Read accessors resurrect destroyed fields | ⚠️ Warning | WR-01 correctness bug — out of Phase-1 goal scope; flag for Phase 2 tests |
+All six declared requirement IDs (BUILD-01..06) are accounted for across plans 01-01..01-04 and cross-referenced against REQUIREMENTS.md; none orphaned. No REQUIREMENTS.md IDs mapped to Phase 1 are missing from the plans. (REQUIREMENTS.md traceability table still lists BUILD-01/04/05/06 as "Gaps Found" from the prior run — a docs-status update, not a code gap.)
 
 ### Behavioral Spot-Checks
 
 | Behavior | Command | Result | Status |
 | -------- | ------- | ------ | ------ |
 | Full workspace typecheck | `npm run typecheck` | exit 0 | ✓ PASS |
-| Full workspace build | `npm run build` | exit 0, all dist present, no cjs | ✓ PASS |
-| Subpath .d.ts resolution (8 subpaths, node16+bundler) | `npm run typecheck:smoke` | exit 0 | ✓ PASS |
-| forms decorators externalized | grep dist/forms.js for external `lit/decorators.js` | inlined region present, no external import | ✗ FAIL (CR-01) |
-| router single registration | grep dist/router.js + dist/router-lit.js for `customElement("router-outlet")` | present in BOTH | ✗ FAIL (CR-02) |
+| Full workspace build | `npm run build` | exit 0, all dist, 0 cjs | ✓ PASS |
+| Subpath .d.ts resolution (node16 + bundler) | `npm run typecheck:smoke` | exit 0 | ✓ PASS |
+| Router suite incl. double-register smoke | `npm run test -w @willram/router` | 218 passed | ✓ PASS |
+| no-double-register smoke (isolated) | `npx vitest run src/test/no-double-register.test.ts` | 1 passed (not skipped) | ✓ PASS |
+| forms decorators externalized (CR-01) | `grep lit/decorators.js dist/forms.js && ! grep node_modules/lit/` | external present, no inline | ✓ PASS |
+| router registration survives (CR-02/BUILD-03) | `grep router-outlet dist/router.js && dist/router-lit.js` | present in both | ✓ PASS |
+
+### Anti-Patterns Found
+
+| File | Line | Pattern | Severity | Impact |
+| ---- | ---- | ------- | -------- | ------ |
+| (phase-modified files) | — | TBD/FIXME/XXX debt markers | none | No blocker debt markers in any of the six 01-04 files |
+
+Note: prior-run warnings WR-01 (`engine.ts` read-accessor bug) and WR-03 (dead `router/vite.config.ts` block) remain out of scope for the Phase 1 goal and were explicitly deferred to Phase 2; they do not affect the phase-goal verdict.
 
 ### Human Verification Required
 
-None required for status determination — both gaps are programmatically observable in the dist output.
+None. Both previously-failing gaps are programmatically observable in the dist output and now pass; the CR-02 idempotency invariant is covered by a passing behavioral test.
 
 ### Gaps Summary
 
-The five literal ROADMAP success criteria all pass: typecheck green, build green with dist, sideEffects allowlists + TanStack peers in place, ESM-only policy applied, and all eight `exports` subpaths resolve a `.d.ts` under both `node16` and `bundler`. The smoke harness (`tools/typecheck-smoke/`) is a genuine, working BUILD-06 gate.
+None. All seven observable truths verify: the five literal ROADMAP success criteria (typecheck green, build green with dist, sideEffects allowlists + TanStack peers, ESM-only policy, all subpaths resolve node16 + bundler) plus the two BLOCKER gaps closed by plan 01-04:
 
-However, two configuration defects — both empirically re-confirmed against the built dist, not taken on faith from the review — fail the phase goal's broader "correctly configured" clause and the repo-wide CLAUDE.md externalization constraint the orchestrator directed be treated as a phase gap:
+1. **CR-01 (closed):** `packages/forms/vite.config.ts` now uses a `/^lit\//` catch-all; rebuilt `dist/forms.js` externalizes `lit/decorators.js` with no inlined `lit/*` module body — the bundle-duplication defect is gone.
+2. **CR-02 (closed):** router's three element modules register through a local idempotent `define()` guard (no `@willram/kit` dependency added); a new dist-level smoke test proves importing both `@willram/router` and `@willram/router/lit` registers each tag exactly once without a duplicate-definition `DOMException`, while registration still survives tree-shaking in both shipped entries.
 
-1. **CR-01 (BLOCKER):** `@willram/forms` fails to externalize `lit/decorators.js`, inlining Lit's decorators shim into `dist/forms.js`. This reintroduces the bundle-duplication the phase exists to prevent and is a clean, isolable regression (query does it correctly). One-line fix: use a `/^lit\//` catch-all in `packages/forms/vite.config.ts`.
-
-2. **CR-02 (BLOCKER):** The router's per-entry self-contained bundling (chosen to satisfy BUILD-03) plus the aggregate `src/index.ts` re-exporting the Lit element classes causes `router-outlet`/`router-link`/`router-provider` to register in BOTH `dist/router.js` and `dist/router-lit.js`. A consumer importing both `@willram/router` and `@willram/router/lit` will throw a duplicate-definition `DOMException`. Fix via an idempotent registration guard (kit's `defineElement` pattern already exists) or by not re-exporting the element classes from the aggregate entry.
-
-Neither gap is addressed by a later milestone phase (Phase 5's VER-02 checks that registration *survives* tree-shaking, not that it doesn't *double-register*; VER-03 concerns TanStack single-instance, not Lit). Both should be closed within Phase 1.
-
-Recommended: run `/gsd-plan-phase --gaps` to close CR-01 and CR-02.
+Phase goal achieved. Ready to proceed.
 
 ---
 
-_Verified: 2026-08-11T22:27:29Z_
+_Verified: 2026-08-11T21:15:00Z_
 _Verifier: Claude (gsd-verifier)_
