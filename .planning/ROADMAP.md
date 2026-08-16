@@ -66,20 +66,20 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. CI fails a PR whose exports/types break `publint` or `@arethetypeswrong/cli`, and fails a package-changing PR that carries no changeset (`changeset status`) (TEST-04, TEST-05)
   5. Vitest v8 coverage is reported in the CI run (report only, no threshold gate) (TEST-06)
 
-**Plans**: 5 plans
+**Plans**: 4/5 plans executed
 
 **Wave 1**
 
-- [ ] 02-01-PLAN.md — TRACER: shared root `test-setup.ts` jsdom mocks (RO/IO/matchMedia) wired into kit + kit browser-controller & kit-element suites (TEST-01/02)
+- [x] 02-01-PLAN.md — TRACER: shared root `test-setup.ts` jsdom mocks (RO/IO/matchMedia) wired into kit + kit browser-controller & kit-element suites (TEST-01/02)
 
 **Wave 2** *(blocked on Wave 1)*
 
-- [ ] 02-02-PLAN.md — forms critical-path suites (create-form/field/field-controller/array-controller/zod) + forms setupFiles wiring (TEST-01/02)
-- [ ] 02-03-PLAN.md — router-core matcher suite + link.ts two bug fixes with regression tests (D-02) + router setupFiles wiring (TEST-01/02)
+- [x] 02-02-PLAN.md — forms critical-path suites (create-form/field/field-controller/array-controller/zod) + forms setupFiles wiring (TEST-01/02)
+- [x] 02-03-PLAN.md — router-core matcher suite + link.ts two bug fixes with regression tests (D-02) + router setupFiles wiring (TEST-01/02)
 
 **Wave 3** *(blocked on Wave 2)*
 
-- [ ] 02-04-PLAN.md — gate tooling install (coverage-v8/publint/attw/changesets) + minimal `.changeset/config.json` (D-05) + report-only coverage config + query/store setupFiles wiring (TEST-01/02/04/05/06)
+- [x] 02-04-PLAN.md — gate tooling install (coverage-v8/publint/attw/changesets) + minimal `.changeset/config.json` (D-05) + report-only coverage config + query/store setupFiles wiring (TEST-01/02/04/05/06)
 
 **Wave 4** *(blocked on Wave 3)*
 
@@ -135,7 +135,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 (Phase 3 may run in p
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Build & Typecheck Hardening | 4/4 | Complete    | 2026-08-11 |
-| 2. Tests & CI | 0/5 | Not started | - |
+| 2. Tests & CI | 4/5 | In Progress|  |
 | 3. Docs | 0/TBD | Not started | - |
 | 4. Release Automation & Publish | 0/TBD | Not started | - |
 | 5. Consumer Install Verification | 0/TBD | Not started | - |
