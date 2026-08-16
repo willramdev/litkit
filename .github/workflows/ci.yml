@@ -1,0 +1,67 @@
+name: ci
+
+# Read-only CI gate for litkit. Runs the green baseline (install/typecheck/
+# build/test) on every push and pull request to main. No write scopes, no
+# registry credentials, and no publish step — publish auth is Phase-4 release.yml.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Least privilege: the workflow only needs to read repository contents.
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    name: build-test (node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm run test
+
+  # Single-Node gate: exports/types packaging + changeset presence + coverage.
+  # Runs once (not per matrix leg) behind a green build-test. fetch-depth: 0 so
+  # `changeset status` can diff against origin/main. Inherits the top-level
+  # read-only token — no credentials, no publish step.
+  gate:
+    name: gate
+    needs: build-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      # publint: package.json exports/types correctness across all five packages.
+      - name: publint (all packages)
+        run: |
+          for d in packages/*; do npx publint "$d"; done
+      # attw: .d.ts resolution under node16 + bundler; esm-only profile suppresses
+      # the expected CJS-resolution reports for these import-only packages.
+      - name: attw --profile esm-only (all packages)
+        run: |
+          for d in packages/*; do npx attw --pack "$d" --profile esm-only; done
+      # changeset gate: fails a package-changing PR that ships no covering changeset.
+      - name: changeset status
+        run: npx changeset status --since origin/main
+      # v8 coverage: report-only (text + json-summary reporters), no threshold gate.
+      - name: coverage (report-only)
+        run: npx vitest run --coverage
