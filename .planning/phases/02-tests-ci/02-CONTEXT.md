@@ -23,7 +23,7 @@ Requirements in scope: **TEST-01 … TEST-06**. This phase clarifies **how** to 
   - **forms** — field/array + zod, closing untested `array-controller`, `create-form`, `field-controller`, `field`, `zod` (CONCERNS: HIGH)
   - **store** — slice
   — **Reversibility:** reversible — adding test files is additive and safe to trim later.
-- **D-01a:** **MEDIUM-priority CONCERNS gaps are NOT required this phase** — router-lit `route-decorator`/`search-params-controller`/`router-provider`, query `query-client-provider`/`index`. Planner may include a subset opportunistically but they are not a phase-blocking bar. Tracked in Deferred.
+- **D-01a [informational]:** **MEDIUM-priority CONCERNS gaps are NOT required this phase** — router-lit `route-decorator`/`search-params-controller`/`router-provider`, query `query-client-provider`/`index`. Planner may include a subset opportunistically but they are not a phase-blocking bar. Tracked in Deferred.
 
 ### link.ts Bug Fixes (parked from Phase 1)
 - **D-02:** **Fold both `router-lit/link.ts` fixes AND their regression tests into Phase 2.** Bug (1) event-listener leak when a `link()` directive moves between elements (old element's click listener never removed); bug (2) duplicate click listeners accumulating on disconnect→reconnect. Exact patches are in `.planning/codebase/CONCERNS.md` §Known Bugs. Fix + test land together so the regression cannot silently return. This is exactly what Phase 1's `01-CONTEXT.md` §Deferred planned. — **Reversibility:** reversible.
