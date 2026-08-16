@@ -18,12 +18,12 @@
 
 ### Tests & CI (TEST)
 
-- [ ] **TEST-01**: Each package has named critical-path Vitest suites that pass — kit (factories/emit/decorators), router (matcher/guards), query (observer+mutation), forms (field/array+zod), store (slice)
-- [ ] **TEST-02**: jsdom test setup mocks `ResizeObserver`, `IntersectionObserver`, and `matchMedia` so the kit browser controllers CONCERNS.md flags untested are actually exercised
-- [ ] **TEST-03**: `ci.yml` runs install → typecheck → build → test on push/PR to `main` across a Node `[22, 24]` matrix
-- [ ] **TEST-04**: CI runs a `publint` + `@arethetypeswrong/cli` gate on every package's exports/types
-- [ ] **TEST-05**: CI runs `changeset status` so PRs that change packages must carry a changeset
-- [ ] **TEST-06**: Vitest v8 coverage is reported in CI (report only, no threshold gate)
+- [x] **TEST-01**: Each package has named critical-path Vitest suites that pass — kit (factories/emit/decorators), router (matcher/guards), query (observer+mutation), forms (field/array+zod), store (slice)
+- [x] **TEST-02**: jsdom test setup mocks `ResizeObserver`, `IntersectionObserver`, and `matchMedia` so the kit browser controllers CONCERNS.md flags untested are actually exercised
+- [x] **TEST-03**: `ci.yml` runs install → typecheck → build → test on push/PR to `main` across a Node `[22, 24]` matrix
+- [x] **TEST-04**: CI runs a `publint` + `@arethetypeswrong/cli` gate on every package's exports/types
+- [x] **TEST-05**: CI runs `changeset status` so PRs that change packages must carry a changeset
+- [x] **TEST-06**: Vitest v8 coverage is reported in CI (report only, no threshold gate)
 
 ### Docs (DOCS)
 
@@ -87,12 +87,12 @@ Each v1 requirement maps to exactly one phase (see `.planning/ROADMAP.md`).
 | BUILD-04 | Phase 1 — Build & Typecheck Hardening | Complete |
 | BUILD-05 | Phase 1 — Build & Typecheck Hardening | Complete |
 | BUILD-06 | Phase 1 — Build & Typecheck Hardening | Complete |
-| TEST-01 | Phase 2 — Tests & CI | Pending |
-| TEST-02 | Phase 2 — Tests & CI | Pending |
-| TEST-03 | Phase 2 — Tests & CI | Pending |
-| TEST-04 | Phase 2 — Tests & CI | Pending |
-| TEST-05 | Phase 2 — Tests & CI | Pending |
-| TEST-06 | Phase 2 — Tests & CI | Pending |
+| TEST-01 | Phase 2 — Tests & CI | Complete |
+| TEST-02 | Phase 2 — Tests & CI | Complete |
+| TEST-03 | Phase 2 — Tests & CI | Complete |
+| TEST-04 | Phase 2 — Tests & CI | Complete |
+| TEST-05 | Phase 2 — Tests & CI | Complete |
+| TEST-06 | Phase 2 — Tests & CI | Complete |
 | DOCS-01 | Phase 3 — Docs | Pending |
 | DOCS-02 | Phase 3 — Docs | Pending |
 | DOCS-03 | Phase 3 — Docs | Pending |

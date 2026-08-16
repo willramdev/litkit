@@ -66,7 +66,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. CI fails a PR whose exports/types break `publint` or `@arethetypeswrong/cli`, and fails a package-changing PR that carries no changeset (`changeset status`) (TEST-04, TEST-05)
   5. Vitest v8 coverage is reported in the CI run (report only, no threshold gate) (TEST-06)
 
-**Plans**: 4/5 plans executed
+**Plans**: 5/5 plans executed
 
 **Wave 1**
 
@@ -83,7 +83,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Wave 4** *(blocked on Wave 3)*
 
-- [ ] 02-05-PLAN.md — read-only `.github/workflows/ci.yml`: install/typecheck/build/test on Node [22,24] matrix + single-Node gate (publint/attw/changeset status/coverage) (TEST-03/04/05/06)
+- [x] 02-05-PLAN.md — read-only `.github/workflows/ci.yml`: install/typecheck/build/test on Node [22,24] matrix + single-Node gate (publint/attw/changeset status/coverage) (TEST-03/04/05/06)
 
 ### Phase 3: Docs
 
@@ -135,7 +135,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 (Phase 3 may run in p
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Build & Typecheck Hardening | 4/4 | Complete    | 2026-08-11 |
-| 2. Tests & CI | 4/5 | In Progress|  |
+| 2. Tests & CI | 5/5 | In Progress|  |
 | 3. Docs | 0/TBD | Not started | - |
 | 4. Release Automation & Publish | 0/TBD | Not started | - |
 | 5. Consumer Install Verification | 0/TBD | Not started | - |
