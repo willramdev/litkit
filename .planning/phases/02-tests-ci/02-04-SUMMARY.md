@@ -184,6 +184,12 @@ None - no external service configuration required.
 - `.changeset/config.json` is intentionally minimal — Phase 4 (publishing) extends it (adds `fixed`/access-publish wiring); it must not be recreated.
 - Coverage is report-only by design; no threshold gate exists to trip in CI.
 
+## Self-Check: PASSED
+
+- Created files verified present: `.changeset/config.json`, `.changeset/tests-ci-router-link-fix.md`, `.changeset/tests-ci-query-types-resolution.md`, `vitest.config.ts`, `02-04-SUMMARY.md`.
+- Commits verified in git log: `cdbb033` (Task 2), `d40c72c` (Task 3), `9a34c6d` (SUMMARY).
+- STATE.md and ROADMAP.md untouched (parallel-executor constraint honored).
+
 ---
 *Phase: 02-tests-ci*
 *Completed: 2026-08-16*
