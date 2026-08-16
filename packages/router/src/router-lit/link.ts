@@ -60,6 +60,11 @@ class LinkDirective extends AsyncDirective {
 
     // Set up click handler once per element
     if (!this._clickHandler || this._element !== element) {
+      // If the directive moved to a new element, remove the stale listener
+      // from the previous element so it cannot leak or keep navigating.
+      if (this._element && this._element !== element && this._clickHandler) {
+        this._element.removeEventListener("click", this._clickHandler);
+      }
       this._element = element;
       this._clickHandler = (e: MouseEvent) => this.handleClick(e);
       element.addEventListener("click", this._clickHandler);
@@ -106,8 +111,9 @@ class LinkDirective extends AsyncDirective {
   }
 
   override reconnected(): void {
-    // Re-subscribe to router on reconnect
-    if (this._router) {
+    // Re-subscribe to router on reconnect, but only when not already subscribed
+    // so a reconnect without an intervening unsubscribe cannot duplicate it.
+    if (this._router && !this._unsubscribe) {
       this._unsubscribe = this._router.subscribe(() => {
         this.updateActiveClasses();
       });

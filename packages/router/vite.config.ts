@@ -19,6 +19,7 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
+    setupFiles: ["../../test-setup.ts"],
     onConsoleLog(log) {
       if (log.includes("Not implemented")) return false;
     },
