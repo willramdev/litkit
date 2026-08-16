@@ -1,0 +1,33 @@
+name: ci
+
+# Read-only CI gate for litkit. Runs the green baseline (install/typecheck/
+# build/test) on every push and pull request to main. No write scopes, no
+# registry credentials, and no publish step — publish auth is Phase-4 release.yml.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Least privilege: the workflow only needs to read repository contents.
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    name: build-test (node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm run test
