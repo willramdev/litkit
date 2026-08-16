@@ -2,8 +2,8 @@ import { LitElement, css, html } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import type { QueryClient } from '@tanstack/query-core'
 
-import { attachQueryClientProvider } from './query-client-context'
-import { createQueryClient } from './index'
+import { attachQueryClientProvider } from './query-client-context.ts'
+import { createQueryClient } from './index.ts'
 
 /** Custom element that provides a `QueryClient` to descendant components via DOM context. */
 @customElement('lit-query-client-provider')
