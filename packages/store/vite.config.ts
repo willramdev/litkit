@@ -14,4 +14,9 @@ export default defineConfig({
     },
     sourcemap: true,
   },
+  test: {
+    // store runs on the default node environment; the guarded matchMedia stub in
+    // the shared setup keeps node runs safe (no browser DOM env forced here).
+    setupFiles: ['../../test-setup.ts'],
+  },
 })

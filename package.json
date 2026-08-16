@@ -11,6 +11,8 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "typecheck:smoke": "tsc -p tools/typecheck-smoke/tsconfig.node16.json && tsc -p tools/typecheck-smoke/tsconfig.bundler.json",
     "test": "npm run test --workspaces --if-present",
+    "coverage": "vitest run --coverage",
+    "changeset:status": "changeset status",
     "dev:kit": "npm run dev -w @willram/kit",
     "dev:router": "npm run dev -w @willram/router",
     "dev:query": "npm run dev -w @willram/query",
@@ -23,5 +25,11 @@
   "dependencies": {
     "typescript": "^6.0.3",
     "vitest": "^4.1.9"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@changesets/cli": "^3.0.0",
+    "@vitest/coverage-v8": "^4.1.9",
+    "publint": "^0.3.23"
   }
 }

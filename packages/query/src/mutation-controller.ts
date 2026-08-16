@@ -7,7 +7,7 @@ import {
 } from '@tanstack/query-core'
 import type { ReactiveController, ReactiveControllerHost } from 'lit'
 
-import { requestQueryClient } from './query-client-context'
+import { requestQueryClient } from './query-client-context.ts'
 
 type MutationControllerHost = ReactiveControllerHost & EventTarget
 

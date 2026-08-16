@@ -9,17 +9,17 @@ import {
 import type { ReactiveController, ReactiveElement } from 'lit'
 
 export * from '@tanstack/query-core'
-export { MutationController, type MutationControllerConfig } from './mutation-controller'
-export { QueryController, type QueryControllerConfig } from './query-controller'
+export { MutationController, type MutationControllerConfig } from './mutation-controller.ts'
+export { QueryController, type QueryControllerConfig } from './query-controller.ts'
 
-import { QueryController, type QueryControllerConfig } from './query-controller'
-import { MutationController, type MutationControllerConfig } from './mutation-controller'
+import { QueryController, type QueryControllerConfig } from './query-controller.ts'
+import { MutationController, type MutationControllerConfig } from './mutation-controller.ts'
 export {
   LIT_QUERY_CLIENT_REQUEST,
   attachQueryClientProvider,
   requestQueryClient,
-} from './query-client-context'
-export { LitQueryClientProvider } from './query-client-provider'
+} from './query-client-context.ts'
+export { LitQueryClientProvider } from './query-client-provider.ts'
 
 type ControllerFactory<T extends ReactiveController> = (host: ReactiveElement) => T
 
