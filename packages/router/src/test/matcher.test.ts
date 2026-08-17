@@ -45,7 +45,14 @@ describe("matcher factory selection", () => {
   });
 
   it("both concrete factories produce matchers with test/exec", () => {
-    for (const factory of [compiledMatcherFactory, urlPatternMatcherFactory]) {
+    // urlPatternMatcherFactory constructs a native URLPattern, which only exists
+    // where globalThis.URLPattern is present (browsers, Node 24+). On Node 22 the
+    // global is absent and production never selects it, so exercise it only when
+    // the runtime actually supports it — mirroring autoMatcherFactory's guard.
+    const concreteFactories = supportsURLPattern
+      ? [compiledMatcherFactory, urlPatternMatcherFactory]
+      : [compiledMatcherFactory];
+    for (const factory of concreteFactories) {
       const matcher = factory("/users/:id");
       expect(typeof matcher.test).toBe("function");
       expect(typeof matcher.exec).toBe("function");
