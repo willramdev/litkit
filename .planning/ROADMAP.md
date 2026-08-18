@@ -149,7 +149,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A single-instance check passes — the consumer's own `QueryClient`/TanStack state is recognized by litkit's controllers, proving the BUILD-04 peerDependencies fix (VER-03)
   4. Tarball imports resolve from each package's public entry and subpaths (`/core`, `/lit`, `/zod`), proving the BUILD-06 `.d.ts`/exports work (VER-04)
 
-**Plans**: 1/2 plans executed
+**Plans**: 2/2 plans executed
 
 **Wave 1** *(tracer + blocking human PAT checkpoint)*
 
@@ -157,7 +157,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Wave 2** *(blocked on Wave 1 — extends the same harness)*
 
-- [ ] 05-02-PLAN.md — VER-02 production `vite build` + jsdom `customElements.get(tag)` tree-shaking-survival assert, VER-03 `@tanstack/query-core` single-instance (class identity + shared cache), and an optional `workflow_dispatch` CI job using the built-in `GITHUB_TOKEN` (VER-02, VER-03)
+- [x] 05-02-PLAN.md — VER-02 production `vite build` + jsdom `customElements.get(tag)` tree-shaking-survival assert, VER-03 `@tanstack/query-core` single-instance (class identity + shared cache), and an optional `workflow_dispatch` CI job using the built-in `GITHUB_TOKEN` (VER-02, VER-03)
 
 ## Progress
 
@@ -170,4 +170,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 (Phase 3 may run in p
 | 2. Tests & CI | 5/5 | In Progress|  |
 | 3. Docs | 5/5 | Complete    | 2026-08-17 |
 | 4. Release Automation & Publish | 4/4 | Complete    | 2026-08-18 |
-| 5. Consumer Install Verification | 1/2 | In Progress|  |
+| 5. Consumer Install Verification | 2/2 | In Progress|  |

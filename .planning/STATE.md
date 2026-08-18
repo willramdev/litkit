@@ -4,16 +4,16 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 05
 current_phase_name: consumer-install-verification
-status: executing
-stopped_at: Completed 05-01-PLAN.md
-last_updated: "2026-08-18T23:34:55.016Z"
+status: verifying
+stopped_at: Completed 05-02-PLAN.md
+last_updated: "2026-08-18T23:51:30.156Z"
 last_activity: 2026-08-18
 last_activity_desc: Phase 04 marked complete
 progress:
   total_phases: 5
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 20
-  completed_plans: 19
+  completed_plans: 20
 ---
 
 # Project State
@@ -29,10 +29,10 @@ See: .planning/PROJECT.md (updated 2026-08-10)
 
 Phase: 05 (consumer-install-verification) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-08-18 — Phase 05 execution started
 
-Progress: [██████████] 95%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -71,6 +71,7 @@ Progress: [██████████] 95%
 | Phase 04 P02 | 2 | 2 tasks | 6 files |
 | Phase 04 P03 | 2 | 2 tasks | 2 files |
 | Phase 05 P01 | 1 | 3 tasks | 8 files |
+| Phase 05 P02 | 1 session | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -96,6 +97,9 @@ Recent decisions affecting current work:
 - [Phase ?]: 04-03: .changeset/config.json extended in place with fixed lockstep group over all five @willramdev/* packages (bump+publish together); access:restricted/baseBranch:main preserved. Three pending changesets deleted for a clean 1.0.0 baseline (RLS-04, D-04).
 - [Phase ?]: 04-03: release.yml is the auth-bearing sibling of read-only ci.yml — SHA-pinned changesets/action@198f833 (v2.1.0) with v2 kebab inputs, least-privilege {contents,pull-requests,packages}:write, GITHUB_TOKEN-only, no PAT, no provenance (RLS-05).
 - [Phase ?]: 05-01: consumer-install harness resolves published @willramdev/* via an ESM child probe (import.meta.resolve + await import()) not createRequire().resolve() — packages export only the import condition; VER-01/VER-04 green against the live registry from an os.tmpdir() consumer.
+- [Phase ?]: 05-02: VER-02 PASS/FAIL decided solely by jsdom runtime customElements.get(tag); static define-count demoted to informational (minification undercounts .define( forms, 3 vs 5). jsdom probe needs full window globals exposed in a child process from consumerDir.
+- [Phase ?]: 05-02: VER-03 single-instance proven by QueryClient Direct === ViaKit + shared-cache read-back through litkit QueryObserver; npm ls shows single deduped @tanstack/query-core 5.101.4. Uses export * from '@tanstack/query-core' at packages/query/src/index.ts:11.
+- [Phase ?]: 05-02: verify-consumer.yml is workflow_dispatch-only, least-privilege {contents,packages}:read, uses built-in secrets.GITHUB_TOKEN (no PAT); ci.yml untouched to preserve Phase 4 read-only/publish-token split.
 
 ### Pending Todos
 
@@ -116,6 +120,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-18T23:34:47.094Z
-Stopped at: Completed 05-01-PLAN.md
+Last session: 2026-08-18T23:51:18.145Z
+Stopped at: Completed 05-02-PLAN.md
 Resume file: None
