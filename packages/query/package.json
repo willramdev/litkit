@@ -21,7 +21,10 @@
     "dist/query.js"
   ],
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "main": "./dist/query.js",
   "module": "./dist/query.js",
@@ -37,7 +40,8 @@
     "build": "vite build && tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prepublishOnly": "npm run typecheck && npm run build"
   },
   "peerDependencies": {
     "@tanstack/query-core": "^5.0.0",
@@ -49,5 +53,8 @@
     "typescript": "^6.0.3",
     "vite": "^8.0.1",
     "vitest": "^4.1.9"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   }
 }

@@ -34,14 +34,18 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "dev": "vite demo",
     "build": "vite build && tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prepublishOnly": "npm run typecheck && npm run build"
   },
   "peerDependencies": {
     "@tanstack/form-core": "^1.0.0",
@@ -60,5 +64,8 @@
     "vite": "^8.0.1",
     "vitest": "^4.1.9",
     "zod": "^4.3.6"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   }
 }
