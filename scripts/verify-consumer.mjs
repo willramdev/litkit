@@ -17,6 +17,7 @@
 // Usage:
 //   node scripts/verify-consumer.mjs --dry-run        # offline scaffold + token-safety check, NO network, NO token
 //   node scripts/verify-consumer.mjs --check install  # VER-01: real install from GitHub Packages (needs GITHUB_TOKEN)
+//   node scripts/verify-consumer.mjs --check resolve  # VER-04: 8 subpaths resolve for tsc (node16+bundler) + runtime (needs warm install)
 //   node scripts/verify-consumer.mjs                  # full runner (all wired checks)
 
 import { spawnSync } from 'node:child_process';
@@ -40,9 +41,9 @@ const NPMRC_CONTENTS =
   '@willramdev:registry=https://npm.pkg.github.com\n' +
   '//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}\n';
 
-// Ordered list of checks the no-flag full runner executes. Task 3 (plan 05-01)
-// and plan 05-02 append 'resolve', 'treeshake', 'single-instance'.
-const CHECK_ORDER = ['install'];
+// Ordered list of checks the no-flag full runner executes. Plan 05-02 appends
+// 'treeshake', 'single-instance'.
+const CHECK_ORDER = ['install', 'resolve'];
 
 function log(msg) {
   process.stdout.write(`${msg}\n`);
@@ -190,6 +191,71 @@ async function checkInstall() {
   log('VER-01 PASS');
 }
 
+// VER-04: prove all eight published entries/subpaths resolve for tsc under BOTH
+// node16 and bundler module resolution AND import at runtime, from the installed
+// tarball (not the workspace). Reads the warm consumer left by `--check install`.
+function checkResolve() {
+  const consumerNodeModules = path.join(consumerDir, 'node_modules');
+  if (!fs.existsSync(consumerNodeModules)) {
+    fail(
+      `VER-04 FAIL: no installed consumer at ${consumerNodeModules}. ` +
+        `Run \`node scripts/verify-consumer.mjs --check install\` first (needs GITHUB_TOKEN).`,
+    );
+  }
+
+  // Copy the two type fixtures + both tsconfigs into the consumer root, and the
+  // runtime smoke into consumer/src, so tsc + node resolve @willramdev/* from
+  // the installed node_modules via each package's exports map.
+  const rootFixtures = [
+    'consumer-router.ts',
+    'consumer-rest.ts',
+    'tsconfig.node16.json',
+    'tsconfig.bundler.json',
+  ];
+  for (const name of rootFixtures) {
+    fs.copyFileSync(path.join(fixturesDir, name), path.join(consumerDir, name));
+  }
+  fs.mkdirSync(path.join(consumerDir, 'src'), { recursive: true });
+  fs.copyFileSync(
+    path.join(fixturesDir, 'src', 'subpath-smoke.mjs'),
+    path.join(consumerDir, 'src', 'subpath-smoke.mjs'),
+  );
+
+  // Type layer: run the consumer's LOCAL typescript via its JS entry so there is
+  // no .cmd/.bin platform branching (cross-platform; the dev box is win32).
+  const tscEntry = path.join(consumerNodeModules, 'typescript', 'bin', 'tsc');
+  if (!fs.existsSync(tscEntry)) {
+    fail(`VER-04 FAIL: consumer typescript not installed at ${tscEntry}.`);
+  }
+  for (const tsconfig of ['tsconfig.node16.json', 'tsconfig.bundler.json']) {
+    const tsc = spawnSync(process.execPath, [tscEntry, '--noEmit', '-p', tsconfig], {
+      cwd: consumerDir,
+      env: process.env,
+      encoding: 'utf8',
+    });
+    if (tsc.status !== 0) {
+      fail(
+        `VER-04 FAIL: tsc --noEmit -p ${tsconfig} exited ${tsc.status} — a subpath did not ` +
+          `resolve from the installed tarball.\n${tsc.stdout || ''}${tsc.stderr || ''}`,
+      );
+    }
+    log(`tsc -p ${tsconfig}: OK`);
+  }
+
+  // Runtime layer: import all eight targets from the consumer.
+  const smoke = spawnSync(process.execPath, [path.join('src', 'subpath-smoke.mjs')], {
+    cwd: consumerDir,
+    env: process.env,
+    encoding: 'utf8',
+  });
+  if (smoke.stdout) process.stdout.write(smoke.stdout);
+  if (smoke.status !== 0) {
+    fail(`VER-04 FAIL: runtime subpath-smoke exited ${smoke.status}.\n${smoke.stderr || '(no stderr)'}`);
+  }
+
+  log('VER-04 PASS');
+}
+
 // --dry-run: scaffold + token-safety validation ONLY. No network, no token.
 function dryRun() {
   scaffoldConsumer();
@@ -201,6 +267,7 @@ function dryRun() {
 
 const CHECKS = {
   install: checkInstall,
+  resolve: checkResolve,
 };
 
 function parseArgs(argv) {
