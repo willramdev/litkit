@@ -21,13 +21,13 @@ All five packages install cleanly from GitHub Packages and work as documented �
 - ✓ `@willram/store` — closure-based reactive `Store<T>` with `StoreSliceController` for slice subscriptions — existing
 - ✓ Monorepo tooling — npm workspaces, shared `tsconfig.base.json` (`erasableSyntaxOnly`, strict, ES2023), per-package Vite library builds externalizing `lit`/`@tanstack/*`, Vitest + jsdom test setup — existing
 - ✓ All five packages typecheck and build green, correctly configured (sideEffects tree-shaking, TanStack required-peers, ESM module-format policy, `.d.ts` resolvable under node16 + bundler, forms externalizes all `lit/*`, router registers each element once) — Validated in Phase 1: Build & Typecheck Hardening
+- ✓ Critical-path test coverage per package; CI runs the full test suite on every push — Validated in Phase 2: Tests & CI
+- ✓ README + API documentation per package with runnable, compile-verified examples; root monorepo map + cross-package integration example; GitHub Packages consumer-auth doc; MIT LICENSE in every package — Validated in Phase 3: Docs
 
 ### Active
 
 <!-- v1 harden + ship. Hypotheses until shipped. -->
-- [ ] Critical-path test coverage per package; CI runs the full test suite on every push
-- [ ] README + API documentation per package, with usage examples that actually run
-- [ ] CI pipeline plus release automation (changesets-style versioning + publish)
+- [ ] Release automation (changesets-style versioning + publish)
 - [ ] Publish `@willram/*` v1.0 to GitHub Packages under a new `willram` org (names unchanged)
 
 ### Out of Scope
@@ -40,7 +40,7 @@ All five packages install cleanly from GitHub Packages and work as documented �
 
 ## Context
 
-- **Current state:** Phase 1 complete — all five packages typecheck and build green with the correctness-config traps fixed (7/7 must-haves verified). Architecture mapped in `.planning/codebase/`. Next: Phase 2 (Tests & CI) encodes this baseline as an enforced gate.
+- **Current state:** Phase 3 (Docs) complete — every package README carries a runnable, compile-verified Quickstart (gated by `npm run doc-check`), the root README maps the monorepo + shows a cross-package integration example, GitHub Packages consumer-auth is documented, and all six packages carry MIT LICENSE (18/18 must-haves verified). Phases 1 (green build) and 2 (tests + enforced CI gate) already complete. Architecture mapped in `.planning/codebase/`. Next: Phase 4 (Release Automation & Publish) stands up the Changesets pipeline and ships v1.0 to GitHub Packages under the `willram` org.
 - **Dependency graph is acyclic:** `kit` depends on nothing internal; router/query/forms/store depend only on `kit` (and their TanStack cores). This must hold — it protects tree-shaking and CI type-checking.
 - **Publishing friction:** GitHub Packages requires the npm scope to equal the GitHub owner. The `willram` org must exist before publish; `@willram/*` names then resolve against it.
 - **No runtime env/config:** libraries need no env vars; the only external services are npm/GitHub Packages (publish) and CI.
@@ -81,4 +81,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-11 after Phase 1 completion*
+*Last updated: 2026-08-17 after Phase 3 completion*
