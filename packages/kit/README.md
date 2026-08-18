@@ -2,13 +2,17 @@
 
 Ergonomic base class, helpers, and controllers for building Lit web components.
 
-## Installation
+## Install
 
 ```bash
 npm install @willram/kit lit
 ```
 
-## Quick Start
+`lit` is a required peer dependency.
+
+## Quickstart
+
+> **TypeScript config:** the kit decorators (`@bind`, `@watch`, `@debounce`, `@throttle`) require `experimentalDecorators: true` and `useDefineForClassFields: false` in your `tsconfig.json` — the same settings this repo compiles under. Without them, decorated methods will not type-check or bind correctly.
 
 <!-- doc-check -->
 ```ts
@@ -46,7 +50,7 @@ class MyCounter extends KitElement {
 define('my-counter', MyCounter);
 ```
 
-## API Reference
+## Core API
 
 ### KitElement
 
@@ -249,3 +253,7 @@ theme = persistedState(this, 'theme', { default: 'system' });
 ## License
 
 MIT
+
+---
+
+> See the [root README](../../README.md) for the monorepo map and the cross-package integration example.
