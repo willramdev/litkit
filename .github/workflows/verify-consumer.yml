@@ -1,0 +1,35 @@
+# Optional, opt-in reproducible-proof job for the consumer-install verification
+# harness (scripts/verify-consumer.mjs). Manually triggered ONLY
+# (workflow_dispatch) — deliberately kept OUT of the always-on ci.yml push gate
+# so Phase 4's read-only / publish-token split stays intact. Promoting this to
+# an always-on ci.yml gate is a DEFERRED team decision.
+#
+# Auth: uses the built-in Actions GITHUB_TOKEN — the repo's own workflow token
+# can read the same repo's GitHub Packages, so NO PAT is stored. The token is
+# never echoed; rely on Actions secret masking. A LOCAL run instead exports a
+# maintainer classic `read:packages` PAT as GITHUB_TOKEN.
+name: verify-consumer
+
+on:
+  workflow_dispatch:
+
+# Least privilege: read repository contents + read GitHub Packages, nothing more.
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  verify-consumer:
+    name: verify-consumer (all four VER checks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Run consumer-install verification harness
+        run: node scripts/verify-consumer.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
