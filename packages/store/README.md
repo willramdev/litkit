@@ -2,18 +2,26 @@
 
 Lightweight reactive store for shared state in Lit applications.
 
-## Installation
+## Install
 
 ```bash
 npm install @willram/store lit
 ```
 
-## Quick Start
+`lit` is a required peer dependency.
 
+## Quickstart
+
+<!-- doc-check -->
 ```ts
 import { createStore, storeSlice } from '@willram/store';
 import { KitElement } from '@willram/kit';
 import { html } from 'lit';
+
+interface User {
+  id: number;
+  name: string;
+}
 
 // Create a store (framework-agnostic)
 const appStore = createStore({
@@ -33,6 +41,7 @@ class UserNav extends KitElement {
 }
 
 // Mutate from anywhere
+const fetchedUser: User = { id: 1, name: 'Ada' };
 appStore.set({ ...appStore.get(), user: fetchedUser });
 appStore.update(s => ({ ...s, theme: 'dark' }));
 ```
@@ -243,3 +252,7 @@ store.update(s => ({ count: s.count + 1 })); // logs: 1
 ## License
 
 MIT
+
+---
+
+> See the [root README](../../README.md) for the monorepo map and the cross-package integration example.
