@@ -44,10 +44,10 @@
 
 ### Consumer Verification (VER)
 
-- [ ] **VER-01**: A clean-machine install of all five packages from GitHub Packages using a `read:packages` PAT succeeds
+- [x] **VER-01**: A clean-machine install of all five packages from GitHub Packages using a `read:packages` PAT succeeds
 - [ ] **VER-02**: A consumer `vite build` asserts `customElements.get(tag)` survives tree-shaking (proves BUILD-03)
 - [ ] **VER-03**: A single-instance check passes — the consumer's own `QueryClient`/TanStack state is recognized by litkit's controllers (proves BUILD-04)
-- [ ] **VER-04**: Tarball imports resolve from each package's public entry and subpaths (`/core`, `/lit`, `/zod`)
+- [x] **VER-04**: Tarball imports resolve from each package's public entry and subpaths (`/core`, `/lit`, `/zod`)
 
 ## v2 Requirements
 
@@ -104,10 +104,10 @@ Each v1 requirement maps to exactly one phase (see `.planning/ROADMAP.md`).
 | RLS-05 | Phase 4 — Release Automation & Publish | Complete |
 | RLS-06 | Phase 4 — Release Automation & Publish | Complete |
 | RLS-07 | Phase 4 — Release Automation & Publish | Pending |
-| VER-01 | Phase 5 — Consumer Install Verification | Pending |
+| VER-01 | Phase 5 — Consumer Install Verification | Complete |
 | VER-02 | Phase 5 — Consumer Install Verification | Pending |
 | VER-03 | Phase 5 — Consumer Install Verification | Pending |
-| VER-04 | Phase 5 — Consumer Install Verification | Pending |
+| VER-04 | Phase 5 — Consumer Install Verification | Complete |
 
 **Coverage:**
 

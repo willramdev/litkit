@@ -149,11 +149,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A single-instance check passes — the consumer's own `QueryClient`/TanStack state is recognized by litkit's controllers, proving the BUILD-04 peerDependencies fix (VER-03)
   4. Tarball imports resolve from each package's public entry and subpaths (`/core`, `/lit`, `/zod`), proving the BUILD-06 `.d.ts`/exports work (VER-04)
 
-**Plans**: 2 plans
+**Plans**: 1/2 plans executed
 
 **Wave 1** *(tracer + blocking human PAT checkpoint)*
 
-- [ ] 05-01-PLAN.md — TRACER: committed `scripts/verify-consumer.mjs` scaffolds an out-of-tree `os.tmpdir()` consumer, installs the five `@willramdev/*@1.0.0` from GitHub Packages (blocking `read:packages` PAT checkpoint), then proves VER-04 subpath/`.d.ts` resolution (tsc node16+bundler + runtime import) for all 8 targets (VER-01, VER-04)
+- [x] 05-01-PLAN.md — TRACER: committed `scripts/verify-consumer.mjs` scaffolds an out-of-tree `os.tmpdir()` consumer, installs the five `@willramdev/*@1.0.0` from GitHub Packages (blocking `read:packages` PAT checkpoint), then proves VER-04 subpath/`.d.ts` resolution (tsc node16+bundler + runtime import) for all 8 targets (VER-01, VER-04)
 
 **Wave 2** *(blocked on Wave 1 — extends the same harness)*
 
@@ -170,4 +170,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 (Phase 3 may run in p
 | 2. Tests & CI | 5/5 | In Progress|  |
 | 3. Docs | 5/5 | Complete    | 2026-08-17 |
 | 4. Release Automation & Publish | 4/4 | Complete    | 2026-08-18 |
-| 5. Consumer Install Verification | 0/2 | Not started | - |
+| 5. Consumer Install Verification | 1/2 | In Progress|  |

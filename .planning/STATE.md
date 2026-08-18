@@ -2,18 +2,18 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 04
+current_phase: 05
+current_phase_name: consumer-install-verification
 status: executing
-stopped_at: Completed 04-03-PLAN.md
-last_updated: "2026-08-18T22:13:39.387Z"
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-08-18T23:34:55.016Z"
 last_activity: 2026-08-18
 last_activity_desc: Phase 04 marked complete
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 20
-  completed_plans: 18
-current_phase_name: release-automation-publish
+  completed_plans: 19
 ---
 
 # Project State
@@ -23,16 +23,16 @@ current_phase_name: release-automation-publish
 See: .planning/PROJECT.md (updated 2026-08-10)
 
 **Core value:** All five packages install cleanly from GitHub Packages and work as documented — a consumer can `npm install @willram/*` and build a Lit app against a green, typed, tested, documented API.
-**Current focus:** Phase 04 — release-automation-publish
+**Current focus:** Phase 05 — consumer-install-verification
 
 ## Current Position
 
-Phase: 04 — COMPLETE
-Plan: 3 of 4
+Phase: 05 (consumer-install-verification) — EXECUTING
+Plan: 2 of 2
 Status: Ready to execute
-Last activity: 2026-08-18 — Phase 04 marked complete
+Last activity: 2026-08-18 — Phase 05 execution started
 
-Progress: [█████████░] 94%
+Progress: [██████████] 95%
 
 ## Performance Metrics
 
@@ -70,6 +70,7 @@ Progress: [█████████░] 94%
 | Phase 03 P05 | 4 | 2 tasks | 8 files |
 | Phase 04 P02 | 2 | 2 tasks | 6 files |
 | Phase 04 P03 | 2 | 2 tasks | 2 files |
+| Phase 05 P01 | 1 | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -94,6 +95,7 @@ Recent decisions affecting current work:
 - [Phase ?]: 04-02: five @willramdev/* packages gain publishConfig(registry=GitHub Packages) + files allowlist [dist,README,LICENSE,CHANGELOG] + prepublishOnly guard; committed auth-free root .npmrc routes only the scope (no global registry, no token)
 - [Phase ?]: 04-03: .changeset/config.json extended in place with fixed lockstep group over all five @willramdev/* packages (bump+publish together); access:restricted/baseBranch:main preserved. Three pending changesets deleted for a clean 1.0.0 baseline (RLS-04, D-04).
 - [Phase ?]: 04-03: release.yml is the auth-bearing sibling of read-only ci.yml — SHA-pinned changesets/action@198f833 (v2.1.0) with v2 kebab inputs, least-privilege {contents,pull-requests,packages}:write, GITHUB_TOKEN-only, no PAT, no provenance (RLS-05).
+- [Phase ?]: 05-01: consumer-install harness resolves published @willramdev/* via an ESM child probe (import.meta.resolve + await import()) not createRequire().resolve() — packages export only the import condition; VER-01/VER-04 green against the live registry from an os.tmpdir() consumer.
 
 ### Pending Todos
 
@@ -114,6 +116,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-18T04:35:24.074Z
-Stopped at: Completed 04-03-PLAN.md
+Last session: 2026-08-18T23:34:47.094Z
+Stopped at: Completed 05-01-PLAN.md
 Resume file: None
