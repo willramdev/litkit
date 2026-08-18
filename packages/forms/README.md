@@ -2,19 +2,74 @@
 
 Type-safe form management for Lit with validation, two-way binding, and array fields.
 
-## Installation
+## Install
 
 ```bash
 npm install @willram/forms @tanstack/form-core lit
 ```
 
-Optional Zod integration:
+`@tanstack/form-core` and `lit` are required peer dependencies. For the optional
+`@willram/forms/zod` subpath, also install `zod`:
 
 ```bash
 npm install zod
 ```
 
-## Quick Start
+## Quickstart
+
+### KitElement
+
+Register the ergonomic form controller with `this.use(form(...))`, then wrap your
+native `<form>` in `<lit-form>` so descendant `bind('field')` / `field('field', ...)`
+helpers resolve the form from context — no need to thread the instance through each
+call:
+
+<!-- doc-check -->
+```ts
+import { KitElement, define } from '@willram/kit';
+import { html } from 'lit';
+import { form, bind, field, required, email } from '@willram/forms';
+
+class LoginForm extends KitElement {
+  form = this.use(
+    form({
+      initialValues: { email: '', password: '' },
+      validators: {
+        email: [required(), email()],
+        password: [required()],
+      },
+      onSubmit: async ({ value }) => {
+        // Replace with your real submit — here we just log the values.
+        console.log('submit', value.email, value.password);
+      },
+    }),
+  );
+
+  render() {
+    return html`
+      <lit-form .form=${this.form}>
+        <form>
+          <input ${bind('email')} placeholder="Email" />
+          ${field('email', (f) =>
+            f.error ? html`<span class="error">${f.error}</span>` : '',
+          )}
+
+          <input type="password" ${bind('password')} placeholder="Password" />
+
+          <button type="submit" ?disabled=${this.form.submitting}>
+            ${this.form.submitting ? 'Submitting…' : 'Login'}
+          </button>
+        </form>
+      </lit-form>
+    `;
+  }
+}
+
+define('login-form', LoginForm);
+```
+
+You can also pass the form instance directly — `bind(this.form, 'email')` and
+`field(this.form, 'email', ...)` — as shown in the LitElement example below.
 
 ### LitElement
 
@@ -53,29 +108,6 @@ class LoginForm extends LitElement {
   }
 }
 ```
-
-### KitElement
-
-```ts
-import { KitElement, html } from '@willram/kit';
-import { form, bind, field, required, email } from '@willram/forms';
-
-class LoginForm extends KitElement {
-  form = this.use(form({
-    initialValues: { email: '', password: '' },
-    validators: {
-      email: [required(), email()],
-      password: [required()],
-    },
-    onSubmit: async ({ value }) => {
-      await login(value.email, value.password);
-    },
-  }));
-
-  // render() is the same as above
-}
-```
-
 
 ### Provider Element (`lit-form`)
 
@@ -116,7 +148,7 @@ class LoginForm extends LitElement {
 
 `lit-form` provides context and wires submit/reset for the descendant native `<form>`, but it does not replace the real form element. Keep using a real `<form>` inside it so native form semantics still work.
 
-## API Reference
+## Core API
 
 ### FormController
 
@@ -301,8 +333,14 @@ validators: {
 
 ### Zod Integration
 
+Import from the `@willram/forms/zod` subpath and derive per-field validators from a
+Zod schema. This block is compiled by the doc-check against the published subpath:
+
+<!-- doc-check -->
 ```ts
-import { zodValidator, zodFieldValidator, zodFormValidator } from '@willram/forms/zod';
+import { LitElement } from 'lit';
+import { FormController } from '@willram/forms';
+import { zodValidator } from '@willram/forms/zod';
 import { z } from 'zod';
 
 const schema = z.object({
@@ -310,16 +348,23 @@ const schema = z.object({
   password: z.string().min(8),
 });
 
-const myForm = new FormController(this, {
-  initialValues: { email: '', password: '' },
-  validators: zodValidator(schema),
-  // Or form-level:
-  formValidators: [zodFormValidator(schema)],
-});
+class SignupForm extends LitElement {
+  form = new FormController(this, {
+    initialValues: { email: '', password: '' },
+    validators: zodValidator(schema),
+  });
+}
+
+customElements.define('signup-form', SignupForm);
 ```
+
+`zodFieldValidator` and `zodFormValidator` are also available on the same subpath for
+single-field and form-level validation.
 
 ## License
 
 MIT
 
+---
 
+> See the [root README](../../README.md) for the monorepo map and the cross-package integration example.
