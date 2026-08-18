@@ -19,7 +19,8 @@
 //   node scripts/verify-consumer.mjs --check install  # VER-01: real install from GitHub Packages (needs GITHUB_TOKEN)
 //   node scripts/verify-consumer.mjs --check resolve  # VER-04: 8 subpaths resolve for tsc (node16+bundler) + runtime (needs warm install)
 //   node scripts/verify-consumer.mjs --check treeshake       # VER-02: production vite build + jsdom element-registration proof (needs warm install)
-//   node scripts/verify-consumer.mjs                  # full runner: install -> resolve -> treeshake
+//   node scripts/verify-consumer.mjs --check single-instance # VER-03: @tanstack/query-core class-identity + shared-cache dedupe proof (needs warm install)
+//   node scripts/verify-consumer.mjs                  # full runner: install -> resolve -> treeshake -> single-instance
 
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -43,9 +44,8 @@ const NPMRC_CONTENTS =
   '//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}\n';
 
 // Ordered list of checks the no-flag full runner executes:
-// install (VER-01) -> resolve (VER-04) -> treeshake (VER-02). Plan 05-02 Task 2
-// appends 'single-instance' (VER-03).
-const CHECK_ORDER = ['install', 'resolve', 'treeshake'];
+// install (VER-01) -> resolve (VER-04) -> treeshake (VER-02) -> single-instance (VER-03).
+const CHECK_ORDER = ['install', 'resolve', 'treeshake', 'single-instance'];
 
 function log(msg) {
   process.stdout.write(`${msg}\n`);
@@ -368,6 +368,62 @@ async function checkTreeshake() {
   log('VER-02 PASS');
 }
 
+// VER-03: prove the consumer's `@tanstack/query-core` is the exact single
+// deduped instance litkit uses (class identity + shared cache — BUILD-04 peer
+// dedupe). Runs the single-instance fixture from the consumer dir, plus
+// `npm ls @tanstack/query-core` as SUPPORTING evidence (a duplicate-version
+// tree is surfaced as a WARNING; only Proof 1/2 failure is a hard fail). Reads
+// the warm consumer left by `--check install`.
+function checkSingleInstance() {
+  const consumerNodeModules = path.join(consumerDir, 'node_modules');
+  if (!fs.existsSync(consumerNodeModules)) {
+    fail(
+      `VER-03 FAIL: no installed consumer at ${consumerNodeModules}. ` +
+        `Run \`node scripts/verify-consumer.mjs --check install\` first (needs GITHUB_TOKEN).`,
+    );
+  }
+
+  fs.mkdirSync(path.join(consumerDir, 'src'), { recursive: true });
+  fs.copyFileSync(
+    path.join(fixturesDir, 'src', 'single-instance.mjs'),
+    path.join(consumerDir, 'src', 'single-instance.mjs'),
+  );
+
+  const proof = spawnSync(process.execPath, [path.join('src', 'single-instance.mjs')], {
+    cwd: consumerDir,
+    env: process.env,
+    encoding: 'utf8',
+  });
+  if (proof.stdout) process.stdout.write(proof.stdout);
+  if (proof.status !== 0) {
+    fail(`VER-03 FAIL: single-instance proof exited ${proof.status}.\n${proof.stderr || '(no stderr)'}`);
+  }
+
+  // Supporting evidence: `npm ls @tanstack/query-core` — a single resolved
+  // version is expected. shell:true lets Windows resolve npm.cmd (same as the
+  // install path). A duplicate/multi-version tree is a WARNING, not a hard fail
+  // (Proof 1/2 above are the gate).
+  const ls = spawnSync('npm', ['ls', '@tanstack/query-core'], {
+    cwd: consumerDir,
+    env: process.env,
+    encoding: 'utf8',
+    shell: true,
+  });
+  const lsOut = `${ls.stdout || ''}${ls.stderr || ''}`.trim();
+  log('npm ls @tanstack/query-core (supporting evidence):');
+  if (lsOut) log(lsOut);
+  const versionMatches = lsOut.match(/@tanstack\/query-core@[0-9][^\s]*/g) || [];
+  const uniqueVersions = new Set(versionMatches.map((m) => m.slice('@tanstack/query-core@'.length)));
+  if (uniqueVersions.size > 1) {
+    log(
+      `WARNING: npm ls reports ${uniqueVersions.size} @tanstack/query-core versions ` +
+        `(${[...uniqueVersions].join(', ')}) — possible duplication (Proof 1/2 still gate PASS/FAIL).`,
+    );
+  }
+
+  log('VER-03 PASS');
+}
+
 // --dry-run: scaffold + token-safety validation ONLY. No network, no token.
 function dryRun() {
   scaffoldConsumer();
@@ -381,6 +437,7 @@ const CHECKS = {
   install: checkInstall,
   resolve: checkResolve,
   treeshake: checkTreeshake,
+  'single-instance': checkSingleInstance,
 };
 
 function parseArgs(argv) {
