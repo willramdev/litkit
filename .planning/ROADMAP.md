@@ -97,7 +97,18 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A "consuming from GitHub Packages" doc plus an `.npmrc` template exist, covering the consumer `read:packages` PAT (DOCS-03)
   4. Every package ships a `LICENSE` file inside its published tarball (DOCS-04)
 
-**Plans**: TBD
+**Plans**: 5 plans
+
+**Wave 1** *(tracer — alone)*
+
+- [ ] 03-01-PLAN.md — TRACER: standalone doc-check harness (zero-dep extractor + node16/bundler tsconfigs + `doc-check` npm script) proving @willram/kit's README quickstart compiles end-to-end against dist types; kit README normalized to the shared template (DOCS-01)
+
+**Wave 2** *(blocked on Wave 1)*
+
+- [ ] 03-02-PLAN.md — query + forms READMEs normalized to the template, `html`-from-kit import drift fixed, marked self-contained quickstarts + forms `./zod` subpath block (DOCS-01)
+- [ ] 03-03-PLAN.md — router + store READMEs normalized, marked self-contained quickstarts + router `./core`/`./lit` subpath block (DOCS-01)
+- [ ] 03-04-PLAN.md — root README (monorepo map + compilable cross-package integration snippet + Consuming-from-GitHub-Packages section) + consumer `.npmrc.example` (DOCS-02, DOCS-03)
+- [ ] 03-05-PLAN.md — MIT LICENSE at root + all 5 packages, root `package.json` license field, one covering changeset (DOCS-04)
 
 ### Phase 4: Release Automation & Publish
 
@@ -136,6 +147,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 (Phase 3 may run in p
 |-------|----------------|--------|-----------|
 | 1. Build & Typecheck Hardening | 4/4 | Complete    | 2026-08-11 |
 | 2. Tests & CI | 5/5 | In Progress|  |
-| 3. Docs | 0/TBD | Not started | - |
+| 3. Docs | 0/5 | Planned | - |
 | 4. Release Automation & Publish | 0/TBD | Not started | - |
 | 5. Consumer Install Verification | 0/TBD | Not started | - |
