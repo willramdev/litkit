@@ -10,8 +10,9 @@ npm install @willram/kit lit
 
 ## Quick Start
 
+<!-- doc-check -->
 ```ts
-import { KitElement, prop, define, computed, watch, bind, debounce, throttle } from '@willram/kit';
+import { KitElement, define, computed, watch, bind } from '@willram/kit';
 import { html } from 'lit';
 
 class MyCounter extends KitElement {

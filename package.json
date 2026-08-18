@@ -10,6 +10,8 @@
     "build": "npm run build --workspaces",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "typecheck:smoke": "tsc -p tools/typecheck-smoke/tsconfig.node16.json && tsc -p tools/typecheck-smoke/tsconfig.bundler.json",
+    "doc-check": "npm run build && node tools/doc-check/extract-snippets.mjs && tsc -p tools/doc-check/tsconfig.node16.json && tsc -p tools/doc-check/tsconfig.bundler.json",
+    "doc-check:snippets": "node tools/doc-check/extract-snippets.mjs && tsc -p tools/doc-check/tsconfig.node16.json && tsc -p tools/doc-check/tsconfig.bundler.json",
     "test": "npm run test --workspaces --if-present",
     "coverage": "vitest run --coverage",
     "changeset:status": "changeset status",

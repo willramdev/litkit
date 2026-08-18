@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "nodenext",
+    "moduleResolution": "node16",
+    "target": "ES2023",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "skipLibCheck": true,
+    "types": [],
+    "noEmit": true,
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false
+  },
+  "include": [".snippets/*.ts"]
+}
