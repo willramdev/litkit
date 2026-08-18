@@ -1,0 +1,37 @@
+name: release
+
+# Auth-bearing release workflow for litkit — the write-scoped sibling of the
+# read-only ci.yml. On push to main it runs the Changesets action, which either
+# opens/updates the "Version Packages" PR or, once that PR merges, publishes the
+# five @willramdev/* tarballs to GitHub Packages. Auth is the built-in
+# GITHUB_TOKEN only (no PAT); setup-node writes the runtime .npmrc.
+on:
+  push:
+    branches: [main]
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+# Least privilege: exactly the three write scopes the release needs, nothing more.
+permissions:
+  contents: write        # push the version commit + git tags
+  pull-requests: write   # open/update the "Version Packages" PR
+  packages: write        # publish the @willramdev/* tarballs
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          registry-url: https://npm.pkg.github.com   # writes runtime auth .npmrc
+          scope: '@willramdev'
+      - run: npm ci
+      - uses: changesets/action@198f833dd7d863100ea6e28967bc9a9fdefadb0a  # v2.1.0
+        with:
+          publish-script: npx changeset publish       # v2 renamed publish -> publish-script
+          github-token: ${{ secrets.GITHUB_TOKEN }}   # v2 needs the INPUT, not env
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # npm auth for the publish step
