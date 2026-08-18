@@ -6,14 +6,14 @@ A set of five composable [Lit](https://lit.dev) web-component packages — an er
 
 | Package | Purpose | Install |
 |---------|---------|---------|
-| [`@willram/kit`](packages/kit)       | Ergonomic Lit base class, controllers, and decorators | `npm i @willram/kit lit` |
-| [`@willram/router`](packages/router) | SPA router: guards, lazy loading, nested routes         | `npm i @willram/router lit` |
-| [`@willram/query`](packages/query)   | Lit controllers for TanStack Query data fetching        | `npm i @willram/query @tanstack/query-core lit` |
-| [`@willram/forms`](packages/forms)   | Type-safe form state, validation, and binding           | `npm i @willram/forms @tanstack/form-core lit` |
-| [`@willram/store`](packages/store)   | Lightweight reactive store with slice subscriptions     | `npm i @willram/store lit` |
+| [`@willramdev/kit`](packages/kit)       | Ergonomic Lit base class, controllers, and decorators | `npm i @willramdev/kit lit` |
+| [`@willramdev/router`](packages/router) | SPA router: guards, lazy loading, nested routes         | `npm i @willramdev/router lit` |
+| [`@willramdev/query`](packages/query)   | Lit controllers for TanStack Query data fetching        | `npm i @willramdev/query @tanstack/query-core lit` |
+| [`@willramdev/forms`](packages/forms)   | Type-safe form state, validation, and binding           | `npm i @willramdev/forms @tanstack/form-core lit` |
+| [`@willramdev/store`](packages/store)   | Lightweight reactive store with slice subscriptions     | `npm i @willramdev/store lit` |
 
-`lit@^3.0.0` is a required peer dependency of every package. `@willram/query` also needs
-`@tanstack/query-core`, and `@willram/forms` needs `@tanstack/form-core`; `@willram/forms/zod`
+`lit@^3.0.0` is a required peer dependency of every package. `@willramdev/query` also needs
+`@tanstack/query-core`, and `@willramdev/forms` needs `@tanstack/form-core`; `@willramdev/forms/zod`
 additionally requires `zod`. See each package's README for its own Quickstart and Core API.
 
 ## Cross-package example
@@ -23,12 +23,12 @@ a TanStack-Query controller, a form, and a store slice into one app-shell compon
 
 <!-- doc-check -->
 ```ts
-import { KitElement, define } from '@willram/kit';
+import { KitElement, define } from '@willramdev/kit';
 import { html } from 'lit';
-import { createRouter, defineRoutes } from '@willram/router';
-import { query, createQueryClient } from '@willram/query';
-import { form } from '@willram/forms';
-import { createStore, storeSlice } from '@willram/store';
+import { createRouter, defineRoutes } from '@willramdev/router';
+import { query, createQueryClient } from '@willramdev/query';
+import { form } from '@willramdev/forms';
+import { createStore, storeSlice } from '@willramdev/store';
 
 const store = createStore({ ready: false });
 const client = createQueryClient();
@@ -74,15 +74,15 @@ define('app-shell', AppShell);
 
 ## Consuming from GitHub Packages
 
-The `@willram/*` packages are published to the [GitHub Packages](https://docs.github.com/en/packages)
+The `@willramdev/*` packages are published to the [GitHub Packages](https://docs.github.com/en/packages)
 npm registry rather than the public npm registry, so npm needs two things to install them:
-a **scope-to-registry mapping** that points the `@willram` scope at `npm.pkg.github.com`, and an
+a **scope-to-registry mapping** that points the `@willramdev` scope at `npm.pkg.github.com`, and an
 **auth token** for that host.
 
 1. Copy the committed [`.npmrc.example`](.npmrc.example) template to a `.npmrc` in your own project:
 
    ```ini
-   @willram:registry=https://npm.pkg.github.com
+   @willramdev:registry=https://npm.pkg.github.com
    //npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
    ```
 
@@ -95,7 +95,7 @@ a **scope-to-registry mapping** that points the `@willram` scope at `npm.pkg.git
 
    ```bash
    export GITHUB_TOKEN=your_read_packages_pat
-   npm install @willram/kit lit
+   npm install @willramdev/kit lit
    ```
 
 Keep any real `.npmrc` containing a token out of source control — commit only the `.npmrc.example`

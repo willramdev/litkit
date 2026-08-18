@@ -1,15 +1,15 @@
-# @willram/forms
+# @willramdev/forms
 
 Type-safe form management for Lit with validation, two-way binding, and array fields.
 
 ## Install
 
 ```bash
-npm install @willram/forms @tanstack/form-core lit
+npm install @willramdev/forms @tanstack/form-core lit
 ```
 
 `@tanstack/form-core` and `lit` are required peer dependencies. For the optional
-`@willram/forms/zod` subpath, also install `zod`:
+`@willramdev/forms/zod` subpath, also install `zod`:
 
 ```bash
 npm install zod
@@ -26,9 +26,9 @@ call:
 
 <!-- doc-check -->
 ```ts
-import { KitElement, define } from '@willram/kit';
+import { KitElement, define } from '@willramdev/kit';
 import { html } from 'lit';
-import { form, bind, field, required, email } from '@willram/forms';
+import { form, bind, field, required, email } from '@willramdev/forms';
 
 class LoginForm extends KitElement {
   form = this.use(
@@ -75,7 +75,7 @@ You can also pass the form instance directly — `bind(this.form, 'email')` and
 
 ```ts
 import { LitElement, html } from 'lit';
-import { FormController, bind, field, required, email } from '@willram/forms';
+import { FormController, bind, field, required, email } from '@willramdev/forms';
 
 class LoginForm extends LitElement {
   form = new FormController(this, {
@@ -115,7 +115,7 @@ Use `lit-form` when you want to provide form context to descendant bindings and 
 
 ```ts
 import { LitElement, html } from 'lit';
-import { FormController, bind, field, required, email } from '@willram/forms';
+import { FormController, bind, field, required, email } from '@willramdev/forms';
 
 class LoginForm extends LitElement {
   form = new FormController(this, {
@@ -305,7 +305,7 @@ guests.fields((field, i) => html`
 ### Built-in Validators
 
 ```ts
-import { required, email, minLength, maxLength, min, max, pattern } from '@willram/forms';
+import { required, email, minLength, maxLength, min, max, pattern } from '@willramdev/forms';
 
 validators: {
   name: [required()],
@@ -333,14 +333,14 @@ validators: {
 
 ### Zod Integration
 
-Import from the `@willram/forms/zod` subpath and derive per-field validators from a
+Import from the `@willramdev/forms/zod` subpath and derive per-field validators from a
 Zod schema. This block is compiled by the doc-check against the published subpath:
 
 <!-- doc-check -->
 ```ts
 import { LitElement } from 'lit';
-import { FormController } from '@willram/forms';
-import { zodValidator } from '@willram/forms/zod';
+import { FormController } from '@willramdev/forms';
+import { zodValidator } from '@willramdev/forms/zod';
 import { z } from 'zod';
 
 const schema = z.object({

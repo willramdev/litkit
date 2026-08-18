@@ -1,11 +1,11 @@
-# @willram/router
+# @willramdev/router
 
 Client-side router for Lit with guards, lazy loading, nested routes, and scroll management.
 
 ## Install
 
 ```bash
-npm install @willram/router lit
+npm install @willramdev/router lit
 ```
 
 `lit` is a required peer dependency.
@@ -14,7 +14,7 @@ npm install @willram/router lit
 
 <!-- doc-check -->
 ```ts
-import { createRouter, defineRoutes } from '@willram/router';
+import { createRouter, defineRoutes } from '@willramdev/router';
 import { LitElement, html } from 'lit';
 
 const routes = defineRoutes([
@@ -57,7 +57,7 @@ All `<router-outlet>`, `<router-link>`, `RouteController`, and `SearchParamsCont
 ### Option 2: Manual provider
 
 ```ts
-import { attachRouterProvider } from '@willram/router';
+import { attachRouterProvider } from '@willramdev/router';
 
 connectedCallback() {
   super.connectedCallback();
@@ -250,7 +250,7 @@ Reactive controller that subscribes to route changes. Resolves the router from c
 
 ```ts
 import { LitElement, html } from 'lit';
-import { RouteController } from '@willram/router';
+import { RouteController } from '@willramdev/router';
 
 class MyPage extends LitElement {
   route = new RouteController(this);
@@ -264,8 +264,8 @@ class MyPage extends LitElement {
 #### KitElement
 
 ```ts
-import { KitElement, html } from '@willram/kit';
-import { routeState } from '@willram/router';
+import { KitElement, html } from '@willramdev/kit';
+import { routeState } from '@willramdev/router';
 
 class MyPage extends KitElement {
   route = this.use(routeState());
@@ -280,7 +280,7 @@ Reactive controller for two-way access to URL search params. Resolves the router
 
 ```ts
 import { LitElement, html } from 'lit';
-import { SearchParamsController } from '@willram/router';
+import { SearchParamsController } from '@willramdev/router';
 
 class SearchPage extends LitElement {
   search = new SearchParamsController(this);
@@ -298,8 +298,8 @@ class SearchPage extends LitElement {
 #### KitElement
 
 ```ts
-import { KitElement, html } from '@willram/kit';
-import { searchParams } from '@willram/router';
+import { KitElement, html } from '@willramdev/kit';
+import { searchParams } from '@willramdev/router';
 
 class SearchPage extends KitElement {
   search = this.use(searchParams());
@@ -327,7 +327,7 @@ const router = createRouter({
 ## Testing
 
 ```ts
-import { createMockRouter, mockMatch } from '@willram/router';
+import { createMockRouter, mockMatch } from '@willramdev/router';
 
 const router = createMockRouter({
   current: mockMatch({ name: 'home', path: '/' }),
@@ -337,9 +337,9 @@ const router = createMockRouter({
 ## Subpath exports
 
 ```ts
-import { createRouter, defineRoutes } from '@willram/router';       // full API
-import { createRouter, defineRoutes } from '@willram/router/core';  // core only (no Lit)
-import { RouteController, link } from '@willram/router/lit';        // Lit bindings only
+import { createRouter, defineRoutes } from '@willramdev/router';       // full API
+import { createRouter, defineRoutes } from '@willramdev/router/core';  // core only (no Lit)
+import { RouteController, link } from '@willramdev/router/lit';        // Lit bindings only
 ```
 
 The doc-check compiles the block below against the published `./core` and `./lit`
@@ -347,8 +347,8 @@ subpaths under both node16 and bundler resolution — an unresolved subpath fail
 
 <!-- doc-check -->
 ```ts
-import { CompiledPathMatcher } from '@willram/router/core';
-import { RouterOutlet } from '@willram/router/lit';
+import { CompiledPathMatcher } from '@willramdev/router/core';
+import { RouterOutlet } from '@willramdev/router/lit';
 
 // ./core — a framework-neutral matcher, usable without Lit
 const matcher = new CompiledPathMatcher('/users/:id');

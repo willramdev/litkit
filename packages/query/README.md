@@ -1,11 +1,11 @@
-# @willram/query
+# @willramdev/query
 
 Lit controllers for TanStack Query — reactive data fetching and mutations for web components.
 
 ## Install
 
 ```bash
-npm install @willram/query @tanstack/query-core lit
+npm install @willramdev/query @tanstack/query-core lit
 ```
 
 `@tanstack/query-core` and `lit` are required peer dependencies.
@@ -16,9 +16,9 @@ npm install @willram/query @tanstack/query-core lit
 
 <!-- doc-check -->
 ```ts
-import { KitElement, define } from '@willram/kit';
+import { KitElement, define } from '@willramdev/kit';
 import { html } from 'lit';
-import { query, createQueryClient } from '@willram/query';
+import { query, createQueryClient } from '@willramdev/query';
 
 interface User {
   id: number;
@@ -60,7 +60,7 @@ define('user-list', UserList);
 
 ```ts
 import { LitElement, html } from 'lit';
-import { QueryController, createQueryClient } from '@willram/query';
+import { QueryController, createQueryClient } from '@willramdev/query';
 
 const client = createQueryClient();
 
@@ -98,7 +98,7 @@ new QueryController(this, options, { client });
 ### Option 2: DOM context (provider pattern)
 
 ```ts
-import '@willram/query'; // registers <lit-query-client-provider>
+import '@willramdev/query'; // registers <lit-query-client-provider>
 
 // In your app shell:
 html`
@@ -114,7 +114,7 @@ users = new QueryController(this, { queryKey: ['users'], queryFn: fetchUsers });
 ### Option 3: Manual provider
 
 ```ts
-import { attachQueryClientProvider } from '@willram/query';
+import { attachQueryClientProvider } from '@willramdev/query';
 
 connectedCallback() {
   super.connectedCallback();
@@ -190,7 +190,7 @@ mutationOptions(options)       // identity function for type inference
 All exports from `@tanstack/query-core` are re-exported for convenience:
 
 ```ts
-import { QueryClient, QueryObserver, type QueryKey } from '@willram/query';
+import { QueryClient, QueryObserver, type QueryKey } from '@willramdev/query';
 ```
 
 ## License

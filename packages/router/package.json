@@ -1,5 +1,5 @@
 {
-  "name": "@willram/router",
+  "name": "@willramdev/router",
   "version": "1.0.0",
   "description": "Client-side router for Lit with guards, lazy loading, nested routes, and scroll management",
   "keywords": [

@@ -1,11 +1,11 @@
-# @willram/store
+# @willramdev/store
 
 Lightweight reactive store for shared state in Lit applications.
 
 ## Install
 
 ```bash
-npm install @willram/store lit
+npm install @willramdev/store lit
 ```
 
 `lit` is a required peer dependency.
@@ -14,8 +14,8 @@ npm install @willram/store lit
 
 <!-- doc-check -->
 ```ts
-import { createStore, storeSlice } from '@willram/store';
-import { KitElement } from '@willram/kit';
+import { createStore, storeSlice } from '@willramdev/store';
+import { KitElement } from '@willramdev/kit';
 import { html } from 'lit';
 
 interface User {
@@ -91,7 +91,7 @@ Subscribers are protected — if one throws, the rest still get notified.
 Batch multiple store updates into a single notification per store. Subscribers are notified once when the batch completes, with the final state and the state before the batch began.
 
 ```ts
-import { batch } from '@willram/store';
+import { batch } from '@willramdev/store';
 
 batch(() => {
   store.update(s => ({ ...s, loading: true }));
@@ -108,7 +108,7 @@ Works across multiple stores and supports nesting.
 Creates a read-only store whose value is computed from one or more source stores. Recomputes when sources change, and only notifies subscribers when the derived value actually changes.
 
 ```ts
-import { createStore, derived } from '@willram/store';
+import { createStore, derived } from '@willramdev/store';
 
 // Single source
 const count = createStore(0);
@@ -197,7 +197,7 @@ const users = storeSlice(this, store, s => s.users, {
 The class behind `storeSlice()`, exported for typing purposes.
 
 ```ts
-import { StoreSliceController } from '@willram/store';
+import { StoreSliceController } from '@willramdev/store';
 ```
 
 ### Store\<T\>
@@ -242,7 +242,7 @@ class UserList extends LitElement {
 The core `createStore` function works in any JavaScript environment:
 
 ```ts
-import { createStore } from '@willram/store';
+import { createStore } from '@willramdev/store';
 
 const store = createStore({ count: 0 });
 store.subscribe((state) => console.log(state.count));

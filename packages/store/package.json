@@ -1,5 +1,5 @@
 {
-  "name": "@willram/store",
+  "name": "@willramdev/store",
   "version": "1.0.0",
   "description": "Lightweight reactive store for shared state in Lit applications",
   "keywords": [

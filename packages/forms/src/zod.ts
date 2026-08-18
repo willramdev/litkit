@@ -1,7 +1,7 @@
 /**
- * Zod schema integration for @willram/forms.
+ * Zod schema integration for @willramdev/forms.
  *
- * Import from `@willram/forms/zod` — this keeps the Zod dependency
+ * Import from `@willramdev/forms/zod` — this keeps the Zod dependency
  * out of the core bundle.
  *
  * Uses structural typing so it works with any Zod-compatible library

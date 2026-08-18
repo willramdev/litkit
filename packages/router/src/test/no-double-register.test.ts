@@ -17,7 +17,7 @@ const routerLitKey = '../../dist/router-lit.js';
 describe.skipIf(!((routerKey in built) && (routerLitKey in built)))(
   'no double registration across shipped router entries',
   () => {
-    it('importing both @willram/router and @willram/router/lit registers each element exactly once', async () => {
+    it('importing both @willramdev/router and @willramdev/router/lit registers each element exactly once', async () => {
       // Sequentially import both built entries into the same jsdom registry.
       // A duplicate `customElements.define` on the same tag would throw a
       // DOMException on the second import — reaching the assertions is the pass.

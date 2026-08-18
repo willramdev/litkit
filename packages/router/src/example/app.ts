@@ -313,7 +313,7 @@ export class PageHome extends LitElement {
   render() {
     return html`
       <h2>Home</h2>
-      <p>Welcome to the <strong>@willram/router</strong> demo. Use the navigation above to explore features.</p>
+      <p>Welcome to the <strong>@willramdev/router</strong> demo. Use the navigation above to explore features.</p>
 
       <h3>Feature highlights</h3>
       <dl>

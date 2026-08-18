@@ -1,5 +1,5 @@
 {
-  "name": "@willram/kit",
+  "name": "@willramdev/kit",
   "version": "1.0.0",
   "description": "Ergonomic base class, helpers, and controllers for building Lit web components",
   "keywords": [

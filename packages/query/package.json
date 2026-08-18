@@ -1,5 +1,5 @@
 {
-  "name": "@willram/query",
+  "name": "@willramdev/query",
   "version": "1.0.0",
   "description": "Lit controllers for TanStack Query — reactive data fetching and mutations",
   "keywords": [

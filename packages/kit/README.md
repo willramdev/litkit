@@ -1,11 +1,11 @@
-# @willram/kit
+# @willramdev/kit
 
 Ergonomic base class, helpers, and controllers for building Lit web components.
 
 ## Install
 
 ```bash
-npm install @willram/kit lit
+npm install @willramdev/kit lit
 ```
 
 `lit` is a required peer dependency.
@@ -16,7 +16,7 @@ npm install @willram/kit lit
 
 <!-- doc-check -->
 ```ts
-import { KitElement, define, computed, watch, bind } from '@willram/kit';
+import { KitElement, define, computed, watch, bind } from '@willramdev/kit';
 import { html } from 'lit';
 
 class MyCounter extends KitElement {
@@ -188,7 +188,7 @@ onScroll(e: Event) { /* ... */ }
 Standalone function version of `KitElement.emit()`.
 
 ```ts
-import { emit } from '@willram/kit';
+import { emit } from '@willramdev/kit';
 emit(myElement, 'my-event', { foo: 'bar' });
 ```
 

@@ -1,5 +1,5 @@
 {
-  "name": "@willram/forms",
+  "name": "@willramdev/forms",
   "version": "1.0.0",
   "description": "Type-safe form management for Lit with validation, binding, and array fields",
   "keywords": [

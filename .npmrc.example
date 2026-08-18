@@ -1,4 +1,4 @@
-# .npmrc.example — consumer template for installing @willram/* from GitHub Packages.
+# .npmrc.example — consumer template for installing @willramdev/* from GitHub Packages.
 #
 # Copy this file to a .npmrc in your OWN project, then provide a GitHub personal
 # access token (PAT) scoped to `read:packages` ONLY (least privilege — a consumer
@@ -11,8 +11,8 @@
 # embeds a secret. Do NOT commit a real .npmrc that contains a token value.
 
 # Scope -> registry map. This line is the part SHARED with the project's own
-# .npmrc; it points every @willram package at the GitHub Packages registry.
-@willram:registry=https://npm.pkg.github.com
+# .npmrc; it points every @willramdev package at the GitHub Packages registry.
+@willramdev:registry=https://npm.pkg.github.com
 
 # Auth line. This is what makes THIS file the CONSUMER template — it must NOT be
 # copied into the project's project-level .npmrc (that file carries only the
