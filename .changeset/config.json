@@ -2,6 +2,9 @@
   "$schema": "https://unpkg.com/@changesets/config/schema.json",
   "changelog": "@changesets/cli/changelog",
   "commit": false,
+  "fixed": [
+    ["@willramdev/kit", "@willramdev/router", "@willramdev/query", "@willramdev/forms", "@willramdev/store"]
+  ],
   "access": "restricted",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
