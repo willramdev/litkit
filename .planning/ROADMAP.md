@@ -97,11 +97,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A "consuming from GitHub Packages" doc plus an `.npmrc` template exist, covering the consumer `read:packages` PAT (DOCS-03)
   4. Every package ships a `LICENSE` file inside its published tarball (DOCS-04)
 
-**Plans**: 5 plans
+**Plans**: 1/5 plans executed
 
 **Wave 1** *(tracer — alone)*
 
-- [ ] 03-01-PLAN.md — TRACER: standalone doc-check harness (zero-dep extractor + node16/bundler tsconfigs + `doc-check` npm script) proving @willram/kit's README quickstart compiles end-to-end against dist types; kit README normalized to the shared template (DOCS-01)
+- [x] 03-01-PLAN.md — TRACER: standalone doc-check harness (zero-dep extractor + node16/bundler tsconfigs + `doc-check` npm script) proving @willram/kit's README quickstart compiles end-to-end against dist types; kit README normalized to the shared template (DOCS-01)
 
 **Wave 2** *(blocked on Wave 1)*
 
@@ -147,6 +147,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 (Phase 3 may run in p
 |-------|----------------|--------|-----------|
 | 1. Build & Typecheck Hardening | 4/4 | Complete    | 2026-08-11 |
 | 2. Tests & CI | 5/5 | In Progress|  |
-| 3. Docs | 0/5 | Planned | - |
+| 3. Docs | 1/5 | In Progress|  |
 | 4. Release Automation & Publish | 0/TBD | Not started | - |
 | 5. Consumer Install Verification | 0/TBD | Not started | - |

@@ -27,7 +27,7 @@
 
 ### Docs (DOCS)
 
-- [ ] **DOCS-01**: Each package README has a runnable, copy-pasteable quickstart matching the shipped API
+- [x] **DOCS-01**: Each package README has a runnable, copy-pasteable quickstart matching the shipped API
 - [ ] **DOCS-02**: Root README maps the monorepo and shows a cross-package integration example (router + query + forms + store)
 - [ ] **DOCS-03**: A "consuming from GitHub Packages" doc + `.npmrc` template exists, covering the consumer `read:packages` PAT
 - [ ] **DOCS-04**: Each package ships a `LICENSE` file inside its published tarball
@@ -93,7 +93,7 @@ Each v1 requirement maps to exactly one phase (see `.planning/ROADMAP.md`).
 | TEST-04 | Phase 2 — Tests & CI | Complete |
 | TEST-05 | Phase 2 — Tests & CI | Complete |
 | TEST-06 | Phase 2 — Tests & CI | Complete |
-| DOCS-01 | Phase 3 — Docs | Pending |
+| DOCS-01 | Phase 3 — Docs | Complete |
 | DOCS-02 | Phase 3 — Docs | Pending |
 | DOCS-03 | Phase 3 — Docs | Pending |
 | DOCS-04 | Phase 3 — Docs | Pending |

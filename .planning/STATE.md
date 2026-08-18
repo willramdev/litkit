@@ -2,18 +2,18 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 02
+current_phase: 03
+current_phase_name: docs
 status: executing
-stopped_at: Phase 3 context gathered
-last_updated: "2026-08-18T01:25:18.991Z"
-last_activity: 2026-08-16
-last_activity_desc: Phase 02 execution started
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-08-18T01:35:05.601Z"
+last_activity: 2026-08-17
+last_activity_desc: Phase 03 execution started
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 14
-  completed_plans: 9
-current_phase_name: tests-ci
+  completed_plans: 10
 ---
 
 # Project State
@@ -23,16 +23,16 @@ current_phase_name: tests-ci
 See: .planning/PROJECT.md (updated 2026-08-10)
 
 **Core value:** All five packages install cleanly from GitHub Packages and work as documented — a consumer can `npm install @willram/*` and build a Lit app against a green, typed, tested, documented API.
-**Current focus:** Phase 02 — tests-ci
+**Current focus:** Phase 03 — docs
 
 ## Current Position
 
-Phase: 02 — COMPLETE
-Plan: 1 of 5
+Phase: 03 (docs) — EXECUTING
+Plan: 2 of 5
 Status: Ready to execute
-Last activity: 2026-08-16 — Phase 02 marked complete
+Last activity: 2026-08-17 — Phase 03 execution started
 
-Progress: [██████████] 100%
+Progress: [███████░░░] 71%
 
 ## Performance Metrics
 
@@ -62,6 +62,7 @@ Progress: [██████████] 100%
 | Phase 01 P02 | 4 | 3 tasks | 3 files |
 | Phase 01 P03 | 3 | 3 tasks | 3 files |
 | Phase 01 P04 | 8 min | 3 tasks | 6 files |
+| Phase 03 P01 | 6 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -75,6 +76,8 @@ Recent decisions affecting current work:
 - Roadmap: Kit-first publish ordering is a non-blocker (no sibling imports `@willram/kit` in source) — no ordering machinery built.
 - [Phase ?]: Router: per-entry ESM Vite build kept (not single multi-entry) so @customElement registrations stay inside the sideEffects-allowlisted entries (D-03/BUILD-03); single multi-entry build hoists them into an un-allowlistable hash chunk.
 - [Phase ?]: 01-02: TanStack cores (query-core/form-core) reclassified as required peerDependencies (kept as devDeps); query/forms sideEffects allowlist their element-carrying built entries; forms multi-entry build safe (zod shares only types).
+- [Phase ?]: 03-01: doc-check is a standalone authoring-time harness (tools/doc-check/) extending BUILD-06; ci.yml untouched (D-04).
+- [Phase ?]: 03-01: <!-- doc-check --> marker opts blocks into compilation; only marker-adjacent ts fences are extracted/compiled.
 
 ### Pending Todos
 
@@ -95,6 +98,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-17T22:45:50.418Z
-Stopped at: Phase 3 context gathered
-Resume file: .planning/phases/03-docs/03-CONTEXT.md
+Last session: 2026-08-18T01:34:56.828Z
+Stopped at: Completed 03-01-PLAN.md
+Resume file: None
