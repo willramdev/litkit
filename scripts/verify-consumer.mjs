@@ -265,15 +265,23 @@ function checkResolve() {
 // for all five registered tags. Reads the warm consumer left by
 // `--check install`.
 //
-// Static fallback (cheaper, weaker): count `customElements.define(` occurrences
-// in the emitted bundle and expect at least five — done inline below as a
-// cross-check before the stronger runtime proof.
+// AUTHORITATIVE PROOF: the jsdom runtime registration check ALONE determines
+// VER-02 PASS/FAIL — `customElements.get(tag)` must be truthy for all five tags
+// after the production bundle executes its module-scope `define()` side effects.
+//
+// Static diagnostic (informational fallback, NOT a gate): count
+// `customElements.define(` occurrences in the emitted bundle. Minification
+// (Vite/esbuild) can rewrite some `.define(` call forms (aliased receiver /
+// helper), so this textual count can UNDERCOUNT even when every registration
+// executes — it is printed as a diagnostic and, when < 5, emits a WARNING, but
+// it NEVER fails the check.
 //
 // NEGATIVE CONTROL: temporarily flipping any target package's `sideEffects` to
-// `false` (e.g. @willramdev/query's package.json) MUST make this check FAIL —
-// that module's `define()` would then be tree-shaken from the production
-// bundle. If the check still passes with `sideEffects:false`, it is NOT
-// exercising tree-shaking and the proof is vacuous (Pitfall 4).
+// `false` (e.g. @willramdev/query's package.json) MUST make the RUNTIME jsdom
+// check FAIL — that module's `define()` would then be tree-shaken from the
+// production bundle and its tag would not register. If the runtime check still
+// passes with `sideEffects:false`, it is NOT exercising tree-shaking and the
+// proof is vacuous (Pitfall 4).
 async function checkTreeshake() {
   const consumerNodeModules = path.join(consumerDir, 'node_modules');
   if (!fs.existsSync(consumerNodeModules)) {
@@ -316,37 +324,57 @@ async function checkTreeshake() {
 
   const tags = ['lit-form', 'lit-query-client-provider', 'router-outlet', 'router-provider', 'router-link'];
 
-  // Static cross-check: the emitted bundle must contain at least five
-  // `customElements.define(` occurrences. A shortfall means registrations were
-  // tree-shaken away before we even reach the jsdom runtime proof.
+  // Static diagnostic (INFORMATIONAL — never the pass/fail gate). Count
+  // `customElements.define(` occurrences in the emitted bundle. This is a weaker,
+  // documented fallback: minification can rewrite some `.define(` call forms
+  // (aliased receiver / helper) so the textual count UNDERCOUNTS the
+  // registrations that actually execute. VER-02's authoritative proof is the
+  // jsdom runtime registration check that follows — do NOT fail() on this count.
   const bundleSource = fs.readFileSync(bundlePath, 'utf8');
   const defineCount = (bundleSource.match(/customElements\.define\(/g) || []).length;
-  log(`Static cross-check: ${defineCount} \`customElements.define(\` occurrences in bundle (expect >= 5).`);
+  log(
+    `Static diagnostic: ${defineCount} \`customElements.define(\` occurrences in bundle ` +
+      `(informational; the authoritative proof is the jsdom runtime check below).`,
+  );
   if (defineCount < 5) {
-    fail(
-      `VER-02 FAIL: only ${defineCount} \`customElements.define(\` occurrences in the production bundle; ` +
-        `expected >= 5. Tree-shaking dropped element registrations (sideEffects allowlist did not survive).`,
+    log(
+      `WARNING: static \`customElements.define(\` count is ${defineCount} (< 5). This does NOT fail VER-02. ` +
+        `Minification (Vite/esbuild) can rewrite \`.define(\` call forms (aliased receiver / helper), so the ` +
+        `textual count undercounts the registrations that actually run. The authoritative proof is the jsdom ` +
+        `runtime registration check (customElements.get(tag) truthy for all five tags) that follows.`,
     );
   }
 
-  // Runtime proof (stronger): load the emitted bundle under jsdom in a child
-  // node process whose cwd is the consumer (so `jsdom` resolves from the
-  // consumer's node_modules). Expose window.customElements / HTMLElement as
-  // globals, import the built bundle (executing its module-scope define() side
-  // effects), then assert every tag registered. The bundle path is passed as
-  // process.argv[1].
+  // Runtime proof (AUTHORITATIVE): load the emitted bundle under jsdom in a
+  // CHILD node process whose cwd is the consumer (so `jsdom` resolves from the
+  // consumer's node_modules). Isolating the probe in a child process keeps the
+  // full jsdom window surface (exposed on globalThis below) from polluting this
+  // harness's own process, which continues to the `single-instance` check after
+  // treeshake in the no-flag full runner.
+  //
+  // Expose the FULL jsdom window global surface BEFORE importing the bundle. A
+  // partial surface (only customElements/HTMLElement) throws `CSSStyleSheet is
+  // not defined` / `Document is not defined` at `define()`/finalize time — the
+  // registration code runs but crashes on a missing global, which would ALSO
+  // masquerade as a spurious VER-02 FAIL. The bundle path is passed as
+  // process.argv[1]. The authoritative assert is `w.customElements.get(tag)`
+  // truthy for every tag; misses are collected and named on failure.
   const jsdomProbe = [
     "import { JSDOM } from 'jsdom';",
     "import { pathToFileURL } from 'node:url';",
-    "const dom = new JSDOM('<!doctype html><html><body></body></html>', { pretendToBeVisual: true });",
-    'globalThis.window = dom.window;',
-    'globalThis.document = dom.window.document;',
-    'globalThis.customElements = dom.window.customElements;',
-    'globalThis.HTMLElement = dom.window.HTMLElement;',
+    "const dom = new JSDOM('<!doctype html><html><body></body></html>', { url: 'http://localhost/', pretendToBeVisual: true });",
+    'const w = dom.window;',
+    'for (const k of Object.getOwnPropertyNames(w)) {',
+    "  if (k in globalThis && ['globalThis','window','self','top','parent','frames'].includes(k)) continue;",
+    '  try { Object.defineProperty(globalThis, k, { value: w[k], configurable: true, writable: true }); } catch {}',
+    '}',
+    'globalThis.window = w;',
     'await import(pathToFileURL(process.argv[1]).href);',
     `const tags = ${JSON.stringify(tags)};`,
-    'const missing = tags.filter((t) => !customElements.get(t));',
-    'for (const t of missing) process.stderr.write(`VER-02 tag missing: <${t}> was tree-shaken away\\n`);',
+    'const registered = tags.filter((t) => w.customElements.get(t));',
+    'const missing = tags.filter((t) => !w.customElements.get(t));',
+    "process.stdout.write('REGISTERED::' + registered.join(',') + '\\n');",
+    'for (const t of missing) process.stderr.write(`VER-02 tag missing: <${t}> did not register at runtime\\n`);',
     "if (missing.length) { process.stdout.write('MISSING::' + missing.join(',') + '\\n'); process.exit(4); }",
     "process.stdout.write('JSDOM_OK\\n');",
   ].join('\n');
@@ -360,11 +388,16 @@ async function checkTreeshake() {
   if (probe.status !== 0) {
     const miss = /^MISSING::(.+)$/m.exec(probe.stdout || '');
     if (miss) {
-      fail(`VER-02 FAIL: these tags were tree-shaken away (not registered under jsdom): ${miss[1]}`);
+      fail(`VER-02 FAIL: these tags did NOT register at runtime under jsdom: ${miss[1]}`);
     }
     fail(`VER-02 FAIL: jsdom registration probe exited ${probe.status}.\n${probe.stderr || '(no stderr)'}`);
   }
 
+  const registeredMatch = /^REGISTERED::(.*)$/m.exec(probe.stdout || '');
+  log(
+    `VER-02 runtime registration (authoritative): all ${tags.length} tags registered under jsdom` +
+      (registeredMatch ? ` [${registeredMatch[1]}]` : ''),
+  );
   log('VER-02 PASS');
 }
 
