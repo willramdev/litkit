@@ -35,11 +35,11 @@
 ### Release & Publish (RLS)
 
 - [ ] **RLS-01**: The `willram` GitHub org exists and owns the repo (org-name availability confirmed) — blocking prerequisite for all publish work
-- [ ] **RLS-02**: Every package has `publishConfig.registry` → GitHub Packages and a `files` allowlist (README + LICENSE + dist)
-- [ ] **RLS-03**: A committed root `.npmrc` maps the `@willram` scope to `npm.pkg.github.com` (never a global `registry=`)
+- [x] **RLS-02**: Every package has `publishConfig.registry` → GitHub Packages and a `files` allowlist (README + LICENSE + dist)
+- [x] **RLS-03**: A committed root `.npmrc` maps the `@willram` scope to `npm.pkg.github.com` (never a global `registry=`)
 - [ ] **RLS-04**: `.changeset/config.json` is configured (`access: restricted`, `baseBranch: main`, lockstep `fixed` for the five `@willram/*` at v1.0)
 - [ ] **RLS-05**: `release.yml` uses a SHA-pinned `changesets/action` with `{contents, pull-requests, packages}: write` and `NODE_AUTH_TOKEN=GITHUB_TOKEN` (no PAT, no `--provenance`)
-- [ ] **RLS-06**: Each package has a `prepublishOnly` build hook enforcing build-before-publish
+- [x] **RLS-06**: Each package has a `prepublishOnly` build hook enforcing build-before-publish
 - [ ] **RLS-07**: All five packages are published to GitHub Packages at an explicit `1.0.0` (before adopting the changesets version bump), with git tags + a GitHub Release
 
 ### Consumer Verification (VER)
@@ -98,11 +98,11 @@ Each v1 requirement maps to exactly one phase (see `.planning/ROADMAP.md`).
 | DOCS-03 | Phase 3 — Docs | Complete |
 | DOCS-04 | Phase 3 — Docs | Complete |
 | RLS-01 | Phase 4 — Release Automation & Publish | Pending |
-| RLS-02 | Phase 4 — Release Automation & Publish | Pending |
-| RLS-03 | Phase 4 — Release Automation & Publish | Pending |
+| RLS-02 | Phase 4 — Release Automation & Publish | Complete |
+| RLS-03 | Phase 4 — Release Automation & Publish | Complete |
 | RLS-04 | Phase 4 — Release Automation & Publish | Pending |
 | RLS-05 | Phase 4 — Release Automation & Publish | Pending |
-| RLS-06 | Phase 4 — Release Automation & Publish | Pending |
+| RLS-06 | Phase 4 — Release Automation & Publish | Complete |
 | RLS-07 | Phase 4 — Release Automation & Publish | Pending |
 | VER-01 | Phase 5 — Consumer Install Verification | Pending |
 | VER-02 | Phase 5 — Consumer Install Verification | Pending |
