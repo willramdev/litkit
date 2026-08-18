@@ -4,7 +4,7 @@ slug: docs
 # status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6)
 # audit-milestone §5.5 distinguishes NOT-VALIDATED (draft) from PARTIAL (validated + nyquist_compliant: false) (#2117)
 status: draft
-nyquist_compliant: false
+nyquist_compliant: true
 wave_0_complete: false
 created: 2026-08-17
 ---
@@ -45,9 +45,20 @@ created: 2026-08-17
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| 3-01-01 | 01 | 1 | DOCS-01 | — | N/A | integration | `npm run doc-check` | ❌ W0 | ⬜ pending |
+| 3-01-01 | 01 | 1 | DOCS-01 | T-03-01a | N/A (tooling) | integration | `npm run build && node tools/doc-check/extract-snippets.mjs && tsc -p tools/doc-check/tsconfig.node16.json && tsc -p tools/doc-check/tsconfig.bundler.json` | ❌ W0 (harness built here) | ⬜ pending |
+| 3-01-02 | 01 | 1 | DOCS-01 | — | N/A | integration | `npm run doc-check:snippets` | ⬜ after 3-01-01 | ⬜ pending |
+| 3-02-01 | 02 | 2 | DOCS-01 | T-03-02a | N/A | integration | `npm run doc-check:snippets` (+ grep marker count) | ⬜ after W1 | ⬜ pending |
+| 3-02-02 | 02 | 2 | DOCS-01 | T-03-02a | N/A | integration | `npm run doc-check:snippets` (+ grep `forms/zod` in marked block) | ⬜ after W1 | ⬜ pending |
+| 3-03-01 | 03 | 2 | DOCS-01 | T-03-03a | N/A | integration | `npm run doc-check:snippets` (+ grep `router/core`,`router/lit`) | ⬜ after W1 | ⬜ pending |
+| 3-03-02 | 03 | 2 | DOCS-01 | T-03-03a | N/A | integration | `npm run doc-check:snippets` | ⬜ after W1 | ⬜ pending |
+| 3-04-01 | 04 | 2 | DOCS-02 | T-03-04c | N/A | integration | `npm run doc-check:snippets` (+ grep map rows + Consuming section) | ⬜ after W1 | ⬜ pending |
+| 3-04-02 | 04 | 2 | DOCS-03 | T-03-04a/b | secret hygiene | presence/content | `grep @willram:registry=…npm.pkg.github.com && grep _authToken && grep read:packages && ! grep ghp_ token` | ⬜ after W1 | ⬜ pending |
+| 3-05-01 | 05 | 2 | DOCS-04 | T-03-05a | N/A | presence/content | LICENSE ×6 each contain `MIT License` + `Copyright (c) 2026 Will Ramanand` | ⬜ | ⬜ pending |
+| 3-05-02 | 05 | 2 | DOCS-04 | — | N/A | presence/content | root `package.json` has `"license": "MIT"` + changeset covers 5 pkgs + `changeset status --since origin/main` exit 0 | ⬜ | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
+
+**Nyquist coverage:** every task carries an automated `<verify>`; no run of 3 consecutive tasks lacks one. The Wave 0 dependency (the doc-check harness) is created by task 3-01-01, whose own verify runs the full extract+compile chain against a real marked block. Phase-gate: full `npm run doc-check` green + all DOCS-01..04 presence/content checks pass.
 
 ---
 
@@ -72,11 +83,11 @@ created: 2026-08-17
 
 ## Validation Sign-Off
 
-- [ ] All tasks have automated verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers the doc-check script (MISSING today)
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 60s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have automated verify or Wave 0 dependencies
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers the doc-check script (built by task 3-01-01; MISSING today, created during execution)
+- [x] No watch-mode flags
+- [x] Feedback latency < 60s
+- [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** seeded by plan-phase (draft) — validate-phase confirms after execution
