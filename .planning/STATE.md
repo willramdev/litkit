@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 04
 current_phase_name: release-automation-publish
 status: executing
-stopped_at: Completed 04-02-PLAN.md
-last_updated: "2026-08-18T04:31:49.214Z"
+stopped_at: Completed 04-03-PLAN.md
+last_updated: "2026-08-18T04:35:35.432Z"
 last_activity: 2026-08-17
 last_activity_desc: Phase 03 execution started
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 18
-  completed_plans: 16
+  completed_plans: 17
 ---
 
 # Project State
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-08-10)
 ## Current Position
 
 Phase: 04 (release-automation-publish) — EXECUTING
-Plan: 2 of 4
+Plan: 3 of 4
 Status: Ready to execute
 Last activity: 2026-08-17 — Phase 04 execution started
 
-Progress: [█████████░] 89%
+Progress: [█████████░] 94%
 
 ## Performance Metrics
 
@@ -69,6 +69,7 @@ Progress: [█████████░] 89%
 | Phase 03 P04 | 4min | 2 tasks | 2 files |
 | Phase 03 P05 | 4 | 2 tasks | 8 files |
 | Phase 04 P02 | 2 | 2 tasks | 6 files |
+| Phase 04 P03 | 2 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -91,6 +92,8 @@ Recent decisions affecting current work:
 - [Phase ?]: 03-05: MIT LICENSE files at root + all five packages (6 identical copies), copyright 'Will Ramanand' 2026 (D-05) — distinct from package.json author 'William Ramanand', left untouched (DOCS-04).
 - [Phase ?]: 03-05: verify-then-fill — only root package.json got 'license: MIT'; the five package.json already declared it. One phase-wide changeset covers all five packages (patch), consumed by Phase 4 changesets versioning.
 - [Phase ?]: 04-02: five @willramdev/* packages gain publishConfig(registry=GitHub Packages) + files allowlist [dist,README,LICENSE,CHANGELOG] + prepublishOnly guard; committed auth-free root .npmrc routes only the scope (no global registry, no token)
+- [Phase ?]: 04-03: .changeset/config.json extended in place with fixed lockstep group over all five @willramdev/* packages (bump+publish together); access:restricted/baseBranch:main preserved. Three pending changesets deleted for a clean 1.0.0 baseline (RLS-04, D-04).
+- [Phase ?]: 04-03: release.yml is the auth-bearing sibling of read-only ci.yml — SHA-pinned changesets/action@198f833 (v2.1.0) with v2 kebab inputs, least-privilege {contents,pull-requests,packages}:write, GITHUB_TOKEN-only, no PAT, no provenance (RLS-05).
 
 ### Pending Todos
 
@@ -111,6 +114,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-18T04:31:49.204Z
-Stopped at: Completed 04-02-PLAN.md
+Last session: 2026-08-18T04:35:24.074Z
+Stopped at: Completed 04-03-PLAN.md
 Resume file: None
