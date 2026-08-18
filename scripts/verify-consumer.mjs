@@ -18,7 +18,8 @@
 //   node scripts/verify-consumer.mjs --dry-run        # offline scaffold + token-safety check, NO network, NO token
 //   node scripts/verify-consumer.mjs --check install  # VER-01: real install from GitHub Packages (needs GITHUB_TOKEN)
 //   node scripts/verify-consumer.mjs --check resolve  # VER-04: 8 subpaths resolve for tsc (node16+bundler) + runtime (needs warm install)
-//   node scripts/verify-consumer.mjs                  # full runner (all wired checks)
+//   node scripts/verify-consumer.mjs --check treeshake       # VER-02: production vite build + jsdom element-registration proof (needs warm install)
+//   node scripts/verify-consumer.mjs                  # full runner: install -> resolve -> treeshake
 
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -41,9 +42,10 @@ const NPMRC_CONTENTS =
   '@willramdev:registry=https://npm.pkg.github.com\n' +
   '//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}\n';
 
-// Ordered list of checks the no-flag full runner executes. Plan 05-02 appends
-// 'treeshake', 'single-instance'.
-const CHECK_ORDER = ['install', 'resolve'];
+// Ordered list of checks the no-flag full runner executes:
+// install (VER-01) -> resolve (VER-04) -> treeshake (VER-02). Plan 05-02 Task 2
+// appends 'single-instance' (VER-03).
+const CHECK_ORDER = ['install', 'resolve', 'treeshake'];
 
 function log(msg) {
   process.stdout.write(`${msg}\n`);
@@ -256,6 +258,116 @@ function checkResolve() {
   log('VER-04 PASS');
 }
 
+// VER-02: prove custom-element registration survives a PRODUCTION consumer
+// bundle (BUILD-03 `sideEffects` allowlist). Copy the bare-side-effect entry +
+// vite config into the warm consumer, run a production `vite build`, then load
+// the emitted bundle under jsdom and assert `customElements.get(tag)` is truthy
+// for all five registered tags. Reads the warm consumer left by
+// `--check install`.
+//
+// Static fallback (cheaper, weaker): count `customElements.define(` occurrences
+// in the emitted bundle and expect at least five — done inline below as a
+// cross-check before the stronger runtime proof.
+//
+// NEGATIVE CONTROL: temporarily flipping any target package's `sideEffects` to
+// `false` (e.g. @willramdev/query's package.json) MUST make this check FAIL —
+// that module's `define()` would then be tree-shaken from the production
+// bundle. If the check still passes with `sideEffects:false`, it is NOT
+// exercising tree-shaking and the proof is vacuous (Pitfall 4).
+async function checkTreeshake() {
+  const consumerNodeModules = path.join(consumerDir, 'node_modules');
+  if (!fs.existsSync(consumerNodeModules)) {
+    fail(
+      `VER-02 FAIL: no installed consumer at ${consumerNodeModules}. ` +
+        `Run \`node scripts/verify-consumer.mjs --check install\` first (needs GITHUB_TOKEN).`,
+    );
+  }
+
+  // Copy the entry fixture + vite config into the consumer.
+  fs.mkdirSync(path.join(consumerDir, 'src'), { recursive: true });
+  fs.copyFileSync(
+    path.join(fixturesDir, 'src', 'tree-shake-entry.ts'),
+    path.join(consumerDir, 'src', 'tree-shake-entry.ts'),
+  );
+  fs.copyFileSync(path.join(fixturesDir, 'vite.config.ts'), path.join(consumerDir, 'vite.config.ts'));
+
+  // Run the consumer's LOCAL vite via its JS entry so there is no .cmd/.bin
+  // platform branching (cross-platform; the dev box is win32). `vite build`
+  // defaults to production mode; the config also pins `mode: 'production'` +
+  // minify on so the sideEffects allowlist is the only thing preserving define().
+  const viteEntry = path.join(consumerNodeModules, 'vite', 'bin', 'vite.js');
+  if (!fs.existsSync(viteEntry)) {
+    fail(`VER-02 FAIL: consumer vite not installed at ${viteEntry}.`);
+  }
+  const build = spawnSync(process.execPath, [viteEntry, 'build'], {
+    cwd: consumerDir,
+    env: process.env,
+    encoding: 'utf8',
+  });
+  if (build.stdout) process.stdout.write(build.stdout);
+  if (build.status !== 0) {
+    fail(`VER-02 FAIL: consumer vite build exited ${build.status}.\n${build.stderr || '(no stderr)'}`);
+  }
+
+  const bundlePath = path.join(consumerDir, 'dist', 'tree-shake-entry.js');
+  if (!fs.existsSync(bundlePath)) {
+    fail(`VER-02 FAIL: expected production bundle not emitted at ${bundlePath}.`);
+  }
+
+  const tags = ['lit-form', 'lit-query-client-provider', 'router-outlet', 'router-provider', 'router-link'];
+
+  // Static cross-check: the emitted bundle must contain at least five
+  // `customElements.define(` occurrences. A shortfall means registrations were
+  // tree-shaken away before we even reach the jsdom runtime proof.
+  const bundleSource = fs.readFileSync(bundlePath, 'utf8');
+  const defineCount = (bundleSource.match(/customElements\.define\(/g) || []).length;
+  log(`Static cross-check: ${defineCount} \`customElements.define(\` occurrences in bundle (expect >= 5).`);
+  if (defineCount < 5) {
+    fail(
+      `VER-02 FAIL: only ${defineCount} \`customElements.define(\` occurrences in the production bundle; ` +
+        `expected >= 5. Tree-shaking dropped element registrations (sideEffects allowlist did not survive).`,
+    );
+  }
+
+  // Runtime proof (stronger): load the emitted bundle under jsdom in a child
+  // node process whose cwd is the consumer (so `jsdom` resolves from the
+  // consumer's node_modules). Expose window.customElements / HTMLElement as
+  // globals, import the built bundle (executing its module-scope define() side
+  // effects), then assert every tag registered. The bundle path is passed as
+  // process.argv[1].
+  const jsdomProbe = [
+    "import { JSDOM } from 'jsdom';",
+    "import { pathToFileURL } from 'node:url';",
+    "const dom = new JSDOM('<!doctype html><html><body></body></html>', { pretendToBeVisual: true });",
+    'globalThis.window = dom.window;',
+    'globalThis.document = dom.window.document;',
+    'globalThis.customElements = dom.window.customElements;',
+    'globalThis.HTMLElement = dom.window.HTMLElement;',
+    'await import(pathToFileURL(process.argv[1]).href);',
+    `const tags = ${JSON.stringify(tags)};`,
+    'const missing = tags.filter((t) => !customElements.get(t));',
+    'for (const t of missing) process.stderr.write(`VER-02 tag missing: <${t}> was tree-shaken away\\n`);',
+    "if (missing.length) { process.stdout.write('MISSING::' + missing.join(',') + '\\n'); process.exit(4); }",
+    "process.stdout.write('JSDOM_OK\\n');",
+  ].join('\n');
+
+  const probe = spawnSync(process.execPath, ['--input-type=module', '--eval', jsdomProbe, bundlePath], {
+    cwd: consumerDir,
+    env: process.env,
+    encoding: 'utf8',
+  });
+  if (probe.stdout) process.stdout.write(probe.stdout);
+  if (probe.status !== 0) {
+    const miss = /^MISSING::(.+)$/m.exec(probe.stdout || '');
+    if (miss) {
+      fail(`VER-02 FAIL: these tags were tree-shaken away (not registered under jsdom): ${miss[1]}`);
+    }
+    fail(`VER-02 FAIL: jsdom registration probe exited ${probe.status}.\n${probe.stderr || '(no stderr)'}`);
+  }
+
+  log('VER-02 PASS');
+}
+
 // --dry-run: scaffold + token-safety validation ONLY. No network, no token.
 function dryRun() {
   scaffoldConsumer();
@@ -268,6 +380,7 @@ function dryRun() {
 const CHECKS = {
   install: checkInstall,
   resolve: checkResolve,
+  treeshake: checkTreeshake,
 };
 
 function parseArgs(argv) {
