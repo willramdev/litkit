@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 03
 current_phase_name: docs
 status: executing
-stopped_at: Completed 03-03-PLAN.md
-last_updated: "2026-08-18T01:52:16.909Z"
+stopped_at: Completed 03-04-PLAN.md
+last_updated: "2026-08-18T01:57:11.535Z"
 last_activity: 2026-08-17
 last_activity_desc: Phase 03 execution started
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 14
-  completed_plans: 12
+  completed_plans: 13
 ---
 
 # Project State
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-08-10)
 ## Current Position
 
 Phase: 03 (docs) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Status: Ready to execute
 Last activity: 2026-08-17 — Phase 03 execution started
 
-Progress: [█████████░] 86%
+Progress: [█████████░] 93%
 
 ## Performance Metrics
 
@@ -65,6 +65,7 @@ Progress: [█████████░] 86%
 | Phase 03 P01 | 6 | 2 tasks | 6 files |
 | Phase 03 P02 | 12 | 2 tasks | 2 files |
 | Phase 03-docs P03 | 5min | 2 tasks | 2 files |
+| Phase 03 P04 | 4min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -82,6 +83,8 @@ Recent decisions affecting current work:
 - [Phase ?]: 03-01: <!-- doc-check --> marker opts blocks into compilation; only marker-adjacent ts fences are extracted/compiled.
 - [Phase ?]: 03-02: query/forms READMEs normalized + marked Quickstarts verified by doc-check under node16+bundler; forms exercises the /zod subpath.
 - [Phase ?]: 03-02: shipped bind()/field() type FormInstance<any> reject a concrete FormController<T> (group keyof-T variance) — deferred; forms Quickstart uses the lit-form context pattern.
+- [Phase ?]: 03-04: root README ships one compiling <!-- doc-check --> cross-package snippet (router+query+forms+store into one KitElement); option shapes confirmed against dist/*.d.ts under node16+bundler (DOCS-02).
+- [Phase ?]: 03-04: consumer .npmrc.example carries scope->registry map + env-expanded _authToken; kept DISTINCT from Phase 4 project .npmrc (D-07 costly seam) (DOCS-03).
 
 ### Pending Todos
 
@@ -102,6 +105,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-18T01:52:16.898Z
-Stopped at: Completed 03-03-PLAN.md
+Last session: 2026-08-18T01:57:00.772Z
+Stopped at: Completed 03-04-PLAN.md
 Resume file: None
