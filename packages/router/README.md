@@ -2,17 +2,20 @@
 
 Client-side router for Lit with guards, lazy loading, nested routes, and scroll management.
 
-## Installation
+## Install
 
 ```bash
 npm install @willram/router lit
 ```
 
-## Quick Start
+`lit` is a required peer dependency.
 
+## Quickstart
+
+<!-- doc-check -->
 ```ts
 import { createRouter, defineRoutes } from '@willram/router';
-import { html } from 'lit';
+import { LitElement, html } from 'lit';
 
 const routes = defineRoutes([
   { path: '/', name: 'home', component: 'home-page' },
@@ -23,14 +26,18 @@ const routes = defineRoutes([
 
 const router = createRouter({ routes });
 
-// In your app shell:
-render() {
-  return html`
-    <router-provider .router=${router}>
-      <router-outlet></router-outlet>
-    </router-provider>
-  `;
+// Mount the router in your app shell — descendants resolve it from context.
+class AppShell extends LitElement {
+  render() {
+    return html`
+      <router-provider .router=${router}>
+        <router-outlet></router-outlet>
+      </router-provider>
+    `;
+  }
 }
+
+customElements.define('app-shell', AppShell);
 ```
 
 All descendants inside `<router-provider>` automatically resolve the router — no need to pass it as a property to every component.
@@ -327,7 +334,7 @@ const router = createMockRouter({
 });
 ```
 
-## Sub-path Imports
+## Subpath exports
 
 ```ts
 import { createRouter, defineRoutes } from '@willram/router';       // full API
@@ -335,6 +342,27 @@ import { createRouter, defineRoutes } from '@willram/router/core';  // core only
 import { RouteController, link } from '@willram/router/lit';        // Lit bindings only
 ```
 
+The doc-check compiles the block below against the published `./core` and `./lit`
+subpaths under both node16 and bundler resolution — an unresolved subpath fails the check:
+
+<!-- doc-check -->
+```ts
+import { CompiledPathMatcher } from '@willram/router/core';
+import { RouterOutlet } from '@willram/router/lit';
+
+// ./core — a framework-neutral matcher, usable without Lit
+const matcher = new CompiledPathMatcher('/users/:id');
+const matched = matcher.exec('/users/42'); // { params: { id: '42' } } | null
+console.log(matched?.params.id);
+
+// ./lit — the outlet element class lives in the Lit-only subpath
+customElements.define('app-router-outlet', RouterOutlet);
+```
+
 ## License
 
 MIT
+
+---
+
+> See the [root README](../../README.md) for the monorepo map and the cross-package integration example.
