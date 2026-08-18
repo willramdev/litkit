@@ -122,7 +122,20 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. `.changeset/config.json` is configured (`access: restricted`, `baseBranch: main`, the five `@willram/*` packages `fixed`/lockstep at v1.0), and `release.yml` uses a SHA-pinned `changesets/action` with `{contents, pull-requests, packages}: write` and `NODE_AUTH_TOKEN=GITHUB_TOKEN` (no PAT, no `--provenance`) (RLS-04, RLS-05)
   4. All five packages are published to GitHub Packages at an explicit `1.0.0` — before adopting the changesets version bump — with git tags and a GitHub Release (RLS-07)
 
-**Plans**: TBD
+**Plans**: 4 plans
+
+**Wave 1** *(blocking gate — nothing proceeds until confirmed)*
+
+- [ ] 04-01-PLAN.md — GATE: create `willram` org + verify name available + transfer repo + re-point local remote (RLS-01, D-01/D-02)
+
+**Wave 2** *(blocked on Wave 1; parallel — no file overlap)*
+
+- [ ] 04-02-PLAN.md — per-package `publishConfig` + `files` allowlist + `prepublishOnly`, and committed auth-free root `.npmrc` (RLS-02, RLS-03, RLS-06)
+- [ ] 04-03-PLAN.md — extend `.changeset/config.json` with the `fixed` lockstep group + clear 3 pending changesets + SHA-pinned token-safe `release.yml` (RLS-04, RLS-05)
+
+**Wave 3** *(blocked on Wave 2)*
+
+- [ ] 04-04-PLAN.md — manual one-shot `1.0.0` publish: build → `changeset publish` → push tags → cut GitHub Release (RLS-07, D-03)
 
 ### Phase 5: Consumer Install Verification
 
@@ -148,5 +161,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 (Phase 3 may run in p
 | 1. Build & Typecheck Hardening | 4/4 | Complete    | 2026-08-11 |
 | 2. Tests & CI | 5/5 | In Progress|  |
 | 3. Docs | 5/5 | Complete    | 2026-08-17 |
-| 4. Release Automation & Publish | 0/TBD | Not started | - |
+| 4. Release Automation & Publish | 0/4 | Not started | - |
 | 5. Consumer Install Verification | 0/TBD | Not started | - |
