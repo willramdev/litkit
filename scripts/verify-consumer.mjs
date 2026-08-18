@@ -20,11 +20,10 @@
 //   node scripts/verify-consumer.mjs                  # full runner (all wired checks)
 
 import { spawnSync } from 'node:child_process';
-import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -144,32 +143,50 @@ async function checkInstall() {
   log(`Consumer dir: ${consumerDir}`);
   runNpmInstall();
 
-  // Resolve @willramdev/kit from the consumer and assert the path is under the
-  // temp consumer's node_modules — the Spoofing guard (Pitfall 1 / T-5-02).
-  const requireFromConsumer = createRequire(path.join(consumerDir, 'package.json'));
-  let resolvedKit;
-  try {
-    resolvedKit = requireFromConsumer.resolve('@willramdev/kit');
-  } catch (err) {
-    fail(`VER-01 FAIL: could not resolve @willramdev/kit from the consumer: ${err.message}`);
+  // Resolve AND load @willramdev/kit FROM the consumer via a child `node`
+  // process whose cwd is consumerDir, so the package's ESM `import` export
+  // condition is honored. The published @willramdev/* packages are
+  // `"type":"module"` and define ONLY the `import` condition in their
+  // exports["."] — no `require`/`default`. A parent-side
+  // createRequire(...).resolve requests the CommonJS `require` condition, which
+  // these packages do not export, throwing ERR_PACKAGE_PATH_NOT_EXPORTED. The
+  // child ESM probe is the correct resolution method; the resolved path is then
+  // asserted to be under the temp consumer's node_modules (T-5-02 Spoofing
+  // guard / Pitfall 1).
+  const probeScript =
+    "const url = import.meta.resolve('@willramdev/kit');\n" +
+    "const mod = await import('@willramdev/kit');\n" +
+    "if (typeof mod.KitElement !== 'function') { console.error('KIT_EXPORT_BAD'); process.exit(3); }\n" +
+    "console.log('RESOLVED::' + url);\n";
+
+  const result = spawnSync(process.execPath, ['--input-type=module', '--eval', probeScript], {
+    cwd: consumerDir,
+    env: process.env,
+    encoding: 'utf8',
+  });
+
+  if (result.status !== 0) {
+    fail(
+      `VER-01 FAIL: could not resolve/import @willramdev/kit from the consumer ` +
+        `(exit ${result.status}). stderr:\n${result.stderr || '(none)'}`,
+    );
   }
 
+  const match = /^RESOLVED::(.+)$/m.exec(result.stdout || '');
+  if (!match) {
+    fail(`VER-01 FAIL: probe did not emit a RESOLVED:: line. stdout:\n${result.stdout || '(none)'}`);
+  }
+  const resolvedPath = fileURLToPath(match[1].trim());
+
   const expectedPrefix = path.join(consumerDir, 'node_modules') + path.sep;
-  if (!path.resolve(resolvedKit).startsWith(expectedPrefix)) {
+  if (!path.resolve(resolvedPath).startsWith(expectedPrefix)) {
     fail(
-      `VER-01 FAIL: @willramdev/kit resolved to ${resolvedKit}, which is NOT under ` +
+      `VER-01 FAIL: @willramdev/kit resolved to ${resolvedPath}, which is NOT under ` +
         `${expectedPrefix}. The workspace shadowed the registry install (false positive).`,
     );
   }
-  log(`Resolved @willramdev/kit: ${resolvedKit}`);
 
-  // Dynamically import the installed package and touch one real export to prove
-  // the tarball actually loads.
-  const mod = await import(pathToFileURL(resolvedKit).href);
-  if (typeof mod.KitElement !== 'function') {
-    fail('VER-01 FAIL: @willramdev/kit imported but KitElement is not a constructor.');
-  }
-
+  log(`Resolved @willramdev/kit: ${resolvedPath}`);
   log('VER-01 PASS');
 }
 
