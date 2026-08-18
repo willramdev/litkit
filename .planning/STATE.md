@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 03
 current_phase_name: docs
 status: executing
-stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-08-18T01:35:05.601Z"
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-08-18T01:46:48.529Z"
 last_activity: 2026-08-17
 last_activity_desc: Phase 03 execution started
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 14
-  completed_plans: 10
+  completed_plans: 11
 ---
 
 # Project State
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-08-10)
 ## Current Position
 
 Phase: 03 (docs) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 Status: Ready to execute
 Last activity: 2026-08-17 — Phase 03 execution started
 
-Progress: [███████░░░] 71%
+Progress: [████████░░] 79%
 
 ## Performance Metrics
 
@@ -63,6 +63,7 @@ Progress: [███████░░░] 71%
 | Phase 01 P03 | 3 | 3 tasks | 3 files |
 | Phase 01 P04 | 8 min | 3 tasks | 6 files |
 | Phase 03 P01 | 6 | 2 tasks | 6 files |
+| Phase 03 P02 | 12 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -78,6 +79,8 @@ Recent decisions affecting current work:
 - [Phase ?]: 01-02: TanStack cores (query-core/form-core) reclassified as required peerDependencies (kept as devDeps); query/forms sideEffects allowlist their element-carrying built entries; forms multi-entry build safe (zod shares only types).
 - [Phase ?]: 03-01: doc-check is a standalone authoring-time harness (tools/doc-check/) extending BUILD-06; ci.yml untouched (D-04).
 - [Phase ?]: 03-01: <!-- doc-check --> marker opts blocks into compilation; only marker-adjacent ts fences are extracted/compiled.
+- [Phase ?]: 03-02: query/forms READMEs normalized + marked Quickstarts verified by doc-check under node16+bundler; forms exercises the /zod subpath.
+- [Phase ?]: 03-02: shipped bind()/field() type FormInstance<any> reject a concrete FormController<T> (group keyof-T variance) — deferred; forms Quickstart uses the lit-form context pattern.
 
 ### Pending Todos
 
@@ -98,6 +101,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-18T01:34:56.828Z
-Stopped at: Completed 03-01-PLAN.md
+Last session: 2026-08-18T01:46:48.518Z
+Stopped at: Completed 03-02-PLAN.md
 Resume file: None
