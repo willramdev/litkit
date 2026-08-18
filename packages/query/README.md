@@ -2,13 +2,59 @@
 
 Lit controllers for TanStack Query — reactive data fetching and mutations for web components.
 
-## Installation
+## Install
 
 ```bash
 npm install @willram/query @tanstack/query-core lit
 ```
 
-## Quick Start
+`@tanstack/query-core` and `lit` are required peer dependencies.
+
+## Quickstart
+
+### KitElement
+
+<!-- doc-check -->
+```ts
+import { KitElement, define } from '@willram/kit';
+import { html } from 'lit';
+import { query, createQueryClient } from '@willram/query';
+
+interface User {
+  id: number;
+  name: string;
+}
+
+const client = createQueryClient();
+
+class UserList extends KitElement {
+  users = this.use(
+    query<User[]>(
+      {
+        queryKey: ['users'],
+        queryFn: (): Promise<User[]> =>
+          fetch('/api/users').then((r) => r.json() as Promise<User[]>),
+      },
+      { client },
+    ),
+  );
+
+  render() {
+    const { data, isLoading, error } = this.users.result;
+
+    if (isLoading) return html`<p>Loading…</p>`;
+    if (error) return html`<p>Error: ${error.message}</p>`;
+
+    return html`
+      <ul>
+        ${(data ?? []).map((u) => html`<li>${u.name}</li>`)}
+      </ul>
+    `;
+  }
+}
+
+define('user-list', UserList);
+```
 
 ### LitElement
 
@@ -32,28 +78,10 @@ class UserList extends LitElement {
 
     return html`
       <ul>
-        ${data.map(u => html`<li>${u.name}</li>`)}
+        ${(data ?? []).map(u => html`<li>${u.name}</li>`)}
       </ul>
     `;
   }
-}
-```
-
-### KitElement
-
-```ts
-import { KitElement, html } from '@willram/kit';
-import { query, createQueryClient } from '@willram/query';
-
-const client = createQueryClient();
-
-class UserList extends KitElement {
-  users = this.use(query({
-    queryKey: ['users'],
-    queryFn: () => fetch('/api/users').then(r => r.json()),
-  }, { client }));
-
-  // render() is the same as above
 }
 ```
 
@@ -94,7 +122,7 @@ connectedCallback() {
 }
 ```
 
-## API Reference
+## Core API
 
 ### QueryController
 
@@ -168,3 +196,7 @@ import { QueryClient, QueryObserver, type QueryKey } from '@willram/query';
 ## License
 
 MIT
+
+---
+
+> See the [root README](../../README.md) for the monorepo map and the cross-package integration example.
