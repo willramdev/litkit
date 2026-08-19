@@ -92,40 +92,42 @@ Explicitly excluded — documented to prevent scope creep. Anti-features surface
 
 ## Traceability
 
-Each v1.1 requirement maps to exactly one phase — populated during roadmap creation.
+Each v1.1 requirement maps to exactly one phase. Phase numbering continues from v1.0 (last phase = 5); v1.1 spans Phases 6-12.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| TYPE-01 | TBD | Pending |
-| TYPE-02 | TBD | Pending |
-| TYPE-03 | TBD | Pending |
-| WARN-01 | TBD | Pending |
-| WARN-02 | TBD | Pending |
-| WARN-03 | TBD | Pending |
-| DOCS-05 | TBD | Pending |
-| DOCS-06 | TBD | Pending |
-| DOCS-07 | TBD | Pending |
-| CEM-01 | TBD | Pending |
-| CEM-02 | TBD | Pending |
-| CEM-03 | TBD | Pending |
-| CEM-04 | TBD | Pending |
-| EXPL-01 | TBD | Pending |
-| EXPL-02 | TBD | Pending |
-| EXPL-03 | TBD | Pending |
-| DTOOL-01 | TBD | Pending |
-| DTOOL-02 | TBD | Pending |
-| DTOOL-03 | TBD | Pending |
-| DTOOL-04 | TBD | Pending |
-| DEPS-01 | TBD | Pending |
-| DEPS-02 | TBD | Pending |
-| DEPS-03 | TBD | Pending |
+| TYPE-01 | Phase 6 | Pending |
+| TYPE-02 | Phase 6 | Pending |
+| TYPE-03 | Phase 6 | Pending |
+| WARN-01 | Phase 7 | Pending |
+| WARN-02 | Phase 7 | Pending |
+| WARN-03 | Phase 7 | Pending |
+| DOCS-05 | Phase 8 | Pending |
+| DOCS-06 | Phase 8 | Pending |
+| DOCS-07 | Phase 8 | Pending |
+| CEM-01 | Phase 9 | Pending |
+| CEM-02 | Phase 9 | Pending |
+| CEM-03 | Phase 9 | Pending |
+| CEM-04 | Phase 9 | Pending |
+| EXPL-01 | Phase 10 | Pending |
+| EXPL-02 | Phase 10 | Pending |
+| EXPL-03 | Phase 10 | Pending |
+| DTOOL-01 | Phase 11 | Pending |
+| DTOOL-02 | Phase 11 | Pending |
+| DTOOL-03 | Phase 11 | Pending |
+| DTOOL-04 | Phase 11 | Pending |
+| DEPS-01 | Phase 12 | Pending |
+| DEPS-02 | Phase 12 | Pending |
+| DEPS-03 | Phase 12 | Pending |
 
 **Coverage:**
 
 - v1.1 requirements: 23 total
-- Mapped to phases: 0 (filled by roadmapper)
-- Unmapped: 23 ⚠️ (resolved at roadmap creation)
+- Mapped to phases: 23 ✓ (Phases 6-12)
+- Unmapped: 0 ✓
+
+Per-phase distribution: Phase 6 (TYPE ×3), Phase 7 (WARN ×3), Phase 8 (DOCS ×3), Phase 9 (CEM ×4), Phase 10 (EXPL ×3), Phase 11 (DTOOL ×4), Phase 12 (DEPS ×3).
 
 ---
 *Requirements defined: 2026-08-19*
-*Last updated: 2026-08-19 after v1.1 milestone requirement definition*
+*Last updated: 2026-08-19 — traceability filled at v1.1 roadmap creation (23/23 mapped to Phases 6-12)*
