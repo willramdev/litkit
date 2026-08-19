@@ -2,18 +2,18 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 5
-current_phase_name: Consumer Install Verification
-status: milestone-complete
-stopped_at: Phase 02 UAT verified — all 5 phases complete, milestone v1.0 ready to close
-last_updated: "2026-08-19T16:49:13.000Z"
+status: Awaiting next milestone
+stopped_at: Phase 02 UAT verified (11/11 pass, 0 issues) + security verified (13 threats closed, threats_open 0); all 5 phases complete — milestone v1.0 100% complete
+last_updated: "2026-08-19T17:38:06.536Z"
 last_activity: 2026-08-19
-last_activity_desc: "Quick task 260819-hlj — forms bind/field generic-overload typing fix (pre-close resolve item); milestone v1.0 still ready to close"
+last_activity_desc: Quick task 260819-hlj — forms bind/field generic-overload typing fix (pre-close resolve item); milestone v1.0 still ready to close
 progress:
   total_phases: 5
   completed_phases: 5
   total_plans: 20
   completed_plans: 20
+current_phase: 5
+current_phase_name: Consumer Install Verification
 ---
 
 # Project State
@@ -27,12 +27,10 @@ See: .planning/PROJECT.md (updated 2026-08-19)
 
 ## Current Position
 
-Phase: 2 — Tests & CI (final straggler, completed out of order)
-Plan: All complete
-Status: Milestone v1.0 complete — all 5 phases verified
-Last activity: 2026-08-19 — Quick task 260819-hlj: forms bind/field generic-overload typing fix (pre-close resolve item)
-
-Progress: [██████████] 100%
+Phase: Milestone v1.0 complete
+Plan: —
+Status: Awaiting next milestone
+Last activity: 2026-08-19 — Milestone v1.0 completed and archived
 
 ## Performance Metrics
 
@@ -132,3 +130,7 @@ Items acknowledged and carried forward from previous milestone close:
 Last session: 2026-08-19
 Stopped at: Phase 02 UAT verified (11/11 pass, 0 issues) + security verified (13 threats closed, threats_open 0); all 5 phases complete — milestone v1.0 100% complete
 Resume file: None
+
+## Operator Next Steps
+
+- Start the next milestone with /gsd-new-milestone
