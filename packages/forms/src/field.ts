@@ -73,8 +73,8 @@ class FieldDirective extends Directive {
 
 const fieldDirective = directive(FieldDirective);
 
-export function field(
-  form: FormInstance<any>,
+export function field<T extends Record<string, unknown>>(
+  form: FormInstance<T>,
   path: string,
   renderFn: (field: FieldInstance) => unknown,
 ): ReturnType<typeof fieldDirective>;

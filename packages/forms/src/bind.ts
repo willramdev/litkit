@@ -235,8 +235,8 @@ class BindDirective extends AsyncDirective {
 
 const bindDirective = directive(BindDirective);
 
-export function bind(
-  form: FormInstance<any>,
+export function bind<T extends Record<string, unknown>>(
+  form: FormInstance<T>,
   path: string,
   options?: BindOptions,
 ): ReturnType<typeof bindDirective>;
