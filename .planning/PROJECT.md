@@ -49,7 +49,7 @@ All five packages install cleanly from GitHub Packages and work as documented �
 
 - **Tech stack**: TypeScript with `erasableSyntaxOnly: true` — no constructor parameter properties; use explicit class fields — TS 5.9/6 constraint, already established repo-wide
 - **Compatibility**: ES2023 target, `lit@^3.0.0` peer dependency, every Vite build must externalize `lit`, `lit/*`, and `@tanstack/*` — prevents bundle duplication for consumers
-- **Publishing**: GitHub Packages registry, scope must match GitHub owner (`willram` org) — internal-team distribution choice
+- **Publishing**: GitHub Packages registry, scope must match GitHub owner (`willramdev`) — internal-team distribution choice
 - **Architecture**: keep core (framework-neutral) separated from Lit bindings per package; no Lit code in core — enables SSR/non-Lit reuse and clean typing
 - **Dependencies**: unidirectional — `kit` never imports from sibling packages — avoids circular workspace deps
 
