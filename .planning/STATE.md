@@ -1,7 +1,7 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.0
-milestone_name: milestone
+milestone_name: Harden & Ship
 status: Awaiting next milestone
 stopped_at: Phase 02 UAT verified (11/11 pass, 0 issues) + security verified (13 threats closed, threats_open 0); all 5 phases complete — milestone v1.0 100% complete
 last_updated: "2026-08-19T17:38:06.536Z"
@@ -23,7 +23,7 @@ current_phase_name: Consumer Install Verification
 See: .planning/PROJECT.md (updated 2026-08-19)
 
 **Core value:** All five packages install cleanly from GitHub Packages and work as documented — a consumer can `npm install @willramdev/*` and build a Lit app against a green, typed, tested, documented API.
-**Current focus:** Milestone v1.0 complete — all 5 phases done; ready to close via `/gsd-complete-milestone v1.0`
+**Current focus:** v1.0 shipped and archived — planning next milestone (define via `/gsd-new-milestone`)
 
 ## Current Position
 
@@ -77,29 +77,12 @@ Last activity: 2026-08-19 — Milestone v1.0 completed and archived
 
 ### Decisions
 
-Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
+Full v1.0 decision log archived in PROJECT.md (Key Decisions) and `.planning/milestones/v1.0-ROADMAP.md`. Carry-forward for the next milestone:
 
-- Roadmap: Only hard serialization is green baseline → CI/automation → publish; docs (Phase 3) parallel to Phase 2 but must land before publish.
-- Roadmap: Correctness-config fixes (sideEffects, TanStack peers, module-format, `.d.ts` resolution) live in Phase 1 (not the release phase) so they can be tested in Phase 2 and verified in Phase 5.
-- Roadmap: Kit-first publish ordering is a non-blocker (no sibling imports `@willramdev/kit` in source) — no ordering machinery built.
-- [Phase ?]: Router: per-entry ESM Vite build kept (not single multi-entry) so @customElement registrations stay inside the sideEffects-allowlisted entries (D-03/BUILD-03); single multi-entry build hoists them into an un-allowlistable hash chunk.
-- [Phase ?]: 01-02: TanStack cores (query-core/form-core) reclassified as required peerDependencies (kept as devDeps); query/forms sideEffects allowlist their element-carrying built entries; forms multi-entry build safe (zod shares only types).
-- [Phase ?]: 03-01: doc-check is a standalone authoring-time harness (tools/doc-check/) extending BUILD-06; ci.yml untouched (D-04).
-- [Phase ?]: 03-01: <!-- doc-check --> marker opts blocks into compilation; only marker-adjacent ts fences are extracted/compiled.
-- [Phase ?]: 03-02: query/forms READMEs normalized + marked Quickstarts verified by doc-check under node16+bundler; forms exercises the /zod subpath.
-- [Phase ?]: 03-02: shipped bind()/field() type FormInstance<any> reject a concrete FormController<T> (group keyof-T variance) — deferred; forms Quickstart uses the lit-form context pattern.
-- [Phase ?]: 03-04: root README ships one compiling <!-- doc-check --> cross-package snippet (router+query+forms+store into one KitElement); option shapes confirmed against dist/*.d.ts under node16+bundler (DOCS-02).
-- [Phase ?]: 03-04: consumer .npmrc.example carries scope->registry map + env-expanded _authToken; kept DISTINCT from Phase 4 project .npmrc (D-07 costly seam) (DOCS-03).
-- [Phase ?]: 03-05: MIT LICENSE files at root + all five packages (6 identical copies), copyright 'Will Ramanand' 2026 (D-05) — distinct from package.json author 'William Ramanand', left untouched (DOCS-04).
-- [Phase ?]: 03-05: verify-then-fill — only root package.json got 'license: MIT'; the five package.json already declared it. One phase-wide changeset covers all five packages (patch), consumed by Phase 4 changesets versioning.
-- [Phase ?]: 04-02: five @willramdev/* packages gain publishConfig(registry=GitHub Packages) + files allowlist [dist,README,LICENSE,CHANGELOG] + prepublishOnly guard; committed auth-free root .npmrc routes only the scope (no global registry, no token)
-- [Phase ?]: 04-03: .changeset/config.json extended in place with fixed lockstep group over all five @willramdev/* packages (bump+publish together); access:restricted/baseBranch:main preserved. Three pending changesets deleted for a clean 1.0.0 baseline (RLS-04, D-04).
-- [Phase ?]: 04-03: release.yml is the auth-bearing sibling of read-only ci.yml — SHA-pinned changesets/action@198f833 (v2.1.0) with v2 kebab inputs, least-privilege {contents,pull-requests,packages}:write, GITHUB_TOKEN-only, no PAT, no provenance (RLS-05).
-- [Phase ?]: 05-01: consumer-install harness resolves published @willramdev/* via an ESM child probe (import.meta.resolve + await import()) not createRequire().resolve() — packages export only the import condition; VER-01/VER-04 green against the live registry from an os.tmpdir() consumer.
-- [Phase ?]: 05-02: VER-02 PASS/FAIL decided solely by jsdom runtime customElements.get(tag); static define-count demoted to informational (minification undercounts .define( forms, 3 vs 5). jsdom probe needs full window globals exposed in a child process from consumerDir.
-- [Phase ?]: 05-02: VER-03 single-instance proven by QueryClient Direct === ViaKit + shared-cache read-back through litkit QueryObserver; npm ls shows single deduped @tanstack/query-core 5.101.4. Uses export * from '@tanstack/query-core' at packages/query/src/index.ts:11.
-- [Phase ?]: 05-02: verify-consumer.yml is workflow_dispatch-only, least-privilege {contents,packages}:read, uses built-in secrets.GITHUB_TOKEN (no PAT); ci.yml untouched to preserve Phase 4 read-only/publish-token split.
+- Correctness-config fixes (sideEffects allowlist, TanStack required-peers, ESM-only, `.d.ts` resolution) live in the build phase so they can be tested and verified downstream — not batched at publish.
+- Per-entry ESM Vite build (not single multi-entry) keeps `@customElement` registrations inside the sideEffects-allowlisted entries.
+- Read-only `ci.yml` vs auth-bearing `release.yml` token split — preserve when touching CI.
+- Resolution harnesses use ESM (`import.meta.resolve` + `await import()`), not `createRequire().resolve()`, since packages export only the import condition.
 
 ### Pending Todos
 
@@ -107,8 +90,7 @@ None yet.
 
 ### Blockers/Concerns
 
-- [Phase 4 — RESOLVED] `willram` GitHub org-name was not secured; resolved by shipping under the `@willramdev` scope (owner `willramdev`) instead of creating a `willram` org. No longer blocking — RLS-01 dropped/obsolete.
-- [Phase 4] npm `workspace:`-protocol behavior on installed npm 11 is MEDIUM confidence — only matters if an internal `@willramdev/kit` edge is ever added; verify locally before relying on it.
+- [Carry-forward] npm `workspace:`-protocol behavior on installed npm 11 is MEDIUM confidence — only matters if an internal `@willramdev/kit` edge is ever added; verify locally before relying on it.
 
 ## Deferred Items
 
