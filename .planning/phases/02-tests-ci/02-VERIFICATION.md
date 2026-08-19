@@ -1,14 +1,16 @@
 ---
 phase: 02-tests-ci
 verified: 2026-08-16T00:00:00Z
-status: human_needed
+status: passed
 score: 5/5 must-haves verified (codebase-level)
 behavior_unverified: 0
 overrides_applied: 0
 human_verification:
+
   - test: "Push this branch / open a PR to `main` and confirm the `ci` workflow completes green on BOTH Node 22 and Node 24 (build-test matrix) and the `gate` job (publint + attw esm-only + changeset status + coverage)."
     expected: "GitHub Actions `ci` check reports success on both matrix legs and the gate job; no step fails."
     why_human: "The workflow triggers on push/PR to `main` and has not run on GitHub yet (current branch is fix/typecheck-query-derived). Actual CI execution is an external-service runtime behavior; every constituent command was verified passing locally on this tree, but only a real GitHub run proves the encoded gate goes green in CI."
+
   - test: "Repo admin: add `ci` as a required status check in GitHub branch protection for `main`."
     expected: "PRs to `main` cannot merge until the `ci` check passes — regressions are actually blocked, not just reported."
     why_human: "Branch protection is a GitHub UI setting (not git-committable). The phase goal's 'regressions cannot merge silently' clause depends on this being set; 02-05 SUMMARY flags it as an out-of-scope repo-admin step."

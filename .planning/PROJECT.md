@@ -81,4 +81,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-18 after Phase 5 completion — consumer-install verification (VER-01..04) proven green against the live GitHub Packages registry; the Core Value (packages install cleanly and work as documented) is now validated end-to-end from an out-of-tree consumer.*
+*Last updated: 2026-08-19 after Phase 2 completion — Tests & CI was the final straggler (executed after Phases 3–5, verified last). UAT passed 11/11 with 0 issues, security verified (13 STRIDE threats closed, threats_open 0), and canonical verification is now `passed`. With Phase 2 done, all 5 phases of milestone v1.0 are complete — ready to close via `/gsd-complete-milestone v1.0`.*
