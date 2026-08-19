@@ -19,7 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 2: Tests & CI** - Named critical-path suites per package with jsdom mocks, enforced by a read-only `ci.yml` gate (typecheck/build/test + publint/attw + changeset status)
 - [x] **Phase 3: Docs** - Per-package runnable quickstarts, root monorepo map + integration example, GitHub Packages consumer-auth doc, and LICENSE in every tarball (completed 2026-08-17)
 - [x] **Phase 4: Release Automation & Publish** - `willramdev` org (fallback: `willram` name unavailable) + two-workflow Changesets pipeline, then an explicit `1.0.0` publish of all five `@willramdev/*` to GitHub Packages with tags; manual `v1.0.0` GitHub Release outstanding (completed 2026-08-18)
-- [ ] **Phase 5: Consumer Install Verification** - Clean-machine install of the shipped tarballs proves tree-shaking survival, TanStack single-instance, and subpath resolution
+- [x] **Phase 5: Consumer Install Verification** - Clean-machine install of the shipped tarballs proves tree-shaking survival, TanStack single-instance, and subpath resolution (completed 2026-08-18)
 
 ## Phase Details
 
@@ -170,4 +170,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 (Phase 3 may run in p
 | 2. Tests & CI | 5/5 | In Progress|  |
 | 3. Docs | 5/5 | Complete    | 2026-08-17 |
 | 4. Release Automation & Publish | 4/4 | Complete    | 2026-08-18 |
-| 5. Consumer Install Verification | 2/2 | In Progress|  |
+| 5. Consumer Install Verification | 2/2 | Complete    | 2026-08-18 |
