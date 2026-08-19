@@ -4,9 +4,9 @@
 
 **litkit**
 
-litkit is a monorepo of five composable Lit web-component packages — `@willram/kit` (ergonomic base class, controllers, decorators) plus `@willram/router`, `@willram/query`, `@willram/forms`, and `@willram/store`. Each package follows a framework-neutral core + Lit-integration pattern built on Reactive Controllers, so Lit apps get routing, TanStack-Query data fetching, TanStack-Form forms, and lightweight state without prop drilling or boilerplate. This milestone hardens the existing library and ships v1.0 to an internal team.
+litkit is a monorepo of five composable Lit web-component packages — `@willramdev/kit` (ergonomic base class, controllers, decorators) plus `@willramdev/router`, `@willramdev/query`, `@willramdev/forms`, and `@willramdev/store`. Each package follows a framework-neutral core + Lit-integration pattern built on Reactive Controllers, so Lit apps get routing, TanStack-Query data fetching, TanStack-Form forms, and lightweight state without prop drilling or boilerplate. This milestone hardens the existing library and ships v1.0 to an internal team.
 
-**Core Value:** All five packages install cleanly from GitHub Packages and work as documented — a consumer can `npm install @willram/*` and build a Lit app against a green, typed, tested, documented API.
+**Core Value:** All five packages install cleanly from GitHub Packages and work as documented — a consumer can `npm install @willramdev/*` and build a Lit app against a green, typed, tested, documented API.
 
 ### Constraints
 
@@ -37,11 +37,11 @@ litkit is a monorepo of five composable Lit web-component packages — `@willram
 ## Frameworks
 
 - Lit 3.3.2 (peer dependency) - Web components framework with reactive controllers
-- `@willram/kit` 1.0.0 - Base class, helpers, and controllers for Lit components (`packages/kit`)
-- `@willram/router` 1.0.0 - Client-side router for Lit SPA with guards, lazy loading, nested routes (`packages/router`)
-- `@willram/query` 1.0.0 - Lit controllers for TanStack Query reactive data fetching (`packages/query`)
-- `@willram/forms` 1.0.0 - Type-safe form management with validation and binding (`packages/forms`)
-- `@willram/store` 1.0.0 - Lightweight reactive state management for Lit applications (`packages/store`)
+- `@willramdev/kit` 1.0.0 - Base class, helpers, and controllers for Lit components (`packages/kit`)
+- `@willramdev/router` 1.0.0 - Client-side router for Lit SPA with guards, lazy loading, nested routes (`packages/router`)
+- `@willramdev/query` 1.0.0 - Lit controllers for TanStack Query reactive data fetching (`packages/query`)
+- `@willramdev/forms` 1.0.0 - Type-safe form management with validation and binding (`packages/forms`)
+- `@willramdev/store` 1.0.0 - Lightweight reactive state management for Lit applications (`packages/store`)
 - Vite 8.0.1 - Fast build tool and dev server, configures Rollup for library bundling
 - Rollup (via Vite) - Used for ESM/CJS dual export in packages like router
 - Vitest 4.1.9 - Test runner with Jest-compatible API
@@ -50,10 +50,10 @@ litkit is a monorepo of five composable Lit web-component packages — `@willram
 
 ## Key Dependencies
 
-- `@tanstack/query-core` 5.91.0 - Core TanStack Query logic for reactive data fetching (used by `@willram/query`)
-- `@tanstack/form-core` 1.28.5 - Core TanStack Form logic for form state management (used by `@willram/forms`)
+- `@tanstack/query-core` 5.91.0 - Core TanStack Query logic for reactive data fetching (used by `@willramdev/query`)
+- `@tanstack/form-core` 1.28.5 - Core TanStack Form logic for form state management (used by `@willramdev/forms`)
 - `lit` 3.3.2 - Web components reactive library (peer dependency for all packages)
-- `zod` >=3.0.0 - Optional schema validation for `@willram/forms` when using `@willram/forms/zod` export
+- `zod` >=3.0.0 - Optional schema validation for `@willramdev/forms` when using `@willramdev/forms/zod` export
 
 ## Configuration
 
@@ -120,7 +120,7 @@ litkit is a monorepo of five composable Lit web-component packages — `@willram
 ## Import Organization
 
 - No path aliases configured
-- All imports use relative paths or full npm package names (`@willram/kit`, `@tanstack/query-core`, etc.)
+- All imports use relative paths or full npm package names (`@willramdev/kit`, `@tanstack/query-core`, etc.)
 - Always include `.ts` extension in imports (e.g., `./prop.ts`, `./types.ts`)
 - Enables TypeScript strict module resolution
 
@@ -173,7 +173,7 @@ litkit is a monorepo of five composable Lit web-component packages — `@willram
 - `packages/kit/src/controllers/index.ts` exports all controllers
 - Each package has main `index.ts` as single entry point
 - Type exports kept alongside implementation exports
-- Four npm-scoped packages under `@willram/` scope
+- Four npm-scoped packages under `@willramdev/` scope
 - Each package independent with own `package.json`, `tsconfig.json`, `vite.config.ts`
 - Shared `tsconfig.base.json` extended by all packages
 - Build outputs: `dist/` directory with `.js`, `.cjs`, and `.d.ts` files
@@ -264,22 +264,22 @@ litkit is a monorepo of five composable Lit web-component packages — `@willram
 ## Entry Points
 
 - Location: `packages/kit/src/index.ts`
-- Triggers: Import `@willram/kit`, use `KitElement`, controller factories, decorators
+- Triggers: Import `@willramdev/kit`, use `KitElement`, controller factories, decorators
 - Responsibilities: Establish component base, factory patterns, utility functions
 - Location: `packages/router/src/index.ts`
-- Triggers: `import '@willram/router'` - re-exports both core and Lit modules
+- Triggers: `import '@willramdev/router'` - re-exports both core and Lit modules
 - Responsibilities: Set up routing with `createRouter()`, render with RouterOutlet/RouterProvider
 - Location: `packages/router/src/router-core/index.ts`
-- Triggers: `import { createRouter } from '@willram/router/core'` (ESM/CJS conditional export)
+- Triggers: `import { createRouter } from '@willramdev/router/core'` (ESM/CJS conditional export)
 - Responsibilities: Framework-neutral routing (useful for non-Lit or SSR)
 - Location: `packages/query/src/index.ts`
-- Triggers: `import { query, mutation } from '@willram/query'` or `import '@willram/query'` for provider element
+- Triggers: `import { query, mutation } from '@willramdev/query'` or `import '@willramdev/query'` for provider element
 - Responsibilities: Set up queries/mutations via controller factories or provider element
 - Location: `packages/forms/src/index.ts`
-- Triggers: `import { form } from '@willram/forms'` or use `LitForm` element
+- Triggers: `import { form } from '@willramdev/forms'` or use `LitForm` element
 - Responsibilities: Create forms via controller factory, optionally use zod subexport for validation
 - Location: `packages/store/src/index.ts`
-- Triggers: `import { createStore, storeSlice } from '@willram/store'`
+- Triggers: `import { createStore, storeSlice } from '@willramdev/store'`
 - Responsibilities: Create stores, subscribe to slices, integrate with Lit components
 
 ## Architectural Constraints

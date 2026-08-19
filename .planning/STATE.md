@@ -22,7 +22,7 @@ progress:
 
 See: .planning/PROJECT.md (updated 2026-08-10)
 
-**Core value:** All five packages install cleanly from GitHub Packages and work as documented — a consumer can `npm install @willram/*` and build a Lit app against a green, typed, tested, documented API.
+**Core value:** All five packages install cleanly from GitHub Packages and work as documented — a consumer can `npm install @willramdev/*` and build a Lit app against a green, typed, tested, documented API.
 **Current focus:** Phase 05 — consumer-install-verification
 
 ## Current Position
@@ -83,7 +83,7 @@ Recent decisions affecting current work:
 
 - Roadmap: Only hard serialization is green baseline → CI/automation → publish; docs (Phase 3) parallel to Phase 2 but must land before publish.
 - Roadmap: Correctness-config fixes (sideEffects, TanStack peers, module-format, `.d.ts` resolution) live in Phase 1 (not the release phase) so they can be tested in Phase 2 and verified in Phase 5.
-- Roadmap: Kit-first publish ordering is a non-blocker (no sibling imports `@willram/kit` in source) — no ordering machinery built.
+- Roadmap: Kit-first publish ordering is a non-blocker (no sibling imports `@willramdev/kit` in source) — no ordering machinery built.
 - [Phase ?]: Router: per-entry ESM Vite build kept (not single multi-entry) so @customElement registrations stay inside the sideEffects-allowlisted entries (D-03/BUILD-03); single multi-entry build hoists them into an un-allowlistable hash chunk.
 - [Phase ?]: 01-02: TanStack cores (query-core/form-core) reclassified as required peerDependencies (kept as devDeps); query/forms sideEffects allowlist their element-carrying built entries; forms multi-entry build safe (zod shares only types).
 - [Phase ?]: 03-01: doc-check is a standalone authoring-time harness (tools/doc-check/) extending BUILD-06; ci.yml untouched (D-04).
@@ -109,7 +109,7 @@ None yet.
 ### Blockers/Concerns
 
 - [Phase 4] `willram` GitHub org-name availability is unverified — a squatting `willram` user would block the org and 403 every publish. Confirm first thing in Phase 4 planning; have a fallback name ready.
-- [Phase 4] npm `workspace:`-protocol behavior on installed npm 11 is MEDIUM confidence — only matters if an internal `@willram/kit` edge is ever added; verify locally before relying on it.
+- [Phase 4] npm `workspace:`-protocol behavior on installed npm 11 is MEDIUM confidence — only matters if an internal `@willramdev/kit` edge is ever added; verify locally before relying on it.
 
 ## Deferred Items
 
@@ -118,6 +118,12 @@ Items acknowledged and carried forward from previous milestone close:
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
 | *(none)* | | | |
+
+## Quick Tasks Completed
+
+| ID | Slug | Date | Description |
+|----|------|------|-------------|
+| 260818-t35 | scope-naming-reconcile | 2026-08-18 | Aligned active docs to the shipped `@willramdev/*` scope; recorded the `willram` org drop (RLS-01 obsolete/won't-do, no longer a v1 blocker) |
 
 ## Session Continuity
 

@@ -24,11 +24,11 @@
 
 **Core:**
 - Lit 3.3.2 (peer dependency) - Web components framework with reactive controllers
-- `@willram/kit` 1.0.0 - Base class, helpers, and controllers for Lit components (`packages/kit`)
-- `@willram/router` 1.0.0 - Client-side router for Lit SPA with guards, lazy loading, nested routes (`packages/router`)
-- `@willram/query` 1.0.0 - Lit controllers for TanStack Query reactive data fetching (`packages/query`)
-- `@willram/forms` 1.0.0 - Type-safe form management with validation and binding (`packages/forms`)
-- `@willram/store` 1.0.0 - Lightweight reactive state management for Lit applications (`packages/store`)
+- `@willramdev/kit` 1.0.0 - Base class, helpers, and controllers for Lit components (`packages/kit`)
+- `@willramdev/router` 1.0.0 - Client-side router for Lit SPA with guards, lazy loading, nested routes (`packages/router`)
+- `@willramdev/query` 1.0.0 - Lit controllers for TanStack Query reactive data fetching (`packages/query`)
+- `@willramdev/forms` 1.0.0 - Type-safe form management with validation and binding (`packages/forms`)
+- `@willramdev/store` 1.0.0 - Lightweight reactive state management for Lit applications (`packages/store`)
 
 **Build:**
 - Vite 8.0.1 - Fast build tool and dev server, configures Rollup for library bundling
@@ -42,12 +42,12 @@
 ## Key Dependencies
 
 **Critical:**
-- `@tanstack/query-core` 5.91.0 - Core TanStack Query logic for reactive data fetching (used by `@willram/query`)
-- `@tanstack/form-core` 1.28.5 - Core TanStack Form logic for form state management (used by `@willram/forms`)
+- `@tanstack/query-core` 5.91.0 - Core TanStack Query logic for reactive data fetching (used by `@willramdev/query`)
+- `@tanstack/form-core` 1.28.5 - Core TanStack Form logic for form state management (used by `@willramdev/forms`)
 - `lit` 3.3.2 - Web components reactive library (peer dependency for all packages)
 
 **Optional Peer Dependencies:**
-- `zod` >=3.0.0 - Optional schema validation for `@willram/forms` when using `@willram/forms/zod` export
+- `zod` >=3.0.0 - Optional schema validation for `@willramdev/forms` when using `@willramdev/forms/zod` export
 
 ## Configuration
 
@@ -82,11 +82,11 @@
 npm run build              # Build all packages
 npm run typecheck          # Type-check all packages
 npm run test               # Run tests across all packages
-npm run dev:kit            # Start dev server for @willram/kit
-npm run dev:router         # Start dev server for @willram/router
-npm run dev:query          # Start dev server for @willram/query
-npm run dev:forms          # Start dev server for @willram/forms
-npm run dev:store          # Start dev server for @willram/store
+npm run dev:kit            # Start dev server for @willramdev/kit
+npm run dev:router         # Start dev server for @willramdev/router
+npm run dev:query          # Start dev server for @willramdev/query
+npm run dev:forms          # Start dev server for @willramdev/forms
+npm run dev:store          # Start dev server for @willramdev/store
 ```
 
 **Package level (each package in `packages/*/package.json`):**

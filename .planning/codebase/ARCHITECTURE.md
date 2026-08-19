@@ -14,7 +14,7 @@
          ▼                  ▼                  ▼                  ▼
 ┌────────────────┐  ┌───────────────┐  ┌──────────────┐  ┌─────────────────┐
 │ Router Layer   │  │ Query Layer   │  │ Forms Layer  │  │ Store Layer     │
-│ @willram/router│  │ @willram/query│  │ @willram/    │  │ @willram/store  │
+│ @willramdev/router│  │ @willramdev/query│  │ @willramdev/    │  │ @willramdev/store  │
 │ `packages/     │  │ `packages/    │  │ forms        │  │ `packages/      │
 │  router`       │  │  query`       │  │ `packages/   │  │  store`         │
 └────────┬───────┘  └───────┬───────┘  │  forms`      │  └────────┬────────┘
@@ -149,32 +149,32 @@
 
 **Kit (Core):**
 - Location: `packages/kit/src/index.ts`
-- Triggers: Import `@willram/kit`, use `KitElement`, controller factories, decorators
+- Triggers: Import `@willramdev/kit`, use `KitElement`, controller factories, decorators
 - Responsibilities: Establish component base, factory patterns, utility functions
 
 **Router (Main):**
 - Location: `packages/router/src/index.ts`
-- Triggers: `import '@willram/router'` - re-exports both core and Lit modules
+- Triggers: `import '@willramdev/router'` - re-exports both core and Lit modules
 - Responsibilities: Set up routing with `createRouter()`, render with RouterOutlet/RouterProvider
 
 **Router Core (Subexport):**
 - Location: `packages/router/src/router-core/index.ts`
-- Triggers: `import { createRouter } from '@willram/router/core'` (ESM/CJS conditional export)
+- Triggers: `import { createRouter } from '@willramdev/router/core'` (ESM/CJS conditional export)
 - Responsibilities: Framework-neutral routing (useful for non-Lit or SSR)
 
 **Query:**
 - Location: `packages/query/src/index.ts`
-- Triggers: `import { query, mutation } from '@willram/query'` or `import '@willram/query'` for provider element
+- Triggers: `import { query, mutation } from '@willramdev/query'` or `import '@willramdev/query'` for provider element
 - Responsibilities: Set up queries/mutations via controller factories or provider element
 
 **Forms:**
 - Location: `packages/forms/src/index.ts`
-- Triggers: `import { form } from '@willram/forms'` or use `LitForm` element
+- Triggers: `import { form } from '@willramdev/forms'` or use `LitForm` element
 - Responsibilities: Create forms via controller factory, optionally use zod subexport for validation
 
 **Store:**
 - Location: `packages/store/src/index.ts`
-- Triggers: `import { createStore, storeSlice } from '@willram/store'`
+- Triggers: `import { createStore, storeSlice } from '@willramdev/store'`
 - Responsibilities: Create stores, subscribe to slices, integrate with Lit components
 
 ## Architectural Constraints
@@ -190,7 +190,7 @@
 
 ### Circular Package Dependencies
 
-**What happens:** A package (e.g., @willram/forms) imports from another package (e.g., @willram/kit) which re-exports from forms
+**What happens:** A package (e.g., @willramdev/forms) imports from another package (e.g., @willramdev/kit) which re-exports from forms
 **Why it's wrong:** Creates circular dependency in npm workspace, breaks tree-shaking, complicates CI/CD and type checking
 **Do this instead:** Keep dependency graph acyclic: kit has no dependencies on other packages. All other packages can depend on kit, but not each other. `packages/kit/src/index.ts` never imports from `packages/{router,query,forms,store}/src/`
 

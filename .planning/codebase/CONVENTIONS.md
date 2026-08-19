@@ -59,7 +59,7 @@
 
 **Path Aliases:**
 - No path aliases configured
-- All imports use relative paths or full npm package names (`@willram/kit`, `@tanstack/query-core`, etc.)
+- All imports use relative paths or full npm package names (`@willramdev/kit`, `@tanstack/query-core`, etc.)
 
 **File Extensions:**
 - Always include `.ts` extension in imports (e.g., `./prop.ts`, `./types.ts`)
@@ -165,7 +165,7 @@ static props(defs: Record<string, unknown>): void { ... }
 - Type exports kept alongside implementation exports
 
 **Monorepo Structure:**
-- Four npm-scoped packages under `@willram/` scope
+- Four npm-scoped packages under `@willramdev/` scope
 - Each package independent with own `package.json`, `tsconfig.json`, `vite.config.ts`
 - Shared `tsconfig.base.json` extended by all packages
 - Build outputs: `dist/` directory with `.js`, `.cjs`, and `.d.ts` files

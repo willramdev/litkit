@@ -10,7 +10,7 @@ Litkit is a library project providing Lit web component controllers and utilitie
 
 ### TanStack Query (Data Fetching)
 
-**Package:** `@willram/query` wraps `@tanstack/query-core`
+**Package:** `@willramdev/query` wraps `@tanstack/query-core`
 - **Location:** `packages/query/src`
 - **Purpose:** Provides reactive Lit controllers for TanStack Query (formerly React Query)
 - **What it integrates with:** Consuming applications provide fetch functions/HTTP clients
@@ -29,14 +29,14 @@ const query = new QueryController(host, { queryKey: ['data'], queryFn });
 
 ### TanStack Form (Form Management)
 
-**Package:** `@willram/forms` wraps `@tanstack/form-core`
+**Package:** `@willramdev/forms` wraps `@tanstack/form-core`
 - **Location:** `packages/forms/src`
 - **Purpose:** Provides type-safe Lit controllers for TanStack Form validation and binding
 - **What it integrates with:** Form validation via optional Zod schema
   - Form: `packages/forms/src/form-controller.ts`
   - Field: `packages/forms/src/field-controller.ts`
   - Zod validation: `packages/forms/src/zod.ts` (optional export)
-- **Validation:** Optional Zod integration via `@willram/forms/zod` export for schema-based validation
+- **Validation:** Optional Zod integration via `@willramdev/forms/zod` export for schema-based validation
   - Zod 4.3.6 (dev/peer dependency, optional)
 
 **Typical consumer integration:**
@@ -48,7 +48,7 @@ const form = new FormController(host, {
 });
 
 // Optional Zod validation:
-import { zodValidator } from '@willram/forms/zod';
+import { zodValidator } from '@willramdev/forms/zod';
 const form = new FormController(host, {
   validator: zodValidator(mySchema)
 });
@@ -68,7 +68,7 @@ const form = new FormController(host, {
   - Consumers control cache invalidation via query keys
 
 **State Management:**
-- `@willram/store` - Lightweight reactive store for shared state (`packages/store/src`)
+- `@willramdev/store` - Lightweight reactive store for shared state (`packages/store/src`)
   - No external integration; provides in-memory observable store
   - Location: `packages/store/src/store.ts`
 
@@ -103,7 +103,7 @@ const form = new FormController(host, {
 **Publishing:**
 - Target: npm registry (https://www.npmjs.com/)
 - Build output: ES modules + TypeScript definitions
-- Packages: `@willram/kit`, `@willram/router`, `@willram/query`, `@willram/forms`, `@willram/store`
+- Packages: `@willramdev/kit`, `@willramdev/router`, `@willramdev/query`, `@willramdev/forms`, `@willramdev/store`
 
 ## Webhooks & Callbacks
 
@@ -129,7 +129,7 @@ const form = new FormController(host, {
 
 Packages require consumers to install:
 - `lit` >=3.0.0 (all packages) - Web components framework
-- `zod` >=3.0.0 (optional for forms) - For schema validation in `@willram/forms/zod`
+- `zod` >=3.0.0 (optional for forms) - For schema validation in `@willramdev/forms/zod`
 
 ## Integration Testing
 

@@ -2,9 +2,9 @@
 
 ## Overview
 
-This is a harden-and-ship milestone for five already-functioning Lit packages (`@willram/kit` + router/query/forms/store), not a greenfield build. The journey moves through one hard serialization — **green baseline → CI/automation → publish** — bookended by verification. Phase 1 makes all five packages green and fixes the correctness-config traps a green build alone misses (tree-shaking, TanStack peers, `.d.ts` resolution). Phase 2 encodes that baseline as an enforced CI gate. Phase 3 writes the docs a consumer needs to install and build against the shipped API (parallelizable with Phase 2, but must land before publish). Phase 4 stands up the two-workflow Changesets release pipeline and ships an explicit `1.0.0` to GitHub Packages under the `willram` org. Phase 5 proves the shipped tarball actually works in a clean consumer.
+This is a harden-and-ship milestone for five already-functioning Lit packages (`@willramdev/kit` + router/query/forms/store), not a greenfield build. The journey moves through one hard serialization — **green baseline → CI/automation → publish** — bookended by verification. Phase 1 makes all five packages green and fixes the correctness-config traps a green build alone misses (tree-shaking, TanStack peers, `.d.ts` resolution). Phase 2 encodes that baseline as an enforced CI gate. Phase 3 writes the docs a consumer needs to install and build against the shipped API (parallelizable with Phase 2, but must land before publish). Phase 4 stands up the two-workflow Changesets release pipeline and ships an explicit `1.0.0` to GitHub Packages under the `@willramdev` scope (the `willram` org was not created). Phase 5 proves the shipped tarball actually works in a clean consumer.
 
-> **Non-blocker note (do not build ordering machinery):** ARCHITECTURE research grep-verified that no sibling package imports `@willram/kit` in source — no sibling `package.json` even declares it. "Kit must publish first" is a documentation/integration convention, not a build or publish blocker. The five packages are independent and parallelizable; Changesets' topological publish handles any future internal edge automatically. The roadmap deliberately invests nothing in publish-ordering machinery.
+> **Non-blocker note (do not build ordering machinery):** ARCHITECTURE research grep-verified that no sibling package imports `@willramdev/kit` in source — no sibling `package.json` even declares it. "Kit must publish first" is a documentation/integration convention, not a build or publish blocker. The five packages are independent and parallelizable; Changesets' topological publish handles any future internal edge automatically. The roadmap deliberately invests nothing in publish-ordering machinery.
 
 ## Phases
 
@@ -51,7 +51,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Wave 4** *(gap closure — blocked on Wave 3 completion)*
 
-- [x] 01-04-PLAN.md — GAP CLOSURE: forms externalizes all `lit/*` via `/^lit\//` (CR-01) + router idempotent element registration guard so `@willram/router` + `/lit` don't double-register (CR-02), with a smoke test
+- [x] 01-04-PLAN.md — GAP CLOSURE: forms externalizes all `lit/*` via `/^lit\//` (CR-01) + router idempotent element registration guard so `@willramdev/router` + `/lit` don't double-register (CR-02), with a smoke test
 
 ### Phase 2: Tests & CI
 
@@ -101,7 +101,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Wave 1** *(tracer — alone)*
 
-- [x] 03-01-PLAN.md — TRACER: standalone doc-check harness (zero-dep extractor + node16/bundler tsconfigs + `doc-check` npm script) proving @willram/kit's README quickstart compiles end-to-end against dist types; kit README normalized to the shared template (DOCS-01)
+- [x] 03-01-PLAN.md — TRACER: standalone doc-check harness (zero-dep extractor + node16/bundler tsconfigs + `doc-check` npm script) proving @willramdev/kit's README quickstart compiles end-to-end against dist types; kit README normalized to the shared template (DOCS-01)
 
 **Wave 2** *(blocked on Wave 1)*
 
@@ -112,21 +112,21 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 ### Phase 4: Release Automation & Publish
 
-**Goal**: All five packages are published to GitHub Packages at an explicit `1.0.0` via a two-workflow, token-safe Changesets pipeline (read-only CI vs. auth-bearing release) — the milestone's end state. The `willram` org is the leading blocking prerequisite; its name availability is an unverified external risk to confirm first (a squatting `willram` user would block the org).
+**Goal**: All five packages are published to GitHub Packages at an explicit `1.0.0` via a two-workflow, token-safe Changesets pipeline (read-only CI vs. auth-bearing release) — the milestone's end state. The `willram` org name proved unavailable, so packages ship under the `@willramdev` scope instead (owner `willramdev`); the org plan (RLS-01) is dropped/obsolete and no longer a blocker.
 **Depends on**: Phase 2, Phase 3
 **Requirements**: RLS-01, RLS-02, RLS-03, RLS-04, RLS-05, RLS-06, RLS-07
 **Success Criteria** (what must be TRUE):
 
-  1. The `willram` GitHub org exists and owns the repo, with org-name availability confirmed — the blocking prerequisite for all publish work is satisfied (RLS-01)
-  2. Every package carries `publishConfig.registry` → GitHub Packages, a `files` allowlist (README + LICENSE + dist), and a `prepublishOnly` build hook; a committed root `.npmrc` maps the `@willram` scope to `npm.pkg.github.com` with no global `registry=` (RLS-02, RLS-03, RLS-06)
-  3. `.changeset/config.json` is configured (`access: restricted`, `baseBranch: main`, the five `@willram/*` packages `fixed`/lockstep at v1.0), and `release.yml` uses a SHA-pinned `changesets/action` with `{contents, pull-requests, packages}: write` and `NODE_AUTH_TOKEN=GITHUB_TOKEN` (no PAT, no `--provenance`) (RLS-04, RLS-05)
+  1. ~~The `willram` GitHub org exists and owns the repo~~ — OBSOLETE: the `willram` org was not created; packages ship under the `@willramdev` scope (owner `willramdev`), so RLS-01 is dropped and no longer a publish blocker (RLS-01)
+  2. Every package carries `publishConfig.registry` → GitHub Packages, a `files` allowlist (README + LICENSE + dist), and a `prepublishOnly` build hook; a committed root `.npmrc` maps the `@willramdev` scope to `npm.pkg.github.com` with no global `registry=` (RLS-02, RLS-03, RLS-06)
+  3. `.changeset/config.json` is configured (`access: restricted`, `baseBranch: main`, the five `@willramdev/*` packages `fixed`/lockstep at v1.0), and `release.yml` uses a SHA-pinned `changesets/action` with `{contents, pull-requests, packages}: write` and `NODE_AUTH_TOKEN=GITHUB_TOKEN` (no PAT, no `--provenance`) (RLS-04, RLS-05)
   4. All five packages are published to GitHub Packages at an explicit `1.0.0` — before adopting the changesets version bump — with git tags and a GitHub Release (RLS-07)
 
 **Plans**: 4 plans
 
 **Wave 1** *(blocking gate — nothing proceeds until confirmed)*
 
-- [ ] 04-01-PLAN.md — GATE: create `willram` org + verify name available + transfer repo + re-point local remote (RLS-01, D-01/D-02)
+- [x] 04-01-PLAN.md — GATE: `willram` org name unavailable → adopted the `@willramdev` scope instead (RLS-01 dropped/obsolete) + re-pointed local remote (D-01/D-02)
 
 **Wave 2** *(blocked on Wave 1; parallel — no file overlap)*
 
@@ -139,7 +139,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 ### Phase 5: Consumer Install Verification
 
-**Goal**: The shipped tarball is proven to work in a clean consumer — the only real proof that the upstream correctness fixes survived publish and that a teammate can `npm install @willram/*` and build.
+**Goal**: The shipped tarball is proven to work in a clean consumer — the only real proof that the upstream correctness fixes survived publish and that a teammate can `npm install @willramdev/*` and build.
 **Depends on**: Phase 4
 **Requirements**: VER-01, VER-02, VER-03, VER-04
 **Success Criteria** (what must be TRUE):

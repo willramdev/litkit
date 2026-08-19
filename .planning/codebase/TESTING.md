@@ -17,7 +17,7 @@
 **Run Commands:**
 ```bash
 npm run test                 # Run all tests in all packages (from root)
-npm run test -w @willram/kit # Run tests in specific package
+npm run test -w @willramdev/kit # Run tests in specific package
 vitest run                   # Run tests once (in package dir)
 vitest                       # Watch mode (in package dir)
 ```

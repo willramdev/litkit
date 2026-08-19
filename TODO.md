@@ -13,7 +13,7 @@ Items to complete before each package can be considered v1.
 
 ---
 
-## @willram/kit
+## @willramdev/kit
 
 ### Must-have
 
@@ -22,7 +22,7 @@ Items to complete before each package can be considered v1.
 
 ---
 
-## @willram/router
+## @willramdev/router
 
 ### Must-have
 
@@ -41,7 +41,7 @@ Items to complete before each package can be considered v1.
 
 ---
 
-## @willram/query
+## @willramdev/query
 
 ### Must-have
 
@@ -56,7 +56,7 @@ Items to complete before each package can be considered v1.
 
 ---
 
-## @willram/forms
+## @willramdev/forms
 
 ### Must-have
 
@@ -72,7 +72,7 @@ Items to complete before each package can be considered v1.
 
 ---
 
-## @willram/store
+## @willramdev/store
 
 ### Must-have
 

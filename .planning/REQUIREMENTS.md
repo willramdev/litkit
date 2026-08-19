@@ -1,7 +1,7 @@
 # Requirements: litkit
 
 **Defined:** 2026-08-10
-**Core Value:** All five packages install cleanly from GitHub Packages and work as documented — a consumer can `npm install @willram/*` and build a Lit app against a green, typed, tested, documented API.
+**Core Value:** All five packages install cleanly from GitHub Packages and work as documented — a consumer can `npm install @willramdev/*` and build a Lit app against a green, typed, tested, documented API.
 
 > Scope note: litkit is a library, not an app. "User" below means a **consumer** (an internal developer installing the packages) or a **maintainer** (whoever ships releases). Requirements are release/hardening deliverables, derived from `.planning/research/SUMMARY.md`.
 
@@ -34,10 +34,10 @@
 
 ### Release & Publish (RLS)
 
-- [ ] **RLS-01**: The `willram` GitHub org exists and owns the repo (org-name availability confirmed) — blocking prerequisite for all publish work
+- [x] ~~**RLS-01**: The `willram` GitHub org exists and owns the repo~~ — **OBSOLETE / won't-do**: shipped under `@willramdev/*` scope in Phase 4; `willram` org not created; superseded — no longer a v1 blocker
 - [x] **RLS-02**: Every package has `publishConfig.registry` → GitHub Packages and a `files` allowlist (README + LICENSE + dist)
-- [x] **RLS-03**: A committed root `.npmrc` maps the `@willram` scope to `npm.pkg.github.com` (never a global `registry=`)
-- [x] **RLS-04**: `.changeset/config.json` is configured (`access: restricted`, `baseBranch: main`, lockstep `fixed` for the five `@willram/*` at v1.0)
+- [x] **RLS-03**: A committed root `.npmrc` maps the `@willramdev` scope to `npm.pkg.github.com` (never a global `registry=`)
+- [x] **RLS-04**: `.changeset/config.json` is configured (`access: restricted`, `baseBranch: main`, lockstep `fixed` for the five `@willramdev/*` at v1.0)
 - [x] **RLS-05**: `release.yml` uses a SHA-pinned `changesets/action` with `{contents, pull-requests, packages}: write` and `NODE_AUTH_TOKEN=GITHUB_TOKEN` (no PAT, no `--provenance`)
 - [x] **RLS-06**: Each package has a `prepublishOnly` build hook enforcing build-before-publish
 - [ ] **RLS-07**: All five packages are published to GitHub Packages at an explicit `1.0.0` (before adopting the changesets version bump), with git tags + a GitHub Release
@@ -71,9 +71,9 @@ Explicitly excluded — documented to prevent scope creep. Anti-features surface
 | README shields/badges | GitHub Packages exposes no shields endpoints |
 | Coverage-% threshold gate | Bar is "critical paths + CI green," not a coverage number |
 | Full docs site (Storybook/VitePress) | Over-engineering for a controller-heavy internal library; README + `.d.ts` suffice |
-| Renaming packages to `@willramanand/*` | Creating a `willram` org instead; `@willram/*` names stay |
+| Renaming packages to `@willramanand/*` | `willram` org not created; packages ship under the `@willramdev/*` scope |
 | New packages / new runtime features | v1 hardens and ships the existing surface, no expansion |
-| Kit-first publish-ordering machinery | No sibling imports `@willram/kit` in source; ordering is convention, not a build blocker |
+| Kit-first publish-ordering machinery | No sibling imports `@willramdev/kit` in source; ordering is convention, not a build blocker |
 
 ## Traceability
 
@@ -97,7 +97,7 @@ Each v1 requirement maps to exactly one phase (see `.planning/ROADMAP.md`).
 | DOCS-02 | Phase 3 — Docs | Complete |
 | DOCS-03 | Phase 3 — Docs | Complete |
 | DOCS-04 | Phase 3 — Docs | Complete |
-| RLS-01 | Phase 4 — Release Automation & Publish | Pending |
+| RLS-01 | Phase 4 — Release Automation & Publish | Obsolete (won't-do) — shipped under `@willramdev/*`; `willram` org not created |
 | RLS-02 | Phase 4 — Release Automation & Publish | Complete |
 | RLS-03 | Phase 4 — Release Automation & Publish | Complete |
 | RLS-04 | Phase 4 — Release Automation & Publish | Complete |

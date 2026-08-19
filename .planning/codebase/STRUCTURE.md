@@ -130,39 +130,39 @@ litkit/ (monorepo root)
 **packages/ (Workspace Directory):**
 - Purpose: Container for npm workspace packages
 - Contains: Five independent npm packages (kit, router, query, forms, store)
-- Publishing: Each package is published to npm under @willram scope
+- Publishing: Each package is published to GitHub Packages under the @willramdev scope
 
 **packages/kit:**
 - Purpose: Core Lit ergonomics and foundational utilities
 - Contains: Base class, property helpers, decorators, browser controllers
 - Key exports: KitElement, prop, define, emit, watch, bind, controllers (listen, mediaQuery, etc.)
-- Shipped: Yes (npm package @willram/kit)
+- Shipped: Yes (npm package @willramdev/kit)
 
 **packages/router:**
 - Purpose: Client-side router for single-page applications
 - Contains: Framework-neutral core + Lit integration layer
 - Key exports: createRouter, RouterOutlet, RouterProvider, routeState, searchParams
 - Subexports: `./core` (framework-neutral), `./lit` (Lit integration)
-- Shipped: Yes (npm package @willram/router)
+- Shipped: Yes (npm package @willramdev/router)
 
 **packages/query:**
 - Purpose: Reactive data fetching and mutations via TanStack Query
 - Contains: QueryController, MutationController, provider element
 - Key exports: query, mutation factories, QueryController, LitQueryClientProvider
-- Shipped: Yes (npm package @willram/query)
+- Shipped: Yes (npm package @willramdev/query)
 
 **packages/forms:**
 - Purpose: Type-safe form management with validation
 - Contains: FormController, field/array/group sub-controllers, validators
 - Key exports: form factory, FormController, field, bind, LitForm
 - Subexports: `./zod` (Zod validation integration)
-- Shipped: Yes (npm package @willram/forms)
+- Shipped: Yes (npm package @willramdev/forms)
 
 **packages/store:**
 - Purpose: Lightweight state management
 - Contains: Store, DerivedStore, StoreSliceController
 - Key exports: createStore, storeSlice, derived, batch
-- Shipped: Yes (npm package @willram/store)
+- Shipped: Yes (npm package @willramdev/store)
 
 ## Key File Locations
 
