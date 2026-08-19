@@ -1,194 +1,259 @@
 # Pitfalls Research
 
-**Domain:** Hardening + shipping a multi-package TypeScript Lit library to GitHub Packages (Changesets release automation)
-**Researched:** 2026-08-10
-**Confidence:** HIGH (grounded in this repo's actual package.json/tsconfig/vite config; a few forward-looking items MEDIUM)
+**Domain:** Adding DX features (hosted TypeDoc, examples app, Custom Elements Manifest, Dependabot, sharper types, prod-stripped dev warnings, plain-JS ergonomics, devtools) to a shipped, externalized-peer Lit/TS monorepo — additive non-breaking v1.1
+**Researched:** 2026-08-19
+**Confidence:** HIGH (grounded in this repo's real `packages/*/package.json`, `vite.config.ts`, tsconfig, and the v1.0 invariants; a few tool-behavior specifics MEDIUM)
 
-> Scope note: This is a HARDEN + SHIP milestone for an existing, functioning five-package Lit workspace (`@willram/kit` + router/query/forms/store). Findings below are validated against the real files in `packages/*` and `tsconfig.base.json`, not generic advice. Phase names referenced: **P1 Build/Typecheck Hardening**, **P2 Tests + CI**, **P3 Docs**, **P4 Release Automation + Publish**, **P5 Consumer Install Verification**. Rename to match the actual ROADMAP when created.
+> Scope note: v1.0 already shipped all five `@willramdev/*` packages to GitHub Packages at `1.0.0`. This is an **additive minor** — the overriding risk theme is that DX tooling *reintroduces* the exact bugs v1.0 fought off: bundle duplication of `lit`/`@tanstack/*`, tree-shaken element registration, broken TanStack single-instance dedup, and accidental **breaking** type changes in a minor. Every pitfall below is checked against the real config. Phase labels used (rename to match the actual ROADMAP): **P-TYPES** (sharper types + plain-JS ergonomics), **P-WARN** (dev-time warnings, prod-stripped), **P-CEM** (Custom Elements Manifest / DX-01), **P-DOCS** (hosted TypeDoc / DX-02), **P-EXAMPLES** (examples app / DX-03), **P-DEPS** (Dependabot + dep hygiene / DX-04), **P-DEVTOOLS** (devtools/debugging).
 
 ---
 
 ## Critical Pitfalls
 
-### Pitfall 1: `sideEffects: false` silently drops custom-element registration
+### Pitfall 1: Examples app bundles a second copy of `lit`/`@tanstack/*` → context, dedup, and dev-mode all break
 
 **What goes wrong:**
-Every package declares `"sideEffects": false`. But `router-outlet.ts`, `router-provider.ts`, `router-link.ts`, `forms/src/lit-form.ts`, and the query provider register elements via `customElements.define(...)`/`@customElement` at module top level. A consumer's bundler (Rollup/Vite/esbuild in the app) is told the package has no side effects, so if the element class is imported only for its type — or the registration module isn't "used" by a value reference — the bundler tree-shakes the `customElements.define` call away. The app renders `<router-outlet>` / `<lit-form>` as an inert unknown element: **blank screen, no error**.
+The `examples/` app (DX-03) is a new workspace member. If it imports the litkit packages via the **workspace symlink** while *also* resolving its own `lit` / `@tanstack/query-core` / `@tanstack/form-core` — or if Vite pre-bundles a second copy — the running app has **two** copies of Lit's reactive-element and TanStack cores. Then: RouterProvider/LitQueryClientProvider/LitForm context provided from one copy is invisible to descendants using the other copy (`instanceof`/identity mismatch), `QueryClient` cache sharing silently dies, and Lit prints **"Lit is in dev mode … multiple versions of @lit/reactive-element"**. This is the exact class of failure v1.0's externalization guarded against — now reintroduced by the demo app that's supposed to *prove* things work.
 
 **Why it happens:**
-`sideEffects: false` is copy-pasted across the workspace to get tree-shaking wins on the pure core modules, without carving out the files whose entire purpose is a global side effect (element registration). The registration "works on my machine" because the demo/tests reference the element directly.
+An app is not a library: Vite bundles everything by default. Workspace hoisting usually gives one copy, but a mismatched semver range in `examples/package.json` (e.g. `lit@^3.2` vs a transitively-pinned `3.3.2`), a nested `node_modules`, or Vite's `optimizeDeps` duplicating a symlinked dep produces two instances. The library builds externalize these deps, but the **app must dedupe** them instead.
 
 **How to avoid:**
-- Change each element-registering package from `"sideEffects": false` to an allowlist of the registration modules, e.g. `"sideEffects": ["**/*define*.js", "dist/lit-form.js", "dist/router-lit*.js"]`, OR keep `false` but ensure registration is triggered by a value import that can't be shaken (side-effect import documented in README: `import "@willram/router/lit"`).
-- Add a consumer smoke test (P5) that imports the built package into a throwaway Vite app in production mode (`vite build`) and asserts `customElements.get("router-outlet")` is defined.
+- In the examples app's `vite.config.ts` set `resolve.dedupe: ['lit', '@lit/reactive-element', 'lit-html', 'lit-element', '@tanstack/query-core', '@tanstack/form-core']` and (belt-and-suspenders) `optimizeDeps` alignment.
+- Depend on litkit packages by their real names and let workspace resolution symlink them; keep a single top-level `lit`/`@tanstack/*` version that satisfies every package's peer range.
+- Add a dev-time assertion / manual QA step: no "Lit is in dev mode: multiple versions" warning in the console; `RouterProvider`/query context actually resolves. `npm ls lit @lit/reactive-element @tanstack/query-core @tanstack/form-core` at the workspace root shows exactly one version each.
 
 **Warning signs:**
-Element works in `vite dev` but disappears after `vite build`; `customElements.get(tag)` returns `undefined` in a consumer prod bundle; DevTools shows the tag as an unstyled unknown element.
+"Lit is in dev mode" *multiple-versions* warning; "no QueryClient found" / "no Router found" despite a provider present; queries stuck loading; double renders; `npm ls` shows two versions.
 
-**Phase to address:** P1 (fix `sideEffects`), verified in P5.
+**Phase to address:** P-EXAMPLES (verify with a `npm ls` single-instance check).
 
 ---
 
-### Pitfall 2: No `publishConfig` → packages publish to public npm instead of GitHub Packages
+### Pitfall 2: Examples app leaks into the published surface (workspace-protocol / `files` / accidental publish)
 
 **What goes wrong:**
-None of the five `package.json` files has a `publishConfig`, and there is no root `.npmrc`. `npm publish` therefore targets `registry.npmjs.org`. Either the publish fails (no npmjs auth / name taken) or — worse — succeeds and leaks the "internal-only" library to the public registry under a scope you don't control there.
+The new `examples/` workspace can contaminate releases three ways: (a) if it's added under `packages/*` or without `"private": true`, Changesets/`npm publish` may try to version/publish it; (b) if a litkit package ever adds a `workspace:*` dep on another for the demo's sake, the unidirectional-acyclic invariant (`kit` imports nothing internal) breaks and Changesets must rewrite `workspace:*` on publish — a footgun the v1.0 research already flagged; (c) example source or fixtures get pulled into a package's `files` and ship in the tarball.
 
 **Why it happens:**
-GitHub Packages is not the npm default; the redirect must be declared explicitly and is easy to forget when packages were scaffolded for local dev only.
+Monorepo glob `packages/*` is easy to over-match; "it's just a demo" leads to skipping `"private": true`; a shared component gets hoisted into a library to avoid duplication.
 
 **How to avoid:**
-- Add to **every** package.json: `"publishConfig": { "registry": "https://npm.pkg.github.com" }`. Per-package is more robust than relying solely on a root `.npmrc` scope line because `publishConfig` travels with the package and cannot be overridden by a stray global registry.
-- Also add a committed root `.npmrc` with `@willram:registry=https://npm.pkg.github.com` so `install` (not just publish) resolves the scope, while leaving the default registry = npmjs for `lit`, `@tanstack/*`, `zod`.
-- Do NOT set a global `registry=https://npm.pkg.github.com`; that breaks resolution of the public deps.
+- Put the app **outside** `packages/` (e.g. `examples/` at root) OR mark it `"private": true` and exclude it from the Changesets `fixed`/ignore config. Root workspaces already list only `packages/*` — keep `examples/` off that glob or explicitly `"private"`.
+- Never let a library package `import` from the examples app or from a sibling (only `kit` + TanStack cores). Keep `files: ["dist", ...]` unchanged — no example paths.
+- Run `changeset status` and `npm publish --dry-run` after adding the app to confirm it is not in the publish set and no `workspace:*` appears in any published `package.json`.
 
 **Warning signs:**
-`npm publish --dry-run` shows `npm notice publishing to https://registry.npmjs.org`; 404/403 on publish; the package appears on npmjs.com.
+`changeset status` lists an `examples`/demo package; `npm pack` of a library contains demo files; a published `package.json` shows `workspace:*`; CI tries to publish the app.
 
-**Phase to address:** P4.
+**Phase to address:** P-EXAMPLES (guard), re-verified whenever a release runs.
 
 ---
 
-### Pitfall 3: Scope ≠ owner, and the `willram` org must exist first
+### Pitfall 3: Dev-time warnings NOT stripped in prod → bundle bloat + `process is not defined` crash in consumer builds
 
 **What goes wrong:**
-GitHub Packages requires the npm scope to equal the repository owner. Scope is `@willram/*`; the repo `repository.url` is `github.com/willram/litkit`. If the `willram` GitHub org does not yet exist (or the repo lives under the personal `willramanand` account), every publish 403s with "permission denied" or "scope mismatch," and the package never links to the repo.
+New dev-time guardrails ("missing provider", "bad route", "API misuse") are added guarded by `if (process.env.NODE_ENV !== 'production')`. Two failure modes for a **library** built with Vite lib mode:
+1. **Not stripped from litkit's own `dist`:** Vite library mode statically replaces `import.meta.env.*` but **does NOT replace `process.env.*`** (deliberately, so consumers can choose). So the warning strings and dead branches ship verbatim in `dist`, relying entirely on the *consumer's* bundler to strip them. If the consumer doesn't define `process.env.NODE_ENV` (many plain-Vite/browser setups don't), the branch is never eliminated → bundle bloat, and worse, evaluating `process.env.NODE_ENV` in a browser with no `process` shim throws **`Uncaught ReferenceError: process is not defined`** at first render/import.
+2. **Warnings run during SSR/first render** and throw or spam before the app hydrates.
 
 **Why it happens:**
-The org is a "Pending" decision in PROJECT.md; publishing is attempted before the org/repo exist, or the repo is created under the personal account whose login differs from the scope.
+The `process.env.NODE_ENV` dead-code pattern is a *bundler* convention, not a runtime one; it assumes every consumer's bundler defines the variable. Lit itself and Svelte avoid this by using `esm-env` / conditional exports, precisely because raw `process.env` is unsafe in the browser.
 
 **How to avoid:**
-- Create the `willram` **org** and transfer/create the repo under it **before** P4. Verify `willram` is available as a GitHub org name (a user and org cannot share a name — confirm no `willram` user already squats it).
-- Ensure `repository.url`, `homepage`, and `bugs` in each package.json point at `github.com/willram/litkit` under the org so GitHub Packages associates the package with the repo (needed for the "linked repository" and inherited access).
+- Use `esm-env`'s `DEV` export (the pattern Lit/Svelte use) instead of raw `process.env.NODE_ENV`: `import { DEV } from 'esm-env'; if (DEV) { console.warn(...) }`. `esm-env` resolves safely across bundlers/runtimes and eliminates the branch in prod without a `process` reference. Add `esm-env` as a real (tiny) dependency, or replicate its guard via a single internal `DEV` const gated on `import.meta.env.DEV` with a `typeof process` guard fallback.
+- Alternatively ship **dev/prod conditional exports** (`"development"` / default) like Lit — heavier, only if warranted.
+- Keep every warning **side-effect-free and lazy** (no work at module top level; guard before touching DOM/`window`), so SSR/first render never trips it.
+- Verify: build a consumer app in production mode, grep the minified output — zero litkit warning strings; and in a no-`define` browser sandbox, importing litkit must not throw `process is not defined`.
 
 **Warning signs:**
-`403 Forbidden - scope not matching owner`; package publishes but shows "not connected to a repository" in the GitHub UI; org name 404s.
+`process is not defined` in a consumer browser build; warning strings visible in a `vite build` of a consumer app; measurable `dist` size increase; warnings printed in SSR logs.
 
-**Phase to address:** P4 (blocking prerequisite — do this first in the phase).
+**Phase to address:** P-WARN (choose the guard mechanism first; verify strip via consumer prod-build grep).
 
 ---
 
-### Pitfall 4: `GITHUB_TOKEN` works in CI, but consumers still need a PAT to install
+### Pitfall 4: Sharper types accidentally become a BREAKING change in a minor
 
 **What goes wrong:**
-The team gets publishing working with the Actions `GITHUB_TOKEN` (+ `permissions: packages: write`) and assumes install "just works" like public npm. It does not: GitHub Packages requires authentication even to **read** packages. Every consumer (and their CI) must put a Personal Access Token with `read:packages` in an `.npmrc`, or `npm install @willram/kit` fails with 401.
+"Tighter generics, fewer casts" (P-TYPES) is presented as additive, but narrowing a public type is **breaking**: tightening a parameter (accepting `string` → `` `/${string}` `` template literal), adding a required generic parameter, changing a return type from `T | undefined` to `T`, renaming an exported type, or making an optional field required will red-line consumers' existing `.ts` on `npm update` inside a `^1` range. A minor that breaks types violates the "no breaking changes this milestone" invariant even though runtime is unchanged.
 
 **Why it happens:**
-Public-npm mental model ("install needs no auth"). `GITHUB_TOKEN` is only injected inside Actions on this repo, not on consumer machines.
+Type changes feel invisible ("no runtime change, so it's safe"). SemVer for types is subtle: *widening* inputs / *narrowing* outputs is safe; the reverse is breaking. Without a `.d.ts` diff gate, the break is only discovered by a consumer.
 
 **How to avoid:**
-- Publish auth: use the built-in `GITHUB_TOKEN` in the release workflow with `permissions: { contents: write, packages: write }`. A classic PAT with `write:packages` is only needed for local/manual publishes.
-- Consumer auth: document a consumer `.npmrc` template in P3 docs:
-  ```
-  @willram:registry=https://npm.pkg.github.com
-  //npm.pkg.github.com/:_authToken=${GH_PACKAGES_TOKEN}
-  always-auth=true
-  ```
-  where `GH_PACKAGES_TOKEN` is each user's PAT with `read:packages`. Never commit a literal token.
-- Provide a one-liner for consumer CI (set `NODE_AUTH_TOKEN`/secret + `setup-node` `registry-url`).
+- Rule of thumb: only **relax** what you accept and **preserve or widen** what you return; add generics only with a **default** (`<T = unknown>`) so existing call sites still compile.
+- Snapshot the public API: generate `.d.ts` (or an API report via `@microsoft/api-extractor`/`typescript` d.ts) for each package on `main`, and diff the v1.1 branch against it in CI. Treat any removed/narrowed symbol as a release-blocking review item.
+- Keep `@arethetypeswrong/cli` + `publint` (already dev-deps) in CI so `.d.ts` **resolution** regressions (missing subpath types, masquerading ESM) are caught mechanically — a type sharpen that breaks emit fails the gate.
+- Test types with `tsd` or `// @ts-expect-error` fixtures for the intended-still-compiles cases.
 
 **Warning signs:**
-`npm ERR! 401 Unauthorized` on a fresh clone; install works on the publisher's machine (cached PAT) but not for teammates; CI installs fail while local succeed.
+Consumers report new `tsc` errors after `npm update` within `^1`; a `.d.ts` diff shows removed overloads / added required params; `attw`/`publint` newly failing.
 
-**Phase to address:** P4 (publish auth), P3 + P5 (consumer install docs & verification).
+**Phase to address:** P-TYPES (add the d.ts-diff gate here; enforce every release).
 
 ---
 
-### Pitfall 5: Inconsistent ESM/CJS surface — four packages are ESM-only, router is dual
+### Pitfall 5: CEM analyzer misses controller-registered / helper-registered elements → hollow manifest
 
 **What goes wrong:**
-`router` ships `main: ./dist/router.cjs` + a `require` condition, but `kit`, `query`, `forms`, `store` are ESM-only (`main`/`module` both point at `.js`, and `exports` has only an `import` condition — no `require`). A Node CJS consumer doing `require("@willram/query")` hits either `ERR_PACKAGE_PATH_NOT_EXPORTED` or a "cannot require ESM" error, while the same `require("@willram/router")` works. The surface is silently inconsistent and undocumented.
+`@custom-elements-manifest/analyzer` (DX-01) discovers elements it can statically resolve: classes with `@customElement('tag')` or a top-level `customElements.define('tag', Cls)`. litkit registers elements in mixed ways — some via decorator, and some guarded (`if (!customElements.get(tag)) customElements.define(tag, Cls)`) or invoked from an `attachRouterProvider()`-style helper function. The analyzer can miss the guarded/indirect `define`s and any element whose tag or class is computed, so `custom-elements.json` is **hollow** (missing `router-outlet`, `router-provider`, `lit-form`, the query provider) — the IDE autocomplete this feature exists to deliver silently doesn't cover those tags. (Reactive **controllers** correctly do NOT appear — they aren't elements; don't chase that as a bug.)
 
 **Why it happens:**
-router got a bespoke dual-format build script (`scripts/build.js`, formats `["es","cjs"]`) while the others use the default Vite `formats: ["es"]`. No one decided a workspace-wide policy.
+The analyzer needs the Lit plugin enabled (`--litelement` / config) to read `@customElement`, and even then static analysis can't follow a `define` behind a runtime guard or inside a called function. Registration styles diverged across packages during v1.0.
 
 **How to avoid:**
-- Decide one policy for the whole workspace. For an internal Lit (ESM) team, **ESM-only everywhere is the honest choice** — then drop router's CJS build too, so the surface matches. If CJS is genuinely needed, add it to all five consistently.
-- Whatever you choose, validate the exports map with `publint` and `@arethetypeswrong/cli` in CI (P2) so the ESM/CJS/types conditions are provably correct rather than assumed.
+- Enable the LitElement plugin in `custom-elements-manifest.config.mjs` (per package or one root config with per-package `globs`).
+- For any element the analyzer can't see, add explicit JSDoc `@customElement tag-name` / `@element` annotations on the class, or refactor the guarded/indirect `define` into a form the analyzer resolves (decorator or bare top-level `define`) — without changing runtime behavior.
+- **Verify coverage**, don't assume: assert the generated manifest's `customElements`/`tagName` set equals the known tag list (`router-outlet`, `router-provider`, `router-link`, `lit-form`, query provider, …). Fail CI if a known tag is absent.
 
 **Warning signs:**
-`attw` reports "CJS resolution fails" / "masquerading" for some packages but not others; a consumer's `require` works for router and 500s for query.
+`custom-elements.json` has fewer `declarations` than known elements; a tag missing from manifest gets no IDE autocomplete; analyzer logs "no custom elements found" for a package.
 
-**Phase to address:** P1 (policy + config), enforced in P2 (publint/attw gate).
+**Phase to address:** P-CEM (add a manifest-completeness assertion).
 
 ---
 
-### Pitfall 6: `@tanstack/query-core` / `form-core` as `dependencies` → duplicate-instance breakage
+### Pitfall 6: Stale / uncommitted CEM, wrong `customElements` package.json path, or manifest referencing externalized types
 
 **What goes wrong:**
-`query` declares `@tanstack/query-core` and `forms` declares `@tanstack/form-core` as **`dependencies`** (only `lit` is a peer). This is the same class of bug as un-externalized `lit`: if the consumer also uses TanStack directly (their own `@tanstack/query-core`), npm can install two copies. A `QueryClient` the consumer creates from *their* copy won't be recognized by litkit's `QueryObserver` from *litkit's* copy — context provision by identity, `instanceof`, and cache sharing silently break.
+Three linked CEM shipping mistakes:
+1. **Stale/uncommitted manifest:** `custom-elements.json` is generated but not regenerated on API change (or not committed / not in `files`), so it drifts from the shipped `dist` — consumers get autocomplete for an old API. If it's `.gitignore`d and only built ad-hoc, releases ship without it.
+2. **Wrong discovery path:** tools locate the manifest via the `"customElements"` field in `package.json` (and/or a `"customElements"` condition in the `exports` map). If that field is missing, points at `src` instead of the published `dist/custom-elements.json`, or the file isn't in `files`, IDEs can't find it in `node_modules`.
+3. **Manifest references externalized types:** the manifest may inline type references to `lit`/`@tanstack/*` symbols that are peer/externalized — fine as strings, but if a downstream tool tries to resolve them it can error; more importantly the manifest must describe litkit's *own* surface, not leak TanStack internals.
 
 **Why it happens:**
-"It's a dependency, so I'll list it as a dependency" — but for a library that shares live objects (QueryClient/Form instances) across the boundary, TanStack cores are effectively singletons that the consumer must own.
+CEM generation is a separate build step easy to forget in the release pipeline; the `customElements` field is non-obvious; `files`/`.gitignore` weren't updated for the new artifact.
 
 **How to avoid:**
-- Move `@tanstack/query-core` and `@tanstack/form-core` to `peerDependencies` (with a matching `devDependency` for building/testing), mirroring how `lit` is already handled. The Vite builds already externalize `@tanstack/*` per the constraints — align package.json to match the build.
-- If you keep them as deps for install convenience, pin narrowly and document that the consumer must not instantiate TanStack objects from a different copy.
+- Add `"customElements": "./dist/custom-elements.json"` (and optionally an `exports` `"customElements"` entry) to each element-exposing package; add the manifest path to `files` so it ships in the tarball.
+- Generate the manifest as part of `build`/`prepublishOnly` so it can never be stale at publish; **commit** it and add a CI check that regenerating produces no diff (`git diff --exit-code custom-elements.json`) — the standard "manifest is stale" guard.
+- Point the analyzer at the same source of truth the docs/types use; keep type references to peers as opaque strings, don't try to inline-resolve `@tanstack/*` internals.
 
 **Warning signs:**
-Consumer `QueryController` never updates / queries "stuck loading"; `npm ls @tanstack/query-core` shows two versions; context error "no QueryClient found" despite a provider being present.
+`git status` dirty after a fresh `cem analyze`; IDE finds no manifest for the package; manifest committed but `files` omits it (missing from `npm pack`); manifest describes types that no longer exist.
 
-**Phase to address:** P1 (peer-dep reclassification), verified in P5.
+**Phase to address:** P-CEM (wire into build + add stale-check + `files`/`customElements` field).
 
 ---
 
-### Pitfall 7: Publishing stale/empty `dist` (no `prepublishOnly`, tests never touch the artifact)
+### Pitfall 7: TypeDoc broken cross-package links + entry-point misconfiguration
 
 **What goes wrong:**
-`files: ["dist"]` means only `dist/` is published. There is no `prepack`/`prepublishOnly` build hook, and Vitest imports from `src`, not `dist`. So `changeset publish` can ship a stale or empty `dist` (e.g., after a `git clean`, or if CI publishes before building), and a green test suite proves nothing about the shipped artifact. Consumers install a package whose `dist` is missing files or built from old source.
+Documenting five packages (DX-02), the natural setup is `entryPointStrategy: "packages"`. Two traps: (a) building a **single** package can't link to symbols in its siblings (they aren't in that conversion), so cross-package references (`RouteController` in query docs, `KitElement` referenced everywhere) render as **plain text / broken `{@link}`s**; (b) in `packages` mode, root-level TypeDoc options are **not** inherited by child projects — options that must take effect during conversion have to live in each package's own TypeDoc config or under `packageOptions`, so a root-only config silently produces empty or misconfigured per-package docs.
 
 **Why it happens:**
-Build is a manual step (`npm run build`) decoupled from publish; tests run against source for speed.
+TypeDoc's monorepo model is two-pass (convert each package, then merge); people configure it like a single project. `{@link}` resolution only works across packages when all are converted in one `packages` run with proper per-package entry points.
 
 **How to avoid:**
-- Add `"prepublishOnly": "npm run build"` (or `prepack`) to each package so `npm publish`/`changeset publish` always rebuilds.
-- In CI (P4), enforce order: install → typecheck → **build** → test → publint/attw → publish.
-- Add a tarball smoke test (P2/P5): `npm pack`, install the tarball into a scratch project, import from the built entry, assert types + a runtime symbol resolve.
+- Use one root `packages`-mode run that includes **all five** packages so `{@link}` resolves across them; give each package a minimal TypeDoc config declaring its own `entryPoints` (its `src/index.ts`), and put conversion-affecting options in `packageOptions`.
+- Point entry points at the same public entry the `exports` map uses (`src/index.ts` plus subpaths `/core`, `/lit`, `/zod`) so docs match the shipped surface, not internal files.
+- Build docs in CI with TypeDoc's `--treatWarningsAsErrors` (or validation for invalid/unresolved links) so a broken `{@link}` or an entry-point typo fails the build instead of shipping.
 
 **Warning signs:**
-Published tarball (`npm pack` + inspect) missing `.js`/`.d.ts`; consumer import 404s on a subpath that exists in `src`; `dist` timestamps older than last source change.
+`{@link Foo}` renders as literal `{@link Foo}` or unlinked text; a package's page is empty; TypeDoc warns "failed to resolve link" / "entry point did not match"; sibling types show as `any`/unlinked.
 
-**Phase to address:** P4 (hooks + CI ordering), smoke test in P2/P5.
+**Phase to address:** P-DOCS.
 
 ---
 
-### Pitfall 8: Changesets first-release when versions are already `1.0.0`
+### Pitfall 8: TypeDoc GitHub Pages deploy — base-path and permissions
 
 **What goes wrong:**
-All packages already have `"version": "1.0.0"` in package.json, but nothing is published yet and there is no `.changeset`. If you `changeset init`, add a changeset, and run `changeset version`, it bumps `1.0.0 → 1.1.0` (or `2.0.0`) and you **never actually publish a `1.0.0`** — the first public version is `1.1.0`, which is confusing for a "v1.0 launch." Alternatively, `changeset publish` refuses to publish a version already recorded, and mismatches between package.json and registry cause "nothing to publish" surprises.
+The hosted site (DX-02) is deployed to GitHub Pages at `https://<owner>.github.io/litkit/`, i.e. served from the **`/litkit/` sub-path**, not root. Assets/links generated for `/` 404 (blank page, missing CSS). Separately, the Pages deploy workflow needs `permissions: { pages: write, id-token: write }` and Pages enabled for the repo; without them the deploy job fails or silently no-ops. This intersects the v1.0 **two-workflow token-safe** split: the docs deploy must be its own workflow (or a clearly-scoped job) and must **not** widen the read-only `ci.yml` with write/id-token perms.
 
 **Why it happens:**
-Changesets assumes it owns versioning from an already-published baseline; bootstrapping onto pre-set versions with an empty registry is an edge case.
+Project-page Pages URLs are sub-path hosted; static-site generators default to root-absolute asset paths. Pages permissions and the environment protection are easy to omit. Bolting docs onto the wrong workflow re-opens the token-safety concern v1.0 solved.
 
 **How to avoid:**
-- Decide the baseline explicitly. Cleanest: **publish the current `1.0.0` once as the initial release** (either a manual `changeset publish` with no pending changeset, or a one-time `npm publish -w ...` after build), THEN adopt changesets for all subsequent versions.
-- In `.changeset/config.json` set `"access": "restricted"` (GitHub Packages/internal), `"baseBranch": "main"`, and since there are effectively no internal `workspace:*` deps, `updateInternalDependencies` is moot but leave it at `"patch"`.
-- Ship all five together at 1.0.0 (a Key Decision) — use a single changeset touching all packages, or `fixed`/`linked` config if you want lockstep versions.
+- Set TypeDoc's base/`--basePath` (or the deploy step's path handling) so asset URLs are relative to `/litkit/`; verify by loading the deployed URL, not just local `open index.html`.
+- Add a **dedicated** `docs.yml` (or a properly-scoped job) using `actions/deploy-pages` with `permissions: { pages: write, id-token: write }` and the `github-pages` environment; keep `ci.yml` read-only and keep publish/auth concerns in `release.yml`. Do not merge docs-deploy perms into `ci.yml`.
+- Restrict docs deploy to `main` (or tags) to avoid publishing docs from feature branches.
 
 **Warning signs:**
-First published version is `1.1.0` not `1.0.0`; `changeset publish` logs "is already published, skipping"; package.json version ahead of the registry.
+Deployed site is blank / unstyled (assets 404 under `/litkit/`); Pages job errors "missing pages permission" / "environment protection"; docs deploying from feature branches; a reviewer notes new write perms added to `ci.yml`.
 
-**Phase to address:** P4.
+**Phase to address:** P-DOCS.
 
 ---
 
-### Pitfall 9: CI that publishes on every push (or has no build-before-publish gate)
+### Pitfall 9: Docs drift from the shipped API (docs describe source that isn't published)
 
 **What goes wrong:**
-A naive workflow runs `changeset publish` on every push to any branch, causing republish attempts, version churn, or accidental releases from feature branches. Or the publish job skips build/tests, shipping broken tarballs.
+TypeDoc generates from whatever entry points you hand it. Point it at internal modules (`router-core` internals, un-exported helpers) and the site documents symbols consumers **can't import**; conversely, if entry points lag the `exports` map, newly-exported symbols are undocumented. Either way the site lies about the installable surface — the opposite of the "works as documented" core value. v1.0 already invested in compile-verified README snippets; the generated site must not regress that.
 
 **Why it happens:**
-Copy-pasted "publish on push" workflows; not using the `changesets/action` two-step (Version PR → publish on merge).
+Docs entry points and the package `exports` map are maintained separately and drift. Internal-vs-public boundary isn't encoded, so TypeDoc happily documents everything it can reach.
 
 **How to avoid:**
-- Use the `changesets/action` pattern: on push to `main`, the action either opens/updates a "Version Packages" PR (when changesets are pending) or runs the `publish` script (when the version PR is merged). It **no-ops when there are no changesets**, so it never republishes.
-- Gate publish behind `if: github.ref == 'refs/heads/main'` and require typecheck+build+test to pass first (needs: [ci]).
-- Set workflow `permissions: { contents: write, packages: write }` and `concurrency` to avoid overlapping releases.
+- Drive TypeDoc entry points from the **same** `src/index.ts` (+ declared subpaths) that `exports` publishes; mark internals `@internal` and enable `excludeInternal`.
+- Add a check that the documented top-level export set matches each package's public `exports` (or reuse the P-TYPES `.d.ts` snapshot as the source of truth).
+- Keep the existing compile-verified snippet check running; consider surfacing those verified snippets in the TypeDoc site so examples stay executable, not decorative.
 
 **Warning signs:**
-Duplicate/failed publishes in Actions history; versions bumping on feature branches; releases with red test runs.
+Site documents a symbol that `import { X }` can't resolve; a shipped export has no page; example in docs won't compile against the published package.
 
-**Phase to address:** P4 (P2 sets up the CI test job it depends on).
+**Phase to address:** P-DOCS (align entry points with `exports`; keep snippet check).
+
+---
+
+### Pitfall 10: Dependabot bumps the pinned `changesets/action` SHA or the `lit` peer range → breaks the token-safe release or consumers
+
+**What goes wrong:**
+Dependabot (DX-04) with `github-actions` + `npm` ecosystems will, by default, try to bump **everything**, including: (a) the **pinned commit SHA** of `changesets/action` in `release.yml` — the token-safe release pipeline depends on a vetted, pinned action; an unreviewed bump can change release behavior or (worse) point at a compromised ref; (b) the **`lit` peer-dependency range** (`^3.0.0`) — Dependabot may "helpfully" narrow it to `^3.3.2`, an accidental **breaking** compatibility change for consumers on older `lit@3`; (c) `@tanstack/*` peer ranges likewise. Auto-merge on top of this can ship a broken minor with no human in the loop.
+
+**Why it happens:**
+Dependabot treats peer ranges like normal deps and treats a pinned SHA like a stale version. Auto-merge is enticing for "hygiene" but removes the review that protects release-critical and compatibility-critical files.
+
+**How to avoid:**
+- Scope Dependabot: `ignore` `peerDependencies` version bumps for `lit`, `@tanstack/query-core`, `@tanstack/form-core` (keep the wide `^3.0.0` deliberately). Peer ranges are a **compatibility contract**, not something to auto-tighten.
+- Keep `changesets/action` (and other release actions) pinned to a SHA; require **manual review** for any `github-actions` bump touching `release.yml`. Do **not** enable auto-merge for CI/release-workflow or peer-range PRs; if auto-merge is used at all, restrict it to `patch` dev-dependency updates that pass full CI.
+- Group updates and set a low `open-pull-requests-limit` + weekly schedule to cut noise.
+
+**Warning signs:**
+A Dependabot PR narrows a peer range in a published `package.json`; a PR changes the `changesets/action` ref; a flood of daily PRs; a release runs off an unreviewed action bump.
+
+**Phase to address:** P-DEPS (write the `dependabot.yml` ignore/group rules and auto-merge policy here).
+
+---
+
+### Pitfall 11: Plain-JS ergonomics undermined by required generics and non-emitted JSDoc types
+
+**What goes wrong:**
+"Clean no-TypeScript experience" (plain-JS ergonomics) fails two ways: (a) APIs with a **required** generic and no runtime default force TS users to annotate and give JS users nothing — worse, if a generic has no default and is used to shape a return, JS consumers get `unknown`/awkward inference and TS consumers get errors at call sites that "should just work"; (b) hand-written **JSDoc types in source are not emitted into `.d.ts`** by `tsc` in a normal TS build — so JSDoc added purely for JS editor hints won't reach consumers unless it's on actually-exported, typed declarations. Plain-JS users then get no autocomplete despite the effort.
+
+**Why it happens:**
+Generics designed for the TS-first path assume a type argument is always supplied. JSDoc is assumed to "just show up" in editors for consumers, but `.d.ts` is generated from TS types, and inline JSDoc on internal/un-exported code doesn't propagate.
+
+**How to avoid:**
+- Give every public generic a **default type parameter** (`<T = unknown>` / a sensible default) and a runtime default where behavior depends on it, so `createStore(0)` / `form({...})` work with zero type args in both JS and TS.
+- Ensure editor hints for JS consumers come from the shipped `.d.ts` (the real carrier), and that `.d.ts` includes the JSDoc descriptions (TS preserves doc comments on typed declarations in emit). Verify by consuming a package from a **plain `.js`** file with `checkJs`/editor and confirming autocomplete + param docs appear.
+- Keep the `attw`/`publint` gate to ensure the `.d.ts` that carries these hints actually resolves for consumers.
+
+**Warning signs:**
+JS consumer must pass `<...>` or gets `unknown`; no autocomplete/param docs in a `.js` consumer; JSDoc visible in source but absent from `dist/*.d.ts`.
+
+**Phase to address:** P-TYPES (co-own with P-DOCS for doc-comment emission).
+
+---
+
+### Pitfall 12: Devtools/logging hooks ship as prod side-effects, retain references, or break tree-shaking
+
+**What goes wrong:**
+Devtools (inspect store/query/router, logging hooks, store time-travel) can regress v1.0 invariants: (a) a global devtools registry (`globalThis.__LITKIT_DEVTOOLS__`) or time-travel history that **retains every state snapshot** leaks memory and holds references that defeat GC in consumer apps; (b) if the devtools bridge runs at module top level it's a **side effect** — packages with `"sideEffects": false` (kit) or a narrow allowlist (query/router/forms) will either tree-shake the bridge away (dead feature) or, if allowlisted, defeat tree-shaking for consumers who never opt in; (c) logging hooks left active in prod spam consoles and add overhead.
+
+**Why it happens:**
+Devtools naturally want a global singleton and to "just work" without opt-in — both hostile to a tree-shakeable, side-effect-audited library. Time-travel's whole job is retaining history, which is a leak if unbounded and always-on.
+
+**How to avoid:**
+- Make devtools **opt-in and dev-gated**: expose an explicit `enableDevtools()` / hook registration the consumer calls; gate the actual work behind the same `esm-env` `DEV` guard as Pitfall 3 so it strips in prod.
+- Keep devtools code **side-effect-free** at module scope (no auto-connect on import); do not add devtools modules to any package's `sideEffects` allowlist. Bound time-travel history (ring buffer / max length) and provide a clear/dispose path.
+- Verify prod build strips the devtools branch (grep minified consumer output) and that importing a package without calling `enableDevtools()` pulls in zero devtools code.
+
+**Warning signs:**
+Growing memory in a consumer app with time-travel on; devtools symbols in a prod bundle; console logs in production; `sideEffects` allowlist widened to include devtools.
+
+**Phase to address:** P-DEVTOOLS (reuse the P-WARN dev-gate mechanism).
 
 ---
 
@@ -196,40 +261,44 @@ Duplicate/failed publishes in Actions history; versions bumping on feature branc
 
 | Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
 |----------|-------------------|----------------|-----------------|
-| Keep `sideEffects: false` everywhere (incl. element-registering files) | Best tree-shaking numbers | Consumers silently lose element registration in prod builds | Never for packages that call `customElements.define` at top level |
-| ESM-only for 4 packages but dual for router | Less build config to write for the four | Inconsistent, undocumented consumer contract; `require` works for one pkg, not others | Only if you deliberately drop router's CJS too and document ESM-only |
-| TanStack cores as `dependencies` | `npm i @willram/query` pulls everything | Duplicate-instance breakage when consumer uses TanStack directly | Never — make them peers like `lit` |
-| Tests import from `src` only | Fast, no build in test loop | Never exercises the published `dist`/exports map | OK for unit tests IF a separate tarball/dist smoke test exists |
-| Ship `1.0.0` via a changeset bump (→1.1.0) | One command | Confusing first-version story for a "v1.0" launch | Never for the first release; publish 1.0.0 explicitly first |
-| Committed `.npmrc` with a literal `_authToken` | "It just works" locally | Token leak; rotates break everyone | Never — always `${ENV_VAR}` interpolation |
+| Guard dev warnings with raw `process.env.NODE_ENV` | Familiar React-era pattern | `process is not defined` crash in browser consumers; not stripped in Vite lib mode | Never for a browser lib — use `esm-env` `DEV` |
+| Let the examples app resolve its own `lit`/`@tanstack/*` | "It runs" | Second copy → broken context/dedup, dev-mode warning (the v1 bug, reborn) | Never — `resolve.dedupe` + single version |
+| Ship devtools always-on with unbounded time-travel history | Zero-config debugging | Memory leak + prod overhead + tree-shake regression | Never — opt-in + dev-gated + bounded |
+| Tighten a public generic/return type "because it's just types" | Better inference | Breaking change in a minor; consumer `tsc` breaks on `npm update` | Never without a `.d.ts` diff review + default generics |
+| Generate CEM ad-hoc, don't commit / don't add to `files` | One less build step | Stale or missing manifest; IDE autocomplete lies or absent | Never — build+commit+stale-check+`files` |
+| Root-only TypeDoc config in `packages` mode | Less config duplication | Empty/misconfigured child docs; broken cross-links | Never — use `packageOptions` + per-package entry points |
+| Dependabot auto-merge everything for "hygiene" | Green dependency dashboard | Unreviewed peer-range narrowing + `changesets/action` SHA bump ship breakage | Only for `patch` dev-deps passing full CI |
 
 ## Integration Gotchas
 
 | Integration | Common Mistake | Correct Approach |
 |-------------|----------------|------------------|
-| GitHub Packages (publish) | No `publishConfig`; assume npm default | Per-package `publishConfig.registry = https://npm.pkg.github.com` + root `.npmrc` scope line |
-| GitHub Packages (install) | Expect auth-free reads like public npm | Consumer `.npmrc` with `read:packages` PAT + `always-auth=true`; document it in README |
-| GitHub Packages (auth in Actions) | Use a PAT secret when `GITHUB_TOKEN` suffices | Built-in `GITHUB_TOKEN` + `permissions: packages: write` for same-owner publish |
-| `.npmrc` scoping | Set global `registry=` to GH Packages | Only redirect `@willram:` scope; leave default = npmjs so `lit`/`@tanstack/*`/`zod` resolve |
-| Changesets in npm workspaces | Fear `workspace:*` won't be replaced | Low risk here — siblings declare **no** internal `@willram/kit` dep; if one is added, use a real version range or `workspace:*` (npm resolves it on publish) |
-| npm provenance | Enable `--provenance` for a GitHub Packages / restricted publish | Provenance is for **public** packages published to npmjs from public repos; do NOT add `--provenance` to the restricted GH Packages publish — it will fail or is meaningless (MEDIUM confidence) |
-| `zod` peer for `forms/zod` | Import `@willram/forms/zod` without installing zod | zod is an **optional** peer (`>=3.0.0`); document that `/zod` subpath requires the consumer to install zod; keep it out of the base entry |
+| Examples app + Vite | Default bundling duplicates symlinked `lit`/`@tanstack/*` | `resolve.dedupe` for lit/reactive-element/lit-html + TanStack cores; single workspace version |
+| GitHub Pages (TypeDoc) | Assets built for `/` 404 under `/litkit/` sub-path | Set base/basePath to `/litkit/`; verify on the live URL |
+| GitHub Pages (perms) | Add `pages: write`/`id-token: write` to read-only `ci.yml` | Dedicated `docs.yml` (or scoped job); keep `ci.yml` read-only, `release.yml` for publish auth |
+| CEM discovery | No `customElements` package.json field / not in `files` | Add `"customElements": "./dist/custom-elements.json"` + include in `files` (+ optional `exports` condition) |
+| CEM analyzer | Expect it to find guarded/indirect `customElements.define` | Enable LitElement plugin; add JSDoc `@element`/`@customElement`; assert manifest tag completeness |
+| Dependabot (npm) | Bumps/narrows `lit`/`@tanstack/*` peer ranges | `ignore` peer-dependency updates for those; keep wide ranges deliberately |
+| Dependabot (actions) | Bumps pinned `changesets/action` SHA unreviewed | Require manual review for `release.yml` action bumps; no auto-merge there |
+| TypeDoc `{@link}` cross-package | Build one package at a time | Single `packages`-mode run over all five so links resolve |
 
 ## Performance Traps
 
 | Trap | Symptoms | Prevention | When It Breaks |
 |------|----------|------------|----------------|
-| Duplicate `lit`/`@tanstack` copies from mis-declared deps | Two reactive-controller/context systems; "no provider found"; double renders | Externalize (already done in Vite) AND declare as peers so the consumer owns one copy | As soon as a consumer app also uses lit/TanStack directly (normal case) |
-| Publishing large `dist` with sourcemaps to a private registry | Slow installs for the internal team | Decide whether `.map` files belong in `files`; they're currently emitted (`sourcemap: true`) | Low impact at this scale; note, don't over-optimize |
+| Unbounded store time-travel history | Memory grows with every `set()`; app slows over session | Ring buffer / max-length + dispose; dev-gated | Long-lived sessions with frequent state changes |
+| Un-stripped dev warnings in consumer prod bundle | Bigger bundle; warning strings shipped | `esm-env` `DEV` guard, verified via minified-output grep | Any consumer not defining `NODE_ENV` |
+| Devtools bridge defeating tree-shaking | Consumers who never enable devtools still pay for it | Side-effect-free, opt-in `enableDevtools()`, not in `sideEffects` allowlist | Every consumer, immediately |
+| Duplicate `lit`/`@tanstack` in examples app | Double renders, stuck queries | `resolve.dedupe`; single version | As soon as ranges diverge |
 
 ## Security Mistakes
 
 | Mistake | Risk | Prevention |
 |---------|------|------------|
-| Literal token in committed `.npmrc` | Registry write token leaked in git history | Use `${NODE_AUTH_TOKEN}`/`${GH_PACKAGES_TOKEN}`; add `.npmrc` patterns to review checklist |
-| Over-broad PAT for consumers | A `read:packages` need met with `repo`+`write:packages` PAT | Issue least-privilege `read:packages`-only PATs; prefer fine-grained tokens |
-| Publishing "internal" lib to public npm by accident (Pitfall 2) | Source/API exposure | `publishConfig` + `"private"` guard on root; `access: restricted` in changesets config |
-| Rendering `forms` server-error strings as HTML | XSS via `setServerErrors` (see CONCERNS.md) | Document "error strings must be pre-escaped; never `innerHTML`"; unchanged from existing concern |
+| Dependabot auto-merging a `changesets/action` SHA bump | Compromised/changed release action runs with publish token | Pin SHA; manual review for release-workflow action bumps; no auto-merge |
+| Docs/devtools workflow widening `ci.yml` permissions | Read-only CI gains write/id-token — re-opens v1 token-safety concern | Dedicated docs workflow; least-privilege per workflow |
+| Devtools exposing state on a global in prod | Consumer app state readable/mutable via `globalThis.__LITKIT_DEVTOOLS__` | Dev-gate the global; strip in prod build |
+| Logging hooks echoing user/form data in prod | Sensitive form/query data in production console | Dev-gate all logging; document that hooks are dev-only |
 
 ## UX Pitfalls
 
@@ -237,99 +306,67 @@ Duplicate/failed publishes in Actions history; versions bumping on feature branc
 
 | Pitfall | User Impact | Better Approach |
 |---------|-------------|-----------------|
-| README examples `import { KitElement } from "@willram/kit"` that never run | Copy-paste fails; erodes trust in v1 | P3: every README snippet compiled/executed in CI (typecheck examples dir) |
-| No documented `.npmrc` install steps | Teammates 401 on first install and give up | Ship a copy-paste consumer setup block (Pitfall 4) |
-| Controller classes not exported as types (CONCERNS.md) | Can't annotate `QueryController` vars | Export controller types alongside factories in index (DX fix, fits P1) |
-| Inconsistent module format (Pitfall 5) | `require` works for router, breaks for query | One workspace-wide policy + `attw` badge in docs |
+| Required generics with no default | JS users get `unknown`; TS users must annotate trivial calls | Default type params + runtime defaults |
+| Over-warning (warn on every benign case) | Warning fatigue; real warnings ignored; console noise | Warn once per condition, only on genuine misuse; dedupe/throttle |
+| Docs site documents un-exported internals | Consumers try to import symbols that aren't public | Drive TypeDoc from `exports`; `@internal` + `excludeInternal` |
+| CEM missing tags | No IDE autocomplete for `router-outlet`/`lit-form` — the whole point of DX-01 | Assert manifest completeness against known tag list |
+| Warning breaks SSR/first render | App errors before hydration in SSR consumers | Lazy, side-effect-free, guarded warnings |
 
 ## "Looks Done But Isn't" Checklist
 
-- [ ] **Publish config:** each package has `publishConfig.registry` → verify `npm publish --dry-run` prints `npm.pkg.github.com`, not npmjs.
-- [ ] **Element registration survives prod build:** `vite build` a consumer app → `customElements.get("router-outlet")`/`"lit-form"` is defined (not tree-shaken).
-- [ ] **Exports/types resolution:** run `publint` + `@arethetypeswrong/cli` on each built package → zero errors across ESM (and CJS if kept) and `types`.
-- [ ] **Tarball, not src:** `npm pack` each package, inspect contents → `dist/*.js` and `dist/*.d.ts` present; install the tarball and import from the public entry + subpaths (`/core`, `/lit`, `/zod`).
-- [ ] **Consumer auth:** a teammate on a clean machine installs with only a `read:packages` PAT and it succeeds.
-- [ ] **TanStack single-instance:** consumer creates `QueryClient`/form from their own `@tanstack/*` and litkit controllers react to it.
-- [ ] **jsdom-only APIs:** kit controllers (ResizeObserver/IntersectionObserver/matchMedia) have tests that actually run (mocks/polyfills present), not skipped.
-- [ ] **First version:** the registry actually contains `1.0.0` (not `1.1.0` from a stray changeset bump).
-- [ ] **CI ordering:** publish job `needs` a passing build+test; publish only on `main`.
-- [ ] **Decorator emit:** the built `dist` `@customElement`/`@property` decorators run correctly (registration + reactivity), verified from the tarball, not just `vite dev`.
+- [ ] **Dev warnings stripped:** `vite build` a consumer in prod → grep minified output for litkit warning strings = zero; importing litkit in a no-`process` browser sandbox does not throw `process is not defined`.
+- [ ] **Examples single-instance:** `npm ls lit @lit/reactive-element @tanstack/query-core @tanstack/form-core` at root shows exactly one version each; no "Lit is in dev mode: multiple versions" warning; provider context resolves.
+- [ ] **Examples not published:** `changeset status` + `npm publish --dry-run` exclude the demo; no `workspace:*` in any published `package.json`.
+- [ ] **CEM complete + shipped:** manifest tag set == known tags; `custom-elements.json` in `files` (appears in `npm pack`); `customElements` package.json field points at `dist`; re-running the analyzer produces no git diff.
+- [ ] **TypeDoc cross-links + base path:** no unresolved `{@link}` warnings; deployed `/litkit/` site loads styled (assets not 404); every documented export is importable; internals excluded.
+- [ ] **No breaking types:** `.d.ts` diff vs `main` shows no removed/narrowed public symbols; `attw` + `publint` green; new generics have defaults; a plain-`.js` consumer gets autocomplete + param docs.
+- [ ] **Dependabot scoped:** `dependabot.yml` ignores `lit`/`@tanstack/*` peer bumps; `changesets/action` bumps require review; auto-merge (if any) limited to patch dev-deps.
+- [ ] **Devtools opt-in + dev-only:** importing a package without `enableDevtools()` pulls in zero devtools code; prod build strips it; time-travel history bounded.
+- [ ] **v1.0 invariants intact:** every build still externalizes `lit`/`lit/*`/`@tanstack/*`; `sideEffects` allowlists unchanged (no devtools/warnings added to them); acyclic deps (`kit` imports nothing internal); repo still ESM-per-policy.
 
 ## Recovery Strategies
 
 | Pitfall | Recovery Cost | Recovery Steps |
 |---------|---------------|----------------|
-| Published to public npm by accident (P2) | MEDIUM | `npm unpublish` within 72h window (or `npm deprecate`); rotate any exposed token; add `publishConfig` + `private` guard; republish to GH Packages |
-| Shipped broken `dist` (P7) | LOW | Patch bump via a new changeset with the build fix; `changeset publish`; add `prepublishOnly` so it can't recur |
-| `sideEffects` dropped registration in a consumer (P1) | LOW-MED | Fix `sideEffects` allowlist, patch release; consumers bump; add prod-build smoke test |
-| First version came out as 1.1.0 (P8) | LOW | Accept 1.1.0 as v1 baseline (cheapest) or, if unpublished, `unpublish` and re-cut 1.0.0 before anyone depends on it |
-| TanStack duplicate instance in field (P6) | MEDIUM | Reclassify to peer, major/minor bump, coordinate consumer `npm dedupe`/single-version install |
-| Token leaked in committed `.npmrc` | HIGH | Revoke token immediately, purge from history (filter-repo), re-issue least-privilege PATs |
+| Breaking type shipped in a minor | MEDIUM | Revert the narrowing in a fast patch; re-add as `<T = default>` / widened; add the `.d.ts` diff gate so it can't recur |
+| Dev warnings crash consumer (`process is not defined`) | LOW-MED | Patch: swap raw `process.env` for `esm-env` `DEV`; grep-verify strip; patch release |
+| Examples app duplicated lit/TanStack | LOW | Add `resolve.dedupe`; align versions; re-run `npm ls` (app-only, no published impact) |
+| Stale/missing CEM shipped | LOW | Wire generation into `build`/`prepublishOnly`, add stale-check + `files`, patch release |
+| Docs site blank on Pages (base path) | LOW | Fix base/basePath, redeploy — no package release needed |
+| Dependabot narrowed a peer range in a release | MEDIUM | Revert the range to `^3.0.0`, patch release; add `ignore` rules |
+| Devtools memory leak / prod leakage | MEDIUM | Bound history + dev-gate; patch release; audit `sideEffects` |
 
 ## Pitfall-to-Phase Mapping
 
 | Pitfall | Prevention Phase | Verification |
 |---------|------------------|--------------|
-| 1. `sideEffects` drops element registration | P1 | Consumer `vite build` smoke test asserts `customElements.get(tag)` (P5) |
-| 2. No `publishConfig` → public npm | P4 | `npm publish --dry-run` shows GH Packages registry |
-| 3. Scope ≠ owner / org missing | P4 (first) | Org exists; test publish 200s and links to repo |
-| 4. Consumer PAT for install | P4 + P3/P5 | Clean-machine install with `read:packages` PAT succeeds |
-| 5. ESM/CJS inconsistency | P1 | `publint` + `attw` green for all packages (P2 gate) |
-| 6. TanStack cores as deps | P1 | `npm ls @tanstack/*` shows single instance in consumer (P5) |
-| 7. Stale/empty `dist` | P4 | Tarball smoke test imports from `dist` (P2/P5) |
-| 8. Changesets first-release vs 1.0.0 | P4 | Registry contains `1.0.0`; changesets config `access: restricted` |
-| 9. CI publishes on every push | P4 | Publish only on `main`, `needs` build+test; `changesets/action` no-ops without changesets |
-| Decorator/erasableSyntax emit (see below) | P1 | Reactivity/registration verified from built tarball, not dev |
-| jsdom gaps for web-component tests (see below) | P2 | ResizeObserver/IO/matchMedia mocked; shadow-DOM assertions pass |
+| 1. Examples duplicate lit/TanStack | P-EXAMPLES | `npm ls` single version; no multi-version dev-mode warning; context resolves |
+| 2. Examples leak into publish surface | P-EXAMPLES | `changeset status` / `--dry-run` exclude app; no `workspace:*` published |
+| 3. Dev warnings not stripped / `process` crash | P-WARN | Consumer prod-build grep = 0 strings; no `process is not defined` |
+| 4. Breaking type change in a minor | P-TYPES | `.d.ts` diff gate vs `main`; `attw`+`publint` green |
+| 5. CEM misses controller/helper-registered elements | P-CEM | Manifest tag set == known tags (CI assert) |
+| 6. Stale CEM / wrong path / externalized types | P-CEM | `git diff --exit-code` on regen; `npm pack` contains manifest; `customElements` field set |
+| 7. TypeDoc broken cross-links / entry points | P-DOCS | No unresolved `{@link}`; all five packages linked in one `packages` run |
+| 8. Pages base-path + permissions | P-DOCS | Live `/litkit/` site styled; scoped `docs.yml`; `ci.yml` still read-only |
+| 9. Docs drift from shipped API | P-DOCS | Documented exports == `exports` map; internals excluded; snippet check green |
+| 10. Dependabot bumps SHA / peer range | P-DEPS | `dependabot.yml` ignores; release-action bumps reviewed; auto-merge scoped |
+| 11. Plain-JS required generics / JSDoc not emitted | P-TYPES | Plain-`.js` consumer autocompletes; generics default; JSDoc in `dist/*.d.ts` |
+| 12. Devtools prod side-effects / leaks / tree-shake | P-DEVTOOLS | Zero devtools code without `enableDevtools()`; prod strip; bounded history |
 
----
-
-## Additional domain-specific pitfalls (Lit + this tsconfig)
-
-### Decorator emit under `experimentalDecorators` + `erasableSyntaxOnly` + two toolchains
-
-**What goes wrong:** `tsconfig.base.json` sets `experimentalDecorators: true`, `useDefineForClassFields: false`, `erasableSyntaxOnly: true`, and `noEmit: true`. JS is emitted by **Vite/esbuild**; `.d.ts` by **tsc** (`tsconfig.build.json`). Two independent decorator interpretations. esbuild honors `experimentalDecorators` but its legacy-decorator + `useDefineForClassFields:false` handling must match Lit 3's expectations, or `@property`/`@customElement` produce fields that don't upgrade (reactivity silently dead) or double-register. `erasableSyntaxOnly` does **not** forbid decorators, but it will (correctly) reject any future refactor that reaches for enums, namespaces, or constructor parameter properties — a contributor "cleaning up" can hit confusing errors, and anyone trying Node's `--experimental-strip-types`/swc will find decorators unsupported there.
-
-**How to avoid:** Keep the esbuild target aligned with the tsconfig (`experimentalDecorators`, `useDefineForClassFields:false`) — verify Vite is actually reading these (it reads `tsconfig.json`, confirm each package extends the base). Do NOT migrate to standard decorators or type-stripping in this milestone. Verify reactivity + registration from the **built tarball**, not `vite dev`.
-
-**Warning signs:** Property changes don't re-render after a build; `@customElement` element not registered; esbuild warning about decorator metadata; `tsc` d.ts emit disagreeing with runtime shape.
-
-**Phase to address:** P1, verified in P2 (build-artifact test).
-
-### Vitest + jsdom coverage gaps for web components
-
-**What goes wrong:**
-- **Missing browser APIs:** jsdom does not implement `ResizeObserver`, `IntersectionObserver`, or `matchMedia` — exactly the three kit controllers CONCERNS.md flags as untested. Tests either crash or get skipped, so "critical paths covered" is an illusion for those controllers.
-- **Custom-element registration collisions:** `customElements.define(tag)` throws `NotSupportedError: already defined` if the same tag is registered twice in one jsdom global. Vitest isolates per test file by default, but with `pool: 'threads'` + `isolate: false`, or re-importing a registration module within a file, collisions appear as flaky failures.
-- **Shadow DOM / styling:** jsdom's `attachShadow` support is partial; `adoptedStyleSheets`, `::part`, and computed styles are unreliable, so visual/style assertions give false confidence.
-
-**How to avoid:** Provide explicit mocks/polyfills in the Vitest setup for `ResizeObserver`/`IntersectionObserver`/`matchMedia` (or gate those controller tests behind a real-browser runner). Assert on shadow-root **structure** (`el.shadowRoot.querySelector`) not computed style. Keep Vitest default isolation; use unique tag names per test or guard `define` with `if (!customElements.get(tag))`. For anything needing real layout/registration semantics, consider Vitest browser mode / Web Test Runner for a subset (note it's still P2 scope, not net-new).
-
-**Warning signs:** `matchMedia is not a function`; `ResizeObserver is not defined`; intermittent "already defined" failures that pass on re-run; style assertions that pass in CI but the component looks wrong in a real browser.
-
-**Phase to address:** P2.
-
-### Types resolution: `types` basename ≠ JS basename, and subpath d.ts
-
-**What goes wrong:** kit maps `types: ./dist/index.d.ts` but `import: ./dist/kit.js` (tsc emits `index.d.ts` from `src/index.ts`; Vite emits `kit.js`). This resolves fine because the exports map's `types` condition is explicit — but it's fragile: any consumer on `moduleResolution: node16/nodenext` follows the exports conditions strictly, and router/forms subpaths (`/core`, `/lit`, `/zod`) must each have a matching `types` that actually exists in `dist`. If the d.ts for a subpath isn't emitted (tsc `outDir` mismatch), consumers get `any` or resolution errors.
-
-**How to avoid:** Run `@arethetypeswrong/cli` per package in CI — it catches masquerading ESM/CJS, missing subpath types, and `types`-condition-ordering bugs. Ensure `types` is the **first** condition in each exports entry (it already is). Confirm `dist/router-core/index.d.ts`, `dist/router-lit/index.d.ts`, `dist/zod.d.ts` are actually produced.
-
-**Warning signs:** Consumer sees `any` for a subpath import; `attw` flags "types resolution failed"; IDE can't find types for `@willram/router/lit`.
-
-**Phase to address:** P1 (config), P2 (attw gate).
-
----
+**Ordering note:** Do **P-TYPES** early — it establishes the `.d.ts` snapshot/diff gate that also protects P-DOCS (Pitfall 9), P-CEM (types in manifest), and P-WARN (public API of the guards). Do **P-WARN** before **P-DEVTOOLS** so both share one verified `esm-env` `DEV` dev-gate mechanism (Pitfalls 3, 12). **P-EXAMPLES** is the integration canary for the v1.0 externalization invariants (Pitfall 1) — schedule it after at least one other DX change lands so it exercises the real published-ish surface.
 
 ## Sources
 
-- Repo ground truth (validated 2026-08-10): `packages/{kit,router,query,forms,store}/package.json`, `tsconfig.base.json`, `packages/kit/vite.config.ts`, `packages/router/scripts/build.js`, `.planning/codebase/CONCERNS.md`, `.planning/PROJECT.md`.
-- [Changesets: workspace protocol replacement on publish (changesets/action #246; discussion #1389)](https://github.com/changesets/action/issues/246)
-- [Using Changesets with workspaces / private registries (pnpm docs; dTech guide)](https://pnpm.io/using-changesets)
-- [npm provenance general availability + public-only/public-repo restriction (GitHub Changelog; npm Docs)](https://github.blog/changelog/2023-09-26-npm-provenance-general-availability/)
-- [Publishing Node.js packages to GitHub Packages (GitHub Docs)](https://docs.github.com/actions/publishing-packages/publishing-nodejs-packages)
-- Well-established tool behavior: Lit `sideEffects`/tree-shaking of `customElements.define`, jsdom missing `ResizeObserver`/`IntersectionObserver`/`matchMedia`, `publint`/`@arethetypeswrong/cli` exports validation, GitHub Packages scope=owner + auth-on-read.
+- Repo ground truth (validated 2026-08-19): `packages/{kit,router,query,forms,store}/package.json`, `packages/kit/vite.config.ts`, root `package.json` (already has `@arethetypeswrong/cli`, `publint`, `@changesets/cli`), `.planning/PROJECT.md`, `.planning/milestones/v1.0-research/PITFALLS.md`. Note: `repository.url` still reads `github.com/willram/litkit` while scope is `@willramdev` — relevant to TypeDoc source links and CEM repo association.
+- [Vite: `process.env.NODE_ENV` not statically replaced in library mode (vitejs/vite #11730)](https://github.com/vitejs/vite/issues/11730) and [Building for Production | Vite](https://vite.dev/guide/build)
+- [Build better libraries, use dev warnings (thoughtspile)](https://thoughtspile.github.io/2021/09/22/dev-warnings/) — the `process.env.NODE_ENV` dead-code-strip pattern and its consumer-bundler dependency
+- [Lit dev mode + "multiple versions of @lit/reactive-element" warning (lit/lit #4877, discussion #3671; sgds-web-component #171)](https://github.com/lit/lit/issues/4877) — the duplicate-copy signal the examples app must avoid
+- [Development – Lit](https://lit.dev/docs/tools/development/) — dev/prod builds via conditional exports (the `esm-env`-style approach)
+- [Custom Elements Manifest analyzer config + LitElement plugin](https://custom-elements-manifest.open-wc.org/analyzer/config/) and [getting started](https://custom-elements-manifest.open-wc.org/analyzer/getting-started/)
+- [custom-elements-manifest: `customElements` package.json field + exports discovery](https://github.com/webcomponents/custom-elements-manifest)
+- [TypeDoc Input options / `entryPointStrategy: packages`, `packageOptions`, per-package config](https://typedoc.org/documents/Options.Input.html) and [monorepo entry points (TypeStrong/typedoc #2138, #1791)](https://github.com/TypeStrong/typedoc/issues/2138)
+- Well-established tool behavior: GitHub Pages project-page sub-path hosting + `actions/deploy-pages` `pages: write`/`id-token: write` perms; Dependabot `ignore`/grouping for peer ranges and pinned action SHAs; SemVer-for-types (widen inputs / narrow outputs) and `@arethetypeswrong/cli` + `publint` d.ts-resolution gating.
 
 ---
-*Pitfalls research for: hardening + shipping a multi-package Lit library to GitHub Packages*
-*Researched: 2026-08-10*
+*Pitfalls research for: adding DX features to a shipped externalized-peer Lit/TS monorepo (v1.1, additive non-breaking)*
+*Researched: 2026-08-19*

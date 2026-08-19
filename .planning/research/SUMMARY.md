@@ -1,160 +1,162 @@
 # Project Research Summary
 
-**Project:** litkit
-**Domain:** Harden + ship a five-package TypeScript Lit component-library monorepo to GitHub Packages (internal-team audience, `willram` org)
-**Researched:** 2026-08-10
+**Project:** litkit — v1.1 "Developer Experience" milestone
+**Domain:** Additive DX/tooling layer over a shipped, externalized-peer five-package Lit + TypeScript monorepo
+**Researched:** 2026-08-19
 **Confidence:** HIGH
 
 ## Executive Summary
 
-litkit is not a greenfield build — it is a **harden-and-ship milestone** for five already-functioning Lit packages (`@willram/kit` + router/query/forms/store) whose runtime architecture is already mapped. The research therefore targets the *ship pipeline* (versioning, CI, publish, docs) and the *correctness traps* that a "critical paths + CI green" bar would silently miss, not the library internals. Experts ship a workspace like this with **Changesets** (two-phase Version-PR → publish), **two separate GitHub Actions workflows** (read-only CI vs. auth-bearing release), and **GitHub Packages auth via the built-in `GITHUB_TOKEN`** (no PAT, since repo and packages share the `willram` org). This toolchain is well-documented and low-risk; the recommended stack (Changesets 2.31, `changesets/action` pinned to a SHA, `@vitest/coverage-v8` exact-matched to Vitest 4.1.9, TypeDoc for optional docs) is HIGH confidence.
+litkit v1.0 is shipped: five `@willramdev/*` packages (kit, router, query, forms, store) published to GitHub Packages, each built as a Vite library that externalizes `lit`/`lit/*`/`@tanstack/*`, tree-shakeable via `sideEffects`, with an acyclic dependency graph where `kit` imports nothing internal. v1.1 is an **additive, non-breaking** DX polish milestone across 8 features: a hosted TypeDoc API site (DX-02), an `examples/` integration app (DX-03), Custom Elements Manifests (DX-01), Dependabot + dependency hygiene (DX-04), sharper types/autocomplete, prod-stripped dev-time warnings, plain-JS ergonomics, and opt-in devtools. The overriding constraint on all of it: do not perturb the v1.0 invariants (externalization contract, `sideEffects` allowlist, acyclic graph, token-safe two-workflow CI/release split).
 
-The single most important structural finding **contradicts a PROJECT.md assumption**: ARCHITECTURE research grep-verified that **no sibling package imports `@willram/kit` in source** — no sibling `package.json` even declares it. So the "kit must publish first" ordering is a *documentation/integration convention, not a build or publish blocker*. The five packages are independent and parallelizable today, which de-risks the release phase and means the roadmap should **not** over-invest in ordering machinery. The real serialization is `green baseline → CI/automation → publish`.
+The expert approach here is almost entirely about **not reintroducing the exact bugs v1.0 fought off**. The research converges on a clear substrate ordering: (1) a shared dev-gate must be chosen first — use esm-env `DEV` (or `process.env.NODE_ENV !== 'production'`), **never** the Vite-only `import.meta.env.DEV` — and litkit's own build must NOT inline it (the guard survives into `dist` for the *consumer's* bundler to strip); (2) a `.d.ts` diff / type-SemVer gate must land early because "sharper types" can silently become a breaking change in a minor, and that same snapshot protects docs, CEM, and the public-API surface. Every other feature hangs off these two: dev-warnings and devtools share the dev-gate; docs, CEM, and plain-JS ergonomics all depend on a stable, diffable typed surface.
 
-The dominant risks are **config gaps present in every package** (no `publishConfig`, no root `.npmrc`, no `.changeset`, no `.github/workflows`) plus **correctness pitfalls invisible to a green build**: `sideEffects:false` tree-shaking away `customElements.define` (blank render in consumer prod builds), `@tanstack/*-core` declared as `dependencies` rather than `peerDependencies` (duplicate-instance breakage), jsdom missing `ResizeObserver`/`IntersectionObserver`/`matchMedia` for the exact kit controllers CONCERNS.md flags untested, and tests importing from `src` never exercising the published `dist`. Two blocking prerequisites bound the whole milestone: the **`willram` GitHub org must exist** (scope==owner rule) before any publish — and its name availability is an **open, unverified risk** — and because every package is already at `1.0.0` with no changesets, the team must **publish `1.0.0` explicitly before adopting changesets**, or the first shipped version becomes `1.1.0` and v1.0 never ships.
+The dominant risks are all regressions of the shipped contract: the examples app double-bundling `lit`/`@tanstack` (breaking context/dedup — the literal v1.0 bug reborn), sharper types shipping as a stealth breaking change, the CEM analyzer producing a hollow manifest for router (whose elements register via an idempotent `define()` wrapper, not `@customElement`), and devtools becoming a forced runtime dependency or prod side-effect. Mitigations are mechanical and verifiable: `resolve.dedupe` + single-version `npm ls` checks, a `.d.ts` diff gate with defaulted generics, a manifest-completeness CI assertion, and devtools as a separate opt-in leaf package (`@willramdev/devtools`) with optional peers and zero forced core dependency.
 
 ## Key Findings
 
 ### Recommended Stack
 
-The ship pipeline is additive to the existing (ground-truth) Lit 3.3.2 / Vite 8 / Vitest 4 stack. Release automation standardizes on Changesets — the de-facto npm-workspaces choice — with the official two-phase GitHub Action. Coverage is reported, not gated. Docs are TypeDoc-to-Markdown (optional, internal-friendly), explicitly *not* a hosted docs site. See `.planning/research/STACK.md`.
+All recommendations are additive dev-tooling; nothing changes the runtime library surface or the externalization contract. Docs generate at the monorepo root; CEM runs per-package on element-exposing packages only; the Pages deploy is a **net-new third workflow** kept isolated from the read-only `ci.yml` and auth-bearing `release.yml`.
 
 **Core technologies:**
-- **`@changesets/cli` ^2.31.1** + `@changesets/changelog-github` ^0.5.1 — coordinated multi-package versioning, changelog, publish — de-facto standard, monorepo-native, intent-based (fits a small team better than Conventional Commits)
-- **`changesets/action` (pin full SHA)** — bot "Version Packages" PR → publish-on-merge — the safe two-phase release pattern; SHA-pin for supply-chain safety
-- **`@vitest/coverage-v8` 4.1.9 (EXACT)** — coverage for the existing suite — must version-lock to installed Vitest or it throws at startup; no % thresholds (report, don't gate)
-- **GitHub Actions + built-in `GITHUB_TOKEN`** — CI + publish auth — repo and packages share `willram`, so no PAT/NPM_TOKEN needed; `actions/setup-node@v5` + `checkout@v5` (Node 24 runtime, required before mid-2026)
-- **TypeDoc ^0.28.20 + `typedoc-plugin-markdown` (optional)** — API reference in-repo Markdown — right fit for a TS-first, mostly-non-visual API surface
+- `typedoc@0.28.20` + `typedoc-plugin-mdn-links` (root dev dep): merged API site via `entryPointStrategy: "packages"`; TS 6.0 support landed in 0.28.18, reads source not `dist`.
+- `@custom-elements-manifest/analyzer@0.11.0` (per-package, forms/query/router only): emits `custom-elements.json` with the `--litelement`/`litPlugin()` flavor; add `"customElements"` field + `files` entry.
+- GitHub Pages actions (`configure-pages@v5`, `upload-pages-artifact@v3`, `deploy-pages@v4`) in a dedicated `docs.yml` with `pages: write` + `id-token: write` + `github-pages` environment.
+- Dependabot (`.github/dependabot.yml`, npm + github-actions, grouped weekly) + OSV scanner or `npm audit --audit-level=high` read-only in CI.
+- Dev-gate: esm-env `DEV` / `process.env.NODE_ENV` guard in a per-package `internal/dev.ts` — NOT `import.meta.env.DEV`, NOT a build-time `define`.
+- Optional devtools: `@tanstack/query-devtools@5.101.2` via a `query/devtools` subpath; store time-travel via `window.__REDUX_DEVTOOLS_EXTENSION__` (zero runtime dep).
+- `tsc --checkJs` smoke consumer to objectively verify plain-JS ergonomics + no-required-generics.
 
 ### Expected Features
 
-The "features" here are *release deliverables* — the artifacts a published v1 must exhibit — not runtime capabilities. See `.planning/research/FEATURES.md`.
+**Must have (P1 / MVP — cheap, non-breaking, high-signal):**
+- Dependabot + grouped updates + advisory audit (DX-04) — lowest cost, independent
+- Hosted TypeDoc site across all 5 packages on Pages (DX-02) — headline deliverable, can't drift
+- `examples/` integration app covering the six cross-package seams (DX-03) — manual-QA surface + integration proof
+- Prod-stripped dev warnings for the top misuse cases, missing-provider first
+- Sharper inference so no public API requires an explicit generic (unblocks plain-JS)
 
-**Must have (table stakes):**
-- `willram` GitHub org exists (scope==owner) — blocks the entire publish step
-- Green typecheck + build across all 5 — the literal Done bar
-- `publishConfig.registry` → GitHub Packages + `files` (README/LICENSE) in every package
-- Bundled `.d.ts` that actually *resolve* (verify with a `tsc` smoke consumer, not file-presence)
-- Named critical-path Vitest suites per package, green in CI
-- CI workflow (install → typecheck → build → test) on push/PR to `main`
-- Per-package README with a runnable, copy-pasteable quickstart matching the shipped API
-- Changesets → CHANGELOG + version bump + git tag + GitHub Release (the internal "provenance-equivalent")
-- LICENSE shipped in the tarball
+**Should have (P2 — add shortly after MVP):**
+- CEM + VS Code custom-data + web-types for the 3 element packages (DX-01)
+- Store <-> Redux DevTools time-travel (near-free once the dev-gate exists)
+- `publint` + `attw` as CI checks (types-resolution gate)
+- Router match log + documented QueryClient exposure for TanStack Devtools
+- Deployed examples app + docs live examples
 
-**Should have (competitive / cheap wins):**
-- `publint` + `@arethetypeswrong/cli` in CI — catches broken exports/`.d.ts` resolution (arguably promote toward table-stakes given router's dual-format subpaths)
-- Root README monorepo map + cross-package integration example
-- `.npmrc` template + one-page "consuming from GitHub Packages" auth doc (kills the #1 install-support ticket)
-- `examples/` integration app (router+query+forms+store) doubling as manual QA
+**Defer (P3 / v2+):**
+- Type-level tests (`tsd`) guarding inference
+- In-page debug panel; Playwright smoke over examples flows
+- Versioned docs / api-extractor report gate
 
-**Defer (v1.x / v2+):**
-- Custom Elements Manifest (`custom-elements.json`) — payoff concentrated in the few packages exposing elements
-- Full TypeDoc API site / Dependabot — hygiene, add on trigger
+**Do NOT build (anti-features):** Docusaurus/VitePress/Storybook, bespoke devtools browser extension, CEM for kit/store, React wrappers, dual published dev/prod builds, always-on/prod devtools or warnings, Renovate mega-config.
 
 ### Architecture Approach
 
-This is a **process/pipeline** architecture. The load-bearing decision: **CI (correctness) and Release (versioning + publish) are two separate workflows** with different triggers, permissions, and secrets — PR CI never authenticates to the registry; only `release.yml` holds `packages:write` + `NODE_AUTH_TOKEN`. Releasing is the Changesets two-phase flow: feature PRs carry `.changeset/*.md`; merge to `main` opens a bot "Version Packages" PR; merging *that* triggers `changeset publish` (topological, idempotent) to GitHub Packages + git tags. See `.planning/research/ARCHITECTURE.md`.
+DX features attach as **new leaf artifacts** (examples app, docs config, `@willramdev/devtools` package) plus **thin, guarded, prod-strippable additions** inside existing packages (per-package `internal/dev.ts`, CEM generation). Nothing creates a new inbound edge to a core package except the deliberate one-directional devtools->core edge, and devtools is a leaf nobody imports — so the acyclic graph and parallel build/publish of the five originals hold.
 
 **Major components:**
-1. **PR CI workflow (`ci.yml`)** — prove every push green (typecheck/build/test all 5 + `changeset status`); read-only, no auth
-2. **Release workflow (`release.yml`)** — `changesets/action` on `main`: open Version PR *or* publish; the only place with registry auth
-3. **Changeset intent files + `config.json`** — author-declared bumps; `access: restricted`, `baseBranch: main`; consider `fixed: [["@willram/*"]]` for a lockstep v1.0
-4. **Per-package `publishConfig` + build/`dist` gate** — registry redirect travels with each package; build (incl. `tsc` `.d.ts`) must hard-gate publish so the tarball contains every `exports` subpath's `.d.ts`
-5. **Externalized-peers contract** — every externalized specifier (`lit`, `@tanstack/*`, `zod`) must map to a declared peer/dep so consumers resolve one copy
+1. `examples/` — private root workspace (never published), consumes built `dist/` via workspace symlink so it validates the real exports map + externalization; `resolve.dedupe` guards single-instance `lit`/`@tanstack`.
+2. Root `typedoc.json` + per-package configs — `packages` mode; per-package entry points must be declared locally (router `./core`/`./lit`, forms `./zod`).
+3. Per-package `custom-elements.json` (forms/query/router only) — analyzer wired into `build`, path in `files` + `customElements` field.
+4. Per-package `internal/dev.ts` — duplicated (NOT shared from kit, which would create the first internal edge), framework-neutral, dev-gated `console.warn`.
+5. `@willramdev/devtools` — 6th leaf package, optional peers on store/query/router, consumes public `subscribe`/`set` hooks; may need a small `router-core` public `subscribe` addition (VERIFY).
 
 ### Critical Pitfalls
 
-Top items from `.planning/research/PITFALLS.md` — several are invisible to a green build:
-
-1. **`sideEffects:false` drops `customElements.define`** — every package sets it, but router/forms/query register elements at module top level; a consumer's prod bundler tree-shakes registration → blank screen, no error. Fix: allowlist registration modules (or documented side-effect import); verify with a consumer `vite build` smoke test asserting `customElements.get(tag)`.
-2. **No `publishConfig` → publishes to public npm** — leaks an internal lib or 403s. Add `publishConfig.registry` to all five + a committed root `.npmrc` scope line (never a global `registry=`).
-3. **Scope != owner / `willram` org missing** — every publish 403s until the org exists and owns the repo; org-name availability is unverified (a squatting `willram` *user* would block the *org*).
-4. **`@tanstack/*-core` as `dependencies`** — duplicate-instance breakage (consumer's `QueryClient` unrecognized by litkit's observer). Reclassify to `peerDependencies` like `lit`.
-5. **Changesets first-release with versions already `1.0.0`** — a changeset bump ships `1.1.0` and v1.0 never exists. Publish `1.0.0` explicitly first, *then* adopt changesets.
-6. **Stale/empty `dist` + tests import from `src`** — a green suite proves nothing about the artifact. Add `prepublishOnly: npm run build`, enforce install→build→test→publish order, add a tarball smoke test.
-7. **jsdom lacks `ResizeObserver`/`IntersectionObserver`/`matchMedia`** — the exact kit controllers CONCERNS.md flags untested; provide setup mocks or "critical paths covered" is an illusion.
+1. **Examples app double-bundles `lit`/`@tanstack`** -> context/dedup/dev-mode break (the v1.0 bug reborn). Avoid with `resolve.dedupe`, a single top-level version, and an `npm ls` single-instance check.
+2. **Sharper types become a stealth breaking change in a minor.** Only relax inputs / preserve-or-widen outputs; add generics only with defaults (`<T = unknown>`); land a `.d.ts` diff gate vs `main` early; keep `attw`+`publint` green.
+3. **Dev warnings not stripped / `process is not defined` crash.** Use esm-env `DEV` (or a `typeof process`-guarded `NODE_ENV`), never `import.meta.env.DEV`; do NOT `define`/inline at litkit's own build; verify strip via minified consumer-build grep.
+4. **CEM hollow manifest on router** — its elements register via an idempotent `define()` wrapper, not `@customElement`, so the analyzer leaves `tagName` empty. Add a JSDoc `@customElement <tag>` tag on each router element class; assert manifest tag-set == known tags in CI. forms/query use the real decorator and need no change.
+5. **Devtools ship as forced dep / prod side-effect / unbounded leak.** Separate opt-in `@willramdev/devtools` leaf with optional peers, `enableDevtools()` entry, dev-gated, side-effect-free, bounded time-travel history; never add to any `sideEffects` allowlist.
+6. **Docs/CEM source-link + Pages hygiene.** Repo `repository.url` still reads `github.com/willram/litkit` while packages ship under `@willramdev` — fix before generating docs/CEM so source links and repo association are correct. Set TypeDoc base path to `/litkit/`; keep the deploy in a dedicated `docs.yml`, never widen `ci.yml` perms.
 
 ## Implications for Roadmap
 
-The only true serialization is **green baseline → CI/automation → publish**. Docs are parallelizable but should land before first publish. The package-level "kit-first" ordering is a **non-blocker today** — do not build ordering machinery for it; Changesets handles it automatically *if* an internal edge is ever added.
+Based on research, suggested phase structure. The two cross-cutting substrates (dev-gate, type-SemVer gate) are sequenced first because nearly everything else depends on them.
 
-### Phase 1: Build & Typecheck Hardening (correctness config)
-**Rationale:** Nothing downstream is trustworthy until all five are green; finishes the in-flight `fix/typecheck-query-derived` work. Also the right home for the correctness-config fixes a green build alone would miss.
-**Delivers:** Green typecheck + build across all 5; `sideEffects` allowlist for element-registering files; `@tanstack/*-core` moved to `peerDependencies`; ESM/CJS policy decision (recommend ESM-only everywhere, or keep router dual and document it); exported controller *types*; verified decorator emit from the built tarball.
-**Addresses:** "Green typecheck + build" table-stakes; installable/typed public surface.
-**Avoids:** Pitfalls 1 (sideEffects), 4 (TanStack deps), 5-ESM/CJS-inconsistency, decorator-emit trap.
+### Phase 1: Sharper Types + Plain-JS Ergonomics + Type-SemVer Gate (P-TYPES)
+**Rationale:** Establishes the `.d.ts` snapshot/diff gate that protects docs (drift), CEM (types in manifest), and dev-warning public API. Pure in-package edits, no new artifacts, no graph change. Do `kit` first (its types are the base others compose), then siblings in parallel.
+**Delivers:** Tighter inference (no required generics), defaulted generics for JS callers, `.d.ts` diff CI gate, `attw`+`publint` checks, `tsc --checkJs` smoke consumer.
+**Addresses:** Sharper types + plain-JS ergonomics (Cat 5/7).
+**Avoids:** Pitfall 2 (stealth breaking types), Pitfall 11 (required generics / JSDoc not emitted).
 
-### Phase 2: Tests + CI
-**Rationale:** Encodes the green baseline so regressions are caught; the test job is a prerequisite for the release workflow's publish gate.
-**Delivers:** Named critical-path Vitest suites per package (router matcher/guards, query observer+mutation, forms field/array+zod, store slice, kit factories/emit/decorators) with `ResizeObserver`/`IntersectionObserver`/`matchMedia` mocks; `ci.yml` (install→typecheck→build→test, Node `[22,24]` matrix, `changeset status` check); `publint` + `attw` gate.
-**Uses:** `@vitest/coverage-v8@4.1.9` (report, no threshold), `actions/setup-node@v5`.
-**Implements:** PR CI workflow component. **Avoids:** Pitfalls 6 (stale dist / tarball smoke), jsdom gaps, types-resolution/subpath `.d.ts`.
+### Phase 2: Dev-Gate + Prod-Stripped Dev Warnings (P-WARN)
+**Rationale:** The dev-gate is the shared substrate for both warnings and devtools; choose the mechanism (esm-env `DEV`) once, verify strip, then reuse. Sequence before devtools.
+**Delivers:** Per-package `internal/dev.ts`, dev-warnings for missing-provider (#1), controller-before-connect, bad route config, duplicate registration, API misuse.
+**Avoids:** Pitfall 3 (`process is not defined` / un-stripped warnings). Verify: consumer prod-build grep = 0 strings; no crash in a no-`process` sandbox.
 
-### Phase 3: Docs (parallelizable with Phase 2)
-**Rationale:** Must precede first publish so "install and it works as documented" holds; independent of CI plumbing.
-**Delivers:** Per-package README with runnable quickstart matching shipped API; root README monorepo map + integration example; consumer `.npmrc` + GitHub Packages auth doc; optional TypeDoc→Markdown.
-**Addresses:** README/docs table-stakes; consumer-auth friction. **Avoids:** README examples that never compile; teammates 401ing on first install.
+### Phase 3: Hosted TypeDoc Site (P-DOCS)
+**Rationale:** Reads source, independent of build; can run parallel with 1-2 but benefits from the stable typed surface from Phase 1. Also the natural moment to fix the `repository.url` stale-owner issue.
+**Delivers:** Merged `packages`-mode site, per-package entry points aligned to `exports`, `docs.yml` Pages deploy with `/litkit/` base path.
+**Avoids:** Pitfalls 7 (cross-links/entry points), 8 (base-path/perms), 9 (docs drift), + `repository.url` source-link fix.
 
-### Phase 4: Release Automation + Publish (terminal deliverable)
-**Rationale:** Correctness (P1) gates automation (P2/P4) which gates publish. This is the milestone's end state.
-**Delivers:** `willram` org created + repo transferred (**blocking prerequisite — do first in this phase**); per-package `publishConfig` + repository fields; committed root `.npmrc`; `.changeset/config.json` (`access: restricted`, consider `fixed`); `release.yml` with SHA-pinned `changesets/action`, `permissions: {contents:write, pull-requests:write, packages:write}`, `NODE_AUTH_TOKEN=GITHUB_TOKEN`; `prepublishOnly` build hooks; **explicit `1.0.0` publish before changesets adoption**; git tags + GitHub Releases (provenance-equivalent). No `--provenance`.
-**Addresses:** all publish/release table-stakes. **Avoids:** Pitfalls 2, 3, 8, 9, and the publish-on-every-push anti-pattern.
+### Phase 4: Custom Elements Manifest (P-CEM)
+**Rationale:** Independent per element package; benefits from Phase 1 typed surface. forms/query/router only — skip kit/store.
+**Delivers:** `custom-elements.json` + `customElements` field + `files` entry + `cem` build step; router JSDoc `@customElement` tags; CI stale-check + completeness assertion.
+**Avoids:** Pitfalls 5 (hollow manifest / router `define()` gap), 6 (stale/wrong-path/externalized-type manifest).
 
-### Phase 5: Consumer Install Verification
-**Rationale:** The only proof the *shipped artifact* works; validates fixes made upstream.
-**Delivers:** Clean-machine install with a `read:packages` PAT; consumer `vite build` asserts `customElements.get(tag)` survives; TanStack single-instance check; tarball import from public entry + subpaths (`/core`, `/lit`, `/zod`).
-**Verifies:** Pitfalls 1, 4, 6, 7 and the "Looks Done But Isn't" checklist.
+### Phase 5: Examples Integration App (P-EXAMPLES)
+**Rationale:** Depends on built `dist/` of all five; schedule after at least one other DX change lands so it exercises a realistic surface and acts as the externalization canary.
+**Delivers:** Private root workspace app covering the six cross-package seams; `resolve.dedupe`; single-instance verification.
+**Avoids:** Pitfalls 1 (double-bundle), 2 (publish-surface leak / `workspace:*`).
+
+### Phase 6: Devtools (P-DEVTOOLS)
+**Rationale:** Reuses the Phase 2 dev-gate; needs the public subscriber hooks (verify/add `router-core subscribe`). New leaf package, no forced core dep.
+**Delivers:** `@willramdev/devtools` with optional peers, store<->Redux time-travel, query-cache exposure, router match log — all opt-in + dev-gated + bounded.
+**Avoids:** Pitfall 12 (prod side-effects / leaks / tree-shake regression).
+
+### Phase 7: Dependabot + Dependency Hygiene (P-DEPS)
+**Rationale:** Orthogonal; can land anytime, placed here to avoid PR noise during active feature work.
+**Delivers:** Grouped `dependabot.yml` (npm + github-actions), audit CI step, `@v5` action-runtime bump.
+**Avoids:** Pitfall 10 (peer-range narrowing / `changesets/action` SHA bump). Ignore `lit`/`@tanstack/*` peer bumps; require review for release-workflow action bumps.
 
 ### Phase Ordering Rationale
-- **Green → automation → publish** is the only hard serialization (ARCHITECTURE + FEATURES agree). Docs (P3) is parallel to P2 but must precede P4.
-- **Kit-first is a non-blocker** — no source/`package.json` edge exists; the roadmap should call this out and skip ordering machinery. If an edge is ever added, declare it + a changeset in the same PR and let topological publish handle it.
-- Correctness-config fixes live in **P1** (not P4) because they are code/config changes that must be *tested* in P2 and *verified* in P5 — batching them at publish time would be too late.
+
+- **Substrate-first:** the type-SemVer gate (Phase 1) and dev-gate (Phase 2) are dependencies of most later work, so they lead. This is the explicit ordering the pitfalls research calls out.
+- **Source-reading before artifact-building:** docs (Phase 3) and CEM (Phase 4) read a stable typed surface; sequencing them after Phase 1 prevents documenting/manifesting a surface that's still churning.
+- **Examples as canary:** Phase 5 deliberately follows earlier changes so it validates the real published-ish surface against the externalization invariant.
+- **Devtools after its substrate:** Phase 6 reuses the Phase 2 dev-gate and the public subscriber hooks.
+- **Independent hygiene last:** Phase 7 (Dependabot) has no dependencies and is placed to minimize noise.
+- **Parallelism:** Phases 3, 4, and 7 are largely parallelizable with each other and with 1-2; only `all-five-build -> examples` and `router-core subscribe -> devtools` are true serializations.
 
 ### Research Flags
 
 Phases likely needing deeper research during planning:
-- **Phase 4 (Release/Publish):** MEDIUM-confidence items to verify against the *installed* npm 11 — `workspace:`-protocol behavior, and confirm `changesets/action` bot-PR permissions. Also confirm `willram` **org-name availability** (open external risk) before committing to it.
-- **Phase 1 (ESM/CJS + decorator emit):** the ESM-only-vs-dual policy is a genuine decision; decorator emit under `experimentalDecorators` + `erasableSyntaxOnly` across two toolchains (esbuild JS, tsc `.d.ts`) warrants a build-artifact verification spike.
+- **Phase 6 (Devtools):** MEDIUM-confidence feature-design — exact query-devtools standalone-mount ergonomics and store<->Redux-extension `JUMP_TO_STATE` wiring should be spiked, plus verifying/adding the `router-core` public `subscribe` hook.
 
 Phases with standard, well-documented patterns (skip research-phase):
-- **Phase 2 (CI):** GitHub Actions + Vitest coverage are established; STACK.md gives concrete configs.
-- **Phase 3 (Docs):** README/TypeDoc conventions are well-trodden.
+- **Phase 1, 2, 3, 4, 5, 7** — TypeDoc `packages` mode, CEM analyzer, esm-env dev-gate, Pages deploy, Dependabot, and the examples-as-leaf-consumer pattern are all HIGH-confidence and documented against current tool versions.
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | Release/CI/coverage verified against official docs; docs-tooling choice is preference-driven (MEDIUM-HIGH) but non-blocking |
-| Features | HIGH | Grounded in direct repo inspection + well-known release-deliverable standards |
-| Architecture | MEDIUM-HIGH | Pipeline mechanics verified vs GitHub/Changesets docs; codebase facts HIGH (grep'd directly); npm `workspace:`-protocol nuance MEDIUM |
-| Pitfalls | HIGH | Validated against this repo's actual `package.json`/`tsconfig`/Vite config; a few forward-looking items MEDIUM |
+| Stack | HIGH | TypeDoc/CEM/Pages/Dependabot/OSV/dev-gate all verified against current docs + repo; devtools libs MEDIUM |
+| Features | HIGH | Clear P1/P2/P3 split grounded in PROJECT.md + v1.0 invariants |
+| Architecture | HIGH | Codebase read directly; leaf-artifact + per-package additions preserve invariants |
+| Pitfalls | HIGH | Grounded in real `package.json`/`vite.config.ts`/tsconfig; a few tool-behavior specifics MEDIUM |
 
 **Overall confidence:** HIGH
 
 ### Gaps to Address
-- **`willram` org-name availability** — unverified external risk; a squatting user blocks the org. Confirm before Phase 4; it gates the entire publish. Handle: check first thing in planning, have a fallback name ready.
-- **npm `workspace:`-protocol behavior on the installed npm 11** — MEDIUM confidence; only matters if an internal `@willram/kit` edge is ever added. Handle: verify locally before relying on it.
-- **`forms` `/zod` subexport externalization** — confirm `zod` is externalized in the `/zod` build and its `.d.ts` is emitted. Handle: `attw`/tarball check in P2/P5.
-- **Decorator emit parity** across esbuild (JS) and tsc (`.d.ts`) — verify reactivity + registration from the built tarball, not `vite dev`. Handle: build-artifact test in P2.
+
+- **Router public `subscribe` hook:** VERIFY whether `router-core` exposes a public match subscription; if not, add it (framework-neutral, small core MODIFY) before devtools — handle during Phase 6 planning.
+- **Devtools UX specifics:** query-devtools mount + Redux-extension protocol wiring are feature-design decisions — spike during Phase 6, not settled library choices.
+- **`repository.url` stale owner:** `github.com/willram/litkit` vs `@willramdev` scope — fix before docs/CEM generation so source links and repo association are correct (Phase 3/4).
+- **CEM manifest completeness:** don't assume — assert generated `tagName` set == known tags in CI (router is the at-risk package).
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- GitHub Docs — Publishing Node.js packages / Working with the npm registry (scope==owner, `publishConfig`, `NODE_AUTH_TOKEN`, `permissions: packages:write`)
-- Changesets docs + `changesets/action` (two-phase Version-PR->publish, topological publish, `updateInternalDependencies`)
-- npmjs — `@changesets/cli` 2.31.1, `@vitest/coverage-v8` exact-match rule, Vitest coverage guide
-- TypeDoc changelog/npm (0.28.20, TS 6.0 support); `actions/setup-node` + `checkout` v5 (Node 24 timeline)
-- npm Docs — provenance is a public-npm/Sigstore feature (NOT GitHub Packages)
-- Repo ground truth (validated 2026-08-10): `packages/*/package.json`, `tsconfig.base.json`, `packages/kit/vite.config.ts`, `packages/router/scripts/build.js`, `.planning/codebase/CONCERNS.md`, `.planning/PROJECT.md`; grep of `@willram/kit` over `packages/**`
+- `.planning/research/STACK.md`, `FEATURES.md`, `ARCHITECTURE.md`, `PITFALLS.md` — this milestone's four research files
+- Repo ground truth: `packages/*/package.json`, `vite.config.ts`, `tsconfig`, `router-lit/*`, root `package.json`; `.planning/PROJECT.md`; `.planning/codebase/`; `v1.0-research/*`
+- TypeDoc docs (packages entryPointStrategy, `packageOptions`), CEM analyzer docs (`--litelement`, `customElements` field), GitHub Pages `actions/*-pages`, Dependabot ignore/grouping — verified against current versions
+- Vite #11730 (lib mode does not replace `process.env.NODE_ENV`); Lit dev-mode / multiple-versions warning; esm-env `DEV` pattern
 
 ### Secondary (MEDIUM confidence)
-- Changesets discussion #1440 — per-package `publishConfig.registry` for GitHub Packages monorepos
-- Custom Elements Manifest analyzer (CEM 0.11.0, `--litelement` plugin)
-- OpenReplay / dTech Changesets release-workflow guides
-
-### Tertiary (LOW confidence / needs validation)
-- npm Docs v11 workspaces — npm auto-symlink via semver range / no `workspace:` prefix (confirm against installed npm 11)
+- `@tanstack/query-devtools` standalone-mount ergonomics; Redux DevTools `connect()`/`JUMP_TO_STATE` wiring — feature-design, to be spiked
 
 ---
-*Research completed: 2026-08-10*
+*Research completed: 2026-08-19*
 *Ready for roadmap: yes*
