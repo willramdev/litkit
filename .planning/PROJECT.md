@@ -81,4 +81,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-17 after Phase 3 completion*
+*Last updated: 2026-08-18 after Phase 5 completion — consumer-install verification (VER-01..04) proven green against the live GitHub Packages registry; the Core Value (packages install cleanly and work as documented) is now validated end-to-end from an out-of-tree consumer.*
