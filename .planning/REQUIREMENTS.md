@@ -40,7 +40,7 @@
 - [x] **RLS-04**: `.changeset/config.json` is configured (`access: restricted`, `baseBranch: main`, lockstep `fixed` for the five `@willramdev/*` at v1.0)
 - [x] **RLS-05**: `release.yml` uses a SHA-pinned `changesets/action` with `{contents, pull-requests, packages}: write` and `NODE_AUTH_TOKEN=GITHUB_TOKEN` (no PAT, no `--provenance`)
 - [x] **RLS-06**: Each package has a `prepublishOnly` build hook enforcing build-before-publish
-- [ ] **RLS-07**: All five packages are published to GitHub Packages at an explicit `1.0.0` (before adopting the changesets version bump), with git tags + a GitHub Release
+- [x] **RLS-07**: All five packages are published to GitHub Packages at an explicit `1.0.0` (before adopting the changesets version bump), with git tags + a GitHub Release — Release cut 2026-08-19 (`v1.0.0` → `a50936d`, https://github.com/willramdev/litkit/releases/tag/v1.0.0)
 
 ### Consumer Verification (VER)
 
@@ -103,7 +103,7 @@ Each v1 requirement maps to exactly one phase (see `.planning/ROADMAP.md`).
 | RLS-04 | Phase 4 — Release Automation & Publish | Complete |
 | RLS-05 | Phase 4 — Release Automation & Publish | Complete |
 | RLS-06 | Phase 4 — Release Automation & Publish | Complete |
-| RLS-07 | Phase 4 — Release Automation & Publish | Pending |
+| RLS-07 | Phase 4 — Release Automation & Publish | Complete |
 | VER-01 | Phase 5 — Consumer Install Verification | Complete |
 | VER-02 | Phase 5 — Consumer Install Verification | Complete |
 | VER-03 | Phase 5 — Consumer Install Verification | Complete |

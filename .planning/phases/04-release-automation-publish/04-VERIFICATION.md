@@ -1,7 +1,8 @@
 ---
 phase: 04-release-automation-publish
 verified: 2026-08-18T00:00:00Z
-status: human_needed
+status: passed
+resolved_human_action: "v1.0.0 GitHub Release cut 2026-08-19 (tag v1.0.0 -> a50936d, https://github.com/willramdev/litkit/releases/tag/v1.0.0); registry re-confirmed 1.0.0. RLS-07 fully satisfied."
 score: 7/7 must-haves verified
 behavior_unverified: 0
 overrides_applied: 7
@@ -22,8 +23,8 @@ human_verification:
 # Phase 4: Release Automation & Publish Verification Report
 
 **Phase Goal:** All five `@willramdev/*` packages install cleanly from GitHub Packages at an explicit `1.0.0` via a two-workflow, token-safe Changesets pipeline (read-only CI vs. auth-bearing release) — the milestone's end state.
-**Verified:** 2026-08-18
-**Status:** human_needed
+**Verified:** 2026-08-18 (human action completed 2026-08-19)
+**Status:** passed
 **Re-verification:** No — initial verification
 
 > **Scope override active (approved).** The plans were authored for the `@willram` scope + a `willram` GitHub org. That org name was unavailable; the maintainer adopted `willramdev` (already the repo owner) and renamed the scope repo-wide. Everywhere the plans/ROADMAP say `@willram`, the correct verified end state is `@willramdev`. This is the intended deviation (04-01-SUMMARY.md), not a defect.
@@ -54,7 +55,7 @@ human_verification:
 | `.github/workflows/release.yml` | SHA-pinned action, write scopes, GITHUB_TOKEN-only, no provenance | ✓ VERIFIED | Full contents match RLS-05. |
 | `.github/workflows/ci.yml` | unchanged `contents: read` | ✓ VERIFIED | Still read-only; no publish step. |
 | Git tags `@willramdev/<pkg>@1.0.0` (×5) | created + pushed | ✓ VERIFIED | 5 tags present locally; pushed per 04-04-SUMMARY. |
-| v1.0.0 GitHub Release | published, references 5 tags | ⚠️ OUTSTANDING (manual) | Not created — `gh` unauthenticated; human-only. Non-blocking for installability. |
+| v1.0.0 GitHub Release | published, references 5 tags | ✓ VERIFIED | Cut 2026-08-19: tag `v1.0.0` → `a50936d` (the 1.0.0 publish commit), marked latest. https://github.com/willramdev/litkit/releases/tag/v1.0.0 |
 
 ### Requirements Coverage
 
@@ -66,7 +67,7 @@ human_verification:
 | RLS-04 | 04-03 | changeset fixed lockstep config | ✓ SATISFIED | .changeset/config.json |
 | RLS-05 | 04-03 | SHA-pinned token-safe release.yml | ✓ SATISFIED | release.yml + ci.yml split |
 | RLS-06 | 04-02 | prepublishOnly build hook | ✓ SATISFIED | all five package.json |
-| RLS-07 | 04-04 | published 1.0.0 + tags + Release | ⚠️ SATISFIED except manual GitHub Release | registry 1.0.0 + 5 tags; Release pending (human-only) |
+| RLS-07 | 04-04 | published 1.0.0 + tags + Release | ✓ SATISFIED | registry 1.0.0 + 5 tags + v1.0.0 GitHub Release (cut 2026-08-19) |
 
 ### Anti-Patterns Found
 
@@ -92,7 +93,7 @@ No functional artifact retains the old `@willram` scope. Grep for `@willram[^d]`
 
 No blocking gaps. Every automatable artifact, config, and registry claim (RLS-01 through RLS-07) is substantively verified against the actual codebase — the correct `@willramdev` end state per the approved scope override, not merely SUMMARY assertions. The phase goal (five packages publishable, versioned, release-automated, installable at 1.0.0) is achieved.
 
-The single outstanding item is the manual **v1.0.0 GitHub Release** (RLS-07 sub-item D3), which is human-only (`gh` unauthenticated) and does not block installability. Status is `human_needed` solely to surface that pending manual action plus an authenticated registry re-confirmation — not because any implementation is missing or wrong.
+The formerly-outstanding manual **v1.0.0 GitHub Release** (RLS-07 sub-item D3) was cut on 2026-08-19 (tag `v1.0.0` → `a50936d`, the 1.0.0 publish commit; marked latest): https://github.com/willramdev/litkit/releases/tag/v1.0.0. Registry state re-confirmed at 1.0.0. With that action complete, RLS-07 is fully satisfied and this report's status is now `passed` (no remaining human-only actions).
 
 ---
 
