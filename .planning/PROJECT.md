@@ -8,6 +8,20 @@ litkit is a monorepo of five composable Lit web-component packages — `@willram
 
 All five packages install cleanly from GitHub Packages and work as documented — a consumer can `npm install @willramdev/*` and build a Lit app against a green, typed, tested, documented API.
 
+## Current Milestone: v1.1 Developer Experience
+
+**Goal:** Make litkit a joy to build against — discoverable docs, live examples, sharper types, dev-time guardrails, devtools, and dependency hygiene. Additive and non-breaking; the v1.0 public API stays stable.
+
+**Target features:**
+- Hosted TypeDoc API reference site across all five packages (DX-02)
+- Standalone `examples/` integration app (router + query + forms + store), doubling as manual QA (DX-03)
+- Custom Elements Manifest (`custom-elements.json`) for element-exposing packages → IDE autocomplete (DX-01)
+- Dependabot + dependency-audit hygiene in CI (DX-04)
+- Sharper types & editor autocomplete on existing APIs (tighter generics, fewer casts)
+- Dev-time warnings & error messages (missing provider, bad route, API misuse) — stripped from prod builds
+- Plain-JS ergonomics — clean no-TypeScript experience, sensible defaults, no required generics
+- Devtools / debugging — inspect store state, query cache, router matches; logging hooks; store time-travel
+
 ## Requirements
 
 ### Validated
@@ -28,17 +42,25 @@ All five packages install cleanly from GitHub Packages and work as documented �
 
 ### Active
 
-<!-- v1.0 shipped. Next-milestone requirements defined via /gsd-new-milestone. -->
+<!-- v1.1 "Developer Experience" — DX polish on the shipped v1.0 surface. Additive, non-breaking. Detailed REQ-IDs in .planning/REQUIREMENTS.md. -->
 
-_None — v1.0 milestone shipped. v2 candidates (DX-01…04) tracked in `.planning/milestones/v1.0-REQUIREMENTS.md`._
+- [ ] Hosted TypeDoc API reference site across all five packages (DX-02)
+- [ ] Standalone `examples/` integration app (router + query + forms + store), doubling as manual QA (DX-03)
+- [ ] Custom Elements Manifest (`custom-elements.json`) for element-exposing packages → IDE autocomplete (DX-01)
+- [ ] Dependabot + dependency-audit hygiene in CI (DX-04)
+- [ ] Sharper types & editor autocomplete on existing APIs (tighter generics, fewer casts)
+- [ ] Dev-time warnings & error messages (missing provider, bad route, API misuse) — stripped from prod builds
+- [ ] Plain-JS ergonomics — clean no-TypeScript experience, sensible defaults, no required generics
+- [ ] Devtools / debugging — inspect store state, query cache, router matches; logging hooks; store time-travel
 
 ### Out of Scope
 
 - Public npm registry publish — audience is an internal team; GitHub Packages chosen
 - Renaming packages to `@willramanand/*` — the `willram` GitHub org was NOT created; packages ship under the `@willramdev/*` scope
-- New packages or new features in existing packages — v1 hardens and ships the current surface, no expansion
+- New packages / net-new domain runtime capabilities — v1.1 polishes DX on the existing surface; new capability waits for v2.0
 - Percentage line-coverage gate — bar is "critical paths covered + CI green," not a coverage number
-- SSR, animations, devtools, CLI, or other net-new capabilities — deferred to post-v1
+- SSR & hydration, auth/session/RBAC, i18n & a11y, data-layer depth (query optimistic/infinite, forms async validation, router search-params) — deferred to the v2.0 "Enterprise" milestone; tracked as v2 requirements
+- Animations, CLI — no demand yet; revisit post-v2.0
 
 ## Context
 
@@ -64,6 +86,7 @@ _None — v1.0 milestone shipped. v2 candidates (DX-01…04) tracked in `.planni
 | Ship all five packages together at v1.0 | Shared tooling and cross-package integration; consumers expect the full set | ✓ Good — lockstep `fixed` changeset group; all five shipped at `1.0.0` (Phase 4) |
 | Coverage bar = critical paths + CI green (no %) | Pragmatic for a small internal library; avoids gaming a coverage number | ✓ Good — report-only v8 coverage in CI, no threshold gate (Phase 2) |
 | Adopt changesets-style release automation | Coordinated versioning across a five-package workspace | ✓ Good — two-workflow token-safe Changesets pipeline live (Phase 4) |
+| Split post-v1 work: v1.1 DX polish before v2.0 enterprise | DX (docs, examples, types, devtools, dep hygiene) is fast + low-risk and ships value sooner; heavy net-new capability (SSR, auth/RBAC, i18n/a11y, data-layer depth) isolated to v2.0 | — Pending |
 
 ## Evolution
 
@@ -83,4 +106,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-19 after v1.0 milestone completion — all 5 phases shipped and verified; `v1.0.0` published to GitHub Packages under the `@willramdev` scope. Next milestone via `/gsd-new-milestone`.*
+*Last updated: 2026-08-19 after v1.1 "Developer Experience" milestone start — DX-polish scope defined (docs, examples, CEM, dep hygiene, sharper types, dev-time warnings, plain-JS ergonomics, devtools); enterprise capabilities (SSR, auth/RBAC, i18n/a11y, data-layer depth) deferred to v2.0.*
