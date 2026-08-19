@@ -108,7 +108,7 @@ None yet.
 
 ### Blockers/Concerns
 
-- [Phase 4] `willram` GitHub org-name availability is unverified — a squatting `willram` user would block the org and 403 every publish. Confirm first thing in Phase 4 planning; have a fallback name ready.
+- [Phase 4 — RESOLVED] `willram` GitHub org-name was not secured; resolved by shipping under the `@willramdev` scope (owner `willramdev`) instead of creating a `willram` org. No longer blocking — RLS-01 dropped/obsolete.
 - [Phase 4] npm `workspace:`-protocol behavior on installed npm 11 is MEDIUM confidence — only matters if an internal `@willramdev/kit` edge is ever added; verify locally before relying on it.
 
 ## Deferred Items
