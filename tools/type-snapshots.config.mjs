@@ -9,9 +9,14 @@
 //
 // MAINTAINER REGENERATION WORKFLOW:
 //   Changed a public type? Run `npm run build && npm run type-snapshot`, review
-//   the tools/type-snapshots/ diff (breaking vs additive by eye — D-03), then
-//   commit it. The committed snapshot IS the baseline (D-04); there is no
-//   branch-vs-main fetch. Any drift red-lines the read-only ci.yml gate.
+//   the tools/type-snapshots/ diff (breaking vs additive BY EYE — D-03: the human
+//   reading the PR diff is the classifier, not an auto-differ), then commit the
+//   regenerated snapshot IN THE SAME PR. The committed snapshot IS the baseline
+//   (D-04); there is no branch-vs-main fetch. Any drift red-lines the read-only
+//   ci.yml gate.
+//   A `typescript` bump can reorder unions / normalize modifiers in .d.ts emit
+//   with no source change (Pitfall 5) — treat that as an INTENDED regeneration:
+//   regenerate + review + commit in the bump PR.
 //
 // Design constraints (mirrors the tools/doc-check/extract-snippets.mjs convention):
 //   - Executable ESM runner, not a dts-bundle-generator `--config` file: the 9.5.1
