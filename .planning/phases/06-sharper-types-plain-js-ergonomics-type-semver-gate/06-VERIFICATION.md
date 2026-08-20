@@ -1,32 +1,43 @@
 ---
 phase: 06-sharper-types-plain-js-ergonomics-type-semver-gate
-verified: 2026-08-19T00:00:00Z
-status: gaps_found
-score: 3/4 must-haves verified
+verified: 2026-08-20T00:00:00Z
+status: passed
+score: 4/4 must-haves verified
 behavior_unverified: 0
 overrides_applied: 0
-gaps:
-  - truth: "A `tsc --checkJs` smoke consumer runs in CI, objectively proving plain-JS callers never hit a forced generic on an ongoing basis (SC3 / TYPE-03; plan 06-03 must_have truth: 'checkJs leg is wired into typecheck:smoke so it runs in the existing CI build-test/gate flow')."
-    status: partial
-    reason: "CR-01 confirmed independently. The `typecheck:smoke` script (package.json:13) — the sole invoker of the five js-*.js checkJs consumers and the node16+bundler legs — is never called by any workflow. A grep of .github for `typecheck:smoke`/`checkjs`/`typecheck-smoke` returns zero matches. ci.yml:31 runs `npm run typecheck`, which expands to `npm run typecheck --workspaces --if-present` (the per-package `typecheck` scripts), NOT the root `typecheck:smoke`. The smoke passes locally (exit 0) so the plain-JS floor is proven at this snapshot, but a future public API that forces an explicit generic would compile-fail locally and sail through CI green — the exact stealth regression the phase exists to prevent. 06-03-SUMMARY.md's claims ('runs in the existing CI build-test/gate flow', 'TYPE-03 plain-JS proof is now part of the standard typecheck:smoke CI leg') are false as written."
-    artifacts:
-      - path: ".github/workflows/ci.yml"
-        issue: "No step invokes `npm run typecheck:smoke`. The gate job runs build, type-snapshot, git diff, publint, attw, changeset status, coverage — never the checkJs smoke. build-test runs per-workspace `typecheck` only."
-      - path: "package.json"
-        issue: "`typecheck:smoke` (line 13) is defined but orphaned from CI. It is also not self-contained (no `npm run build &&` prefix, unlike doc-check) so a CI step must sequence it after build (WR-02)."
-    missing:
-      - "Add a `- run: npm run typecheck:smoke` step to the ci.yml gate job, after `npm run build` (the consumers resolve @willramdev/* through the exports map into dist)."
-      - "Prove the wired gate turns red on a forced generic (introduce a temporary explicit-generic signature, watch CI fail, revert)."
-      - "Optionally make `typecheck:smoke` self-contained (`npm run build && ...`) per WR-02."
+re_verification:
+  previous_status: gaps_found
+  previous_score: 3/4
+  gaps_closed:
+    - "CR-01 — typecheck:smoke wired into ci.yml gate job after build (TYPE-03 checkJs floor now an enforced CI gate)"
+    - "WR-02 — typecheck:smoke step positioned AFTER npm run build with an inline ordering-invariant comment"
+    - "WR-01 — shape gate hardened to `git add -A -- tools/type-snapshots/ && git diff --cached --exit-code -- tools/type-snapshots/`, catching untracked snapshots"
+    - "WR-03 — typescript exact-pinned 6.0.3 (no caret) in package.json + package-lock.json"
+  gaps_remaining: []
+  regressions: []
+gaps: []
 deferred: []
 ---
 
 # Phase 6: Sharper Types, Plain-JS Ergonomics & Type-SemVer Gate — Verification Report
 
-**Phase Goal:** Consumers get sharper editor autocomplete and can build in plain JavaScript with no required generics — and a `.d.ts` snapshot/diff gate guarantees these type improvements can never ship as a stealth breaking change in a minor.
-**Verified:** 2026-08-19
-**Status:** gaps_found
-**Re-verification:** No — initial verification
+**Phase Goal:** Type improvements can NEVER ship as a stealth breaking change — the plain-JS type floor (TYPE-01/TYPE-03) and the type-SemVer shape gate (TYPE-02) are ENFORCED IN CI, not just provable locally.
+**Verified:** 2026-08-20
+**Status:** passed
+**Re-verification:** Yes — after gap-closure plan 06-04 (CR-01, WR-01, WR-02, WR-03)
+
+## Re-Verification Summary
+
+The prior verification (2026-08-19) returned `gaps_found` (3/4): the type mechanisms all worked locally, but the TYPE-03 `checkJs` proof was never invoked by any CI workflow (CR-01, BLOCKER), plus three hardening warnings (WR-01 untracked-snapshot blind spot, WR-02 step ordering, WR-03 caret-ranged typescript). Gap-closure plan 06-04 wired and hardened the gate inside the read-only `ci.yml`. All four gaps are now genuinely closed on disk, confirmed against the actual files (not the SUMMARY narrative alone), and the phase goal is met.
+
+### Per-Gap Disposition
+
+| Gap | Prior status | Now | Evidence (behavioral check I ran vs. relied-on) |
+|-----|-------------|-----|-------------------------------------------------|
+| **CR-01** (BLOCKER — typecheck:smoke not wired into CI) | ✗ FAILED | ✓ CLOSED | ci.yml:59-60 `gate` job step `run: npm run typecheck:smoke`. **I RAN** `npm run typecheck:smoke` against the built `dist/` → **exit 0** (node16 + bundler + checkJs legs green). The forced-generic RED proof (`createStore<T = unknown>(initialState: unknown)` → exit 2, TS18046 ×3; revert → exit 0) is **relied on from the 06-04 SUMMARY** — the mechanism's local green baseline was independently confirmed by me. |
+| **WR-02** (CI step ordering) | ⚠️ WARNING | ✓ CLOSED | ci.yml: `- run: npm run build` at line 52; the `typecheck:smoke` step at line 60 is positioned AFTER it, preceded by an inline ordering-invariant comment (lines 53-58) stating the js-*.js consumers resolve `@willramdev/*` into `dist/`. **Verified on disk.** |
+| **WR-01** (shape gate blind to untracked snapshots) | ✗ FAIL (blind spot) | ✓ CLOSED | ci.yml:76 `run: git add -A -- tools/type-snapshots/ && git diff --cached --exit-code -- tools/type-snapshots/`. **I RAN** the behavioral proof directly: injected an untracked `tools/type-snapshots/__wr01_probe.d.ts` — OLD `git diff --exit-code` → exit 0 (blind), NEW gate → **nonzero (catches it)**; removed probe → snapshot dir restored clean. |
+| **WR-03** (typescript not exact-pinned) | ⚠️ WARNING | ✓ CLOSED | package.json:31 `"typescript": "6.0.3"` (no caret, still under `dependencies` — not moved to devDependencies per IN-01 out-of-scope). package-lock.json:15 `"typescript": "6.0.3"`. **Verified on disk (grep both files).** |
 
 ## Goal Achievement
 
@@ -34,55 +45,51 @@ deferred: []
 
 | # | Truth | Status | Evidence |
 |---|-------|--------|----------|
-| 1 | SC1 (TYPE-01/TYPE-03 API): No public API in any of the five packages requires an explicit generic — TS and JS callers get inferred/defaulted types. | ✓ VERIFIED | `npm run typecheck:smoke` exits 0 locally — all five `js-*.js` consumers call every factory at zero-generic sites (`computed(host, () => 1)`, `createStore(0)`, `query({...})`, `form({...})`, `createRouter({...})`) and compile clean under checkJs. `TYPE-01-audit.md` (9.6KB) enumerates every generic-bearing symbol. `git diff --exit-code -- packages/` clean — verify-only, zero signature edits. |
-| 2 | SC2 (TYPE-02): A `.d.ts` snapshot/diff CI gate fails the build when the public type surface changes unexpectedly. | ✓ VERIFIED (see WR-01 warning) | Shape gate wired in ci.yml gate job (lines 57–60): `npm run type-snapshot` then `git diff --exit-code tools/type-snapshots/`. Behaviorally proven both directions: `npm run type-snapshot` regenerates all 8 files byte-identically (all reported `unchanged`, git diff exit 0); injecting a change into a tracked snapshot makes `git diff --exit-code` red-line. `.gitattributes` pins LF; `git ls-files --eol` reports `i/lf w/lf` for all 8. |
-| 3 | SC3 (TYPE-03): The `tsc --checkJs` smoke consumer passes AND runs in CI, objectively proving (and guarding) that plain-JS callers never hit a forced generic. | ✗ FAILED | Smoke PASSES locally (exit 0), but CR-01 confirmed: `typecheck:smoke` is invoked by NO workflow (grep of .github for `typecheck:smoke`/`checkjs`/`typecheck-smoke` = 0 matches). ci.yml:31 `npm run typecheck` is per-workspace, not the root smoke. The proof is unenforced — a future forced generic passes CI silently. Plan 06-03 must_have truth and 06-03-SUMMARY CI-wiring claims are false. |
-| 4 | SC4: The v1.0 public API is unchanged for `^1` consumers — `attw` + `publint` stay green and every `exports` subpath resolves its `.d.ts` under node16 + bundler. | ✓ VERIFIED | `git diff --exit-code -- packages/` clean (no signature edits). `publint` on all 5 packages: green (only a pre-existing `repository.url` Suggestion — DOCS-07/Phase 8, not an error). `attw --profile esm-only` exits 0 for all 5 packages. node16 + bundler smoke legs pass (part of the local `typecheck:smoke` exit-0 run), proving subpath `.d.ts` resolution. |
+| 1 | SC1 (TYPE-01/TYPE-03 API): No public API in any of the five packages requires an explicit generic — TS and JS callers get inferred/defaulted types. | ✓ VERIFIED | `npm run typecheck:smoke` exits 0 (I ran it) — all five `js-*.js` consumers call every factory at zero-generic sites and compile clean under checkJs. `git diff --exit-code -- packages/` clean — verify-only, zero signature edits (I ran it, exit 0). |
+| 2 | SC2 (TYPE-02): A `.d.ts` snapshot/diff CI gate fails the build when the public type surface changes unexpectedly — including untracked new snapshots. | ✓ VERIFIED | Shape gate in ci.yml:75-76 now `git add -A -- tools/type-snapshots/ && git diff --cached --exit-code -- tools/type-snapshots/`. I behaviorally confirmed the hardened command catches an untracked probe (nonzero) where the old command was blind (exit 0). WR-01 blind spot closed. |
+| 3 | SC3 (TYPE-03): The `tsc --checkJs` smoke consumer passes AND runs in CI, objectively proving (and guarding) that plain-JS callers never hit a forced generic. | ✓ VERIFIED | CR-01 closed: ci.yml:60 `run: npm run typecheck:smoke` in the `gate` job, after `npm run build` (WR-02 ordering). I ran `typecheck:smoke` → exit 0. Forced-generic red-line (exit 2) relied on from 06-04 SUMMARY; the local green baseline independently reproduced. The proof is now an enforced gate, not a local-only run. |
+| 4 | SC4: The v1.0 public API is unchanged for `^1` consumers — `attw` + `publint` stay green and every `exports` subpath resolves its `.d.ts` under node16 + bundler. | ✓ VERIFIED | `git diff --exit-code -- packages/` clean (I ran it). node16 + bundler smoke legs pass as part of the `typecheck:smoke` exit-0 run. publint/attw green from prior verification (unchanged by 06-04, which touched only ci.yml/package.json/package-lock.json). |
 
-**Score:** 3/4 truths verified (0 present, behavior-unverified)
+**Score:** 4/4 truths verified (0 present, behavior-unverified)
 
 ### Required Artifacts
 
 | Artifact | Expected | Status | Details |
 |----------|----------|--------|---------|
-| `.gitattributes` | LF pin for snapshots | ✓ VERIFIED | Contains `tools/type-snapshots/** text eol=lf`; all 8 snapshots report `w/lf i/lf`. |
-| `tools/type-snapshots.config.mjs` | 8-entry generator | ✓ VERIFIED | Executable ESM runner, 8 stable-ordered entries (kit, store, query, forms, forms-zod, router, router-core, router-lit), LF normalization, repo-root anchored. |
-| `tools/type-snapshots/*.d.ts` | 8 flattened snapshots | ✓ VERIFIED | All 8 present, non-empty (908B–18KB), regenerate byte-identically. |
-| `package.json` type-snapshot + dts-bundle-generator | script + exact-pinned devDep | ✓ VERIFIED | `type-snapshot` script present; `dts-bundle-generator: "9.5.1"` exact-pinned in devDependencies (not dependencies). |
-| `.github/workflows/ci.yml` shape-diff steps | in read-only gate job | ✓ VERIFIED | Steps present in gate job; `permissions: contents: read` unchanged; release.yml/verify-consumer.yml untouched. |
-| `tools/typecheck-smoke/tsconfig.checkjs.json` | allowJs+checkJs, no allowImportingTsExtensions | ✓ VERIFIED | `allowJs:true`, `checkJs:true`, `include:["*.js"]`, no `allowImportingTsExtensions`. |
-| `tools/typecheck-smoke/js-{kit,store,query,forms,router}.js` | 5 zero-generic consumers | ✓ VERIFIED | All 5 present, import published `@willramdev/*` specifiers, call factories with no explicit `<...>`. |
-| `tools/typecheck-smoke/TYPE-01-audit.md` | per-symbol audit | ✓ VERIFIED | 9.6KB per-symbol table. |
-| `package.json` typecheck:smoke checkJs leg | checkJs leg wired into script | ⚠️ ORPHANED | The `&& tsc -p ...tsconfig.checkjs.json` leg IS appended to the script — but the script itself is never invoked by CI (CR-01). Artifact present, wiring-to-CI incomplete. |
+| `.github/workflows/ci.yml` typecheck:smoke step | in `gate` job, after build | ✓ VERIFIED | Line 60 `run: npm run typecheck:smoke`, preceded by build (line 52) + WR-02 ordering comment (53-58). |
+| `.github/workflows/ci.yml` hardened shape gate | catches untracked snapshots | ✓ VERIFIED | Line 76 `git add -A -- tools/type-snapshots/ && git diff --cached --exit-code -- tools/type-snapshots/`; behaviorally proven to catch untracked. |
+| `.github/workflows/ci.yml` permissions | unchanged `contents: read` | ✓ VERIFIED | Lines 12-14 `permissions: contents: read` unchanged; only the `gate` job was edited (D-10 preserved). |
+| `package.json` typescript pin | exact `6.0.3`, in dependencies | ✓ VERIFIED | Line 31 `"typescript": "6.0.3"` (no caret), still under `dependencies` (IN-01 relocation correctly NOT done). |
+| `package-lock.json` typescript pin | exact `6.0.3` recorded | ✓ VERIFIED | Line 15 `"typescript": "6.0.3"`. |
+| `release.yml` / `verify-consumer.yml` | untouched | ✓ VERIFIED | Not modified by any 06-04 commit (`git show --stat` on 51c0cab/00a3634/daac0f3 shows only `.github/workflows/ci.yml`). |
 
 ### Key Link Verification
 
 | From | To | Via | Status | Details |
 |------|----|-----|--------|---------|
-| `npm run type-snapshot` | `tools/type-snapshots/*.d.ts` | dts-bundle-generator → write → git diff gate | ✓ WIRED | Regenerates byte-identically; gate in ci.yml. |
-| ci.yml gate job | shape gate | `npm run type-snapshot` + `git diff --exit-code` | ✓ WIRED | Present lines 57–60; red-lines on tracked change. |
-| `js-*.js` consumers | `tsc checkJs` proof | `tsconfig.checkjs.json` via `typecheck:smoke` | ✓ WIRED (script) | Script chains the checkJs leg; passes locally. |
-| CI workflow | `typecheck:smoke` script | any ci.yml/release.yml/verify-consumer.yml step | ✗ NOT_WIRED | CR-01: no workflow invokes it. The TYPE-03 proof is not enforced in CI. |
+| ci.yml gate job | `typecheck:smoke` | `npm run build` -> `npm run typecheck:smoke` step (ordered) | ✓ WIRED | Present ci.yml:52,60; the TYPE-03 proof now runs on every push/PR. |
+| ci.yml shape gate | untracked + modified drift | `git add -A -- path && git diff --cached --exit-code -- path` | ✓ WIRED | Present ci.yml:76; behaviorally catches untracked (I proved it). |
+| `package.json` typescript 6.0.3 | byte-stable .d.ts emit | package-lock.json pinned resolution | ✓ WIRED | Both files record exact `6.0.3`. |
 
 ### Behavioral Spot-Checks
 
-| Behavior | Command | Result | Status |
-|----------|---------|--------|--------|
-| Snapshot regenerates byte-identically | `npm run type-snapshot` | all 8 `unchanged`; `git diff --exit-code` exit 0 | ✓ PASS |
-| Shape gate red-lines on tracked change | append to kit.d.ts + `git diff --exit-code` | non-zero exit | ✓ PASS |
-| Shape gate ignores untracked new snapshot | add `newpkg.d.ts` + `git diff --exit-code` | exit 0 (green) — WR-01 | ✗ FAIL (blind spot) |
-| checkJs + node16 + bundler smoke | `npm run typecheck:smoke` | exit 0 | ✓ PASS (local only) |
-| No package signature edits | `git diff --exit-code -- packages/` | exit 0 | ✓ PASS |
-| publint all packages | `npx publint packages/*` | suggestions only, no errors | ✓ PASS |
-| attw esm-only all packages | `npx attw --pack ... --profile esm-only` | exit 0 (×5) | ✓ PASS |
+| Behavior | Command | Result | Status | Source |
+|----------|---------|--------|--------|--------|
+| checkJs + node16 + bundler smoke green | `npm run typecheck:smoke` | exit 0 | ✓ PASS | **I ran it** |
+| Shape gate catches untracked snapshot | inject untracked `.d.ts` + new gate command | old exit 0 (blind), new nonzero (catches); probe removed clean | ✓ PASS | **I ran it** |
+| No package signature edits | `git diff --exit-code -- packages/` | exit 0 | ✓ PASS | **I ran it** |
+| Forced-generic red-line | `createStore<T = unknown>(initialState: unknown)` probe → `typecheck:smoke` | exit 2 (TS18046 ×3); revert → exit 0; `git diff packages/` exit 0 | ✓ PASS | Relied on 06-04 SUMMARY |
+| CR-01 step present | `grep "run: npm run typecheck:smoke" ci.yml` | line 60 match | ✓ PASS | **I ran it** |
+| WR-03 pin | `grep '"typescript": "6.0.3"' package.json + package-lock.json` | both match | ✓ PASS | **I ran it** |
+| No permissions widening | inspect ci.yml permissions + 06-04 commit stat | `contents: read` unchanged; only ci.yml gate job edited | ✓ PASS | **I ran it** |
 
 ### Requirements Coverage
 
 | Requirement | Source Plan | Description | Status | Evidence |
 |-------------|-------------|-------------|--------|----------|
-| TYPE-01 | 06-03 | No public API requires an explicit generic | ✓ SATISFIED | TYPE-01-audit.md + checkJs smoke compiles clean; zero signature edits. |
-| TYPE-02 | 06-01, 06-02 | `.d.ts` snapshot/diff CI gate catches unintended public-type changes | ✓ SATISFIED (WR-01 warning) | 8 committed snapshots + git-diff gate in ci.yml; red-lines on tracked change. Untracked-file blind spot noted. |
-| TYPE-03 | 06-03 | Plain-JS ergonomics verified by `tsc --checkJs` smoke consumer | ⚠️ PARTIAL | Smoke exists and passes locally, but is NOT run in CI (CR-01) — the ongoing gate is unenforced. |
+| TYPE-01 | 06-03 | No public API requires an explicit generic (verify-only) | ✓ SATISFIED | checkJs smoke compiles clean; zero signature edits (`git diff packages/` clean). |
+| TYPE-02 | 06-01, 06-02, 06-04 | `.d.ts` snapshot/diff CI gate catches unintended public-type changes | ✓ SATISFIED | 8 committed snapshots + hardened git-diff gate (untracked + modified + deleted). WR-01/WR-03 hardening applied. |
+| TYPE-03 | 06-03, 06-04 | Plain-JS ergonomics verified by `tsc --checkJs` smoke consumer, enforced in CI | ✓ SATISFIED | Smoke runs in ci.yml gate job after build (CR-01/WR-02); passes (exit 0); proven to red-line a forced generic. |
 
 No orphaned requirements: TYPE-01/02/03 all claimed by plans and all accounted for.
 
@@ -90,30 +97,27 @@ No orphaned requirements: TYPE-01/02/03 all claimed by plans and all accounted f
 
 | File | Line | Pattern | Severity | Impact |
 |------|------|---------|----------|--------|
-| .github/workflows/ci.yml | 57–60 | Shape gate uses `git diff --exit-code` (ignores untracked files) | ⚠️ Warning (WR-01) | A future new subpath snapshot added but not committed passes CI green — un-baselined surface ships silently. Current 8 snapshots are tracked and protected. |
-| package.json | 13 | `typecheck:smoke` not self-contained (no `npm run build &&`) | ⚠️ Warning (WR-02) | Running it on a clean checkout fails with module-resolution errors; CI wiring must sequence after build. |
-| package.json | 31 | `typescript` pinned `^6.0.3` (caret) while snapshot gate requires byte-stable emit | ⚠️ Warning (WR-03) | A within-caret TS bump can reorder `.d.ts` emit and spuriously red-line (or silently rewrite) snapshots. dts-bundle-generator is exact-pinned; TS is not. |
-| package.json | 30–33 | `typescript`/`vitest` under `dependencies` not `devDependencies` | ℹ️ Info (IN-01) | Harmless (root is private) but misrepresents the graph. |
-| tools/type-snapshots.config.mjs | 98–105 | `const [dts] =` destructure with no empty-array guard | ℹ️ Info (IN-02) | A bad entry yields a confusing `undefined.replace` stack trace. |
+| package.json | 30-33 | `typescript`/`vitest` under `dependencies` not `devDependencies` | ℹ️ Info (IN-01) | Harmless (root is private); deliberately left in place per 06-04 scope (relocation is out-of-scope IN-01). |
 
-### Review-Finding Adjudication (independently verified against the codebase)
-
-- **CR-01 (claimed BLOCKER) — CONFIRMED.** Independently verified: grep of `.github` for `typecheck:smoke`/`checkjs`/`typecheck-smoke` returns zero matches; ci.yml's only typecheck reference is `npm run typecheck` (line 31), which is the per-workspace `typecheck` script, not the root `typecheck:smoke`. Success criterion 3 is met ONLY by manual local runs, NOT by the delivered CI wiring. This is the phase's gap.
-- **WR-01 (claimed WARNING) — CONFIRMED.** Independently verified: a manually-created untracked `tools/type-snapshots/newpkg.d.ts` passes `git diff --exit-code tools/type-snapshots/` green while `git status --porcelain` shows it as `??`. Impact is bounded — all 8 current snapshots are tracked and the gate correctly red-lines on modifications to them — so success criterion 2 is met for the delivered surface, but the gate is not future-proof against new un-committed subpaths.
+The three prior WARNING-level anti-patterns (ci.yml untracked-file blind spot, non-self-contained smoke script, caret typescript) are all resolved: the smoke script is sequenced after build via job ordering (WR-02, deliberate choice over `npm run build &&` prefix), the shape gate now stages before diffing (WR-01), and typescript is exact-pinned (WR-03).
 
 ### Human Verification Required
 
-None — all criteria were verifiable programmatically.
+None — all four gap-closure criteria were verifiable programmatically, and the load-bearing behavioral checks (typecheck:smoke green, WR-01 untracked-catch, packages-clean) were run directly during this re-verification.
 
 ### Gaps Summary
 
-The phase delivers a genuinely working type-SemVer **shape gate** (SC2): 8 flattened `.d.ts` snapshots regenerate byte-identically, are LF-pinned, and the `git diff --exit-code` step in the read-only ci.yml gate job correctly red-lines a tracked public-type change. The plain-JS ergonomics floor itself (SC1/SC4) is real and proven — five checkJs consumers compile clean with zero explicit generics, no package signatures were edited, and attw+publint stay green.
+No remaining gaps. Gap-closure plan 06-04 closed all four items from the prior verification, confirmed against the files on disk plus three behavioral checks I ran myself:
 
-The single blocking gap is **CR-01**: the TYPE-03 `checkJs` proof (`typecheck:smoke`) is never invoked by any CI workflow. It passes locally, but as a *gate* against future stealth breaking changes it is inert — a future public API forcing an explicit generic would fail locally yet pass CI. The plan 06-03 must_have truth and the SUMMARY both assert CI wiring that does not exist. The fix is a one-line CI step (`- run: npm run typecheck:smoke` after `npm run build` in the gate job), plus proving it turns red on a forced generic.
+- **CR-01 (BLOCKER):** `typecheck:smoke` now runs on every CI build in the `ci.yml` gate job, after `npm run build`. The TYPE-03 plain-JS floor is an enforced CI gate, not a local-only proof. `typecheck:smoke` exits 0 (verified live).
+- **WR-02:** the smoke step is ordered after build with an inline ordering-invariant comment — no redundant second build, ordering guaranteed.
+- **WR-01:** the shape gate stages then diffs the snapshot dir, catching untracked new snapshots (verified live — old command blind, new command catches).
+- **WR-03:** `typescript` is exact-pinned `6.0.3` in both `package.json` and `package-lock.json`, protecting byte-stable `.d.ts` emit.
 
-Two hardening warnings ride alongside: WR-01 (shape gate should fail on untracked snapshots too, e.g. `git add -A` + `git diff --cached --exit-code`, or a `git status --porcelain` assertion) and WR-03 (pin `typescript` exactly to protect byte-stable emit).
+No permissions widening (`contents: read` unchanged); `release.yml` and `verify-consumer.yml` untouched (D-10 preserved); `git diff --exit-code -- packages/` clean (TYPE-01 verify-only honored). The phase goal — type improvements can never ship as a stealth breaking change because the plain-JS floor and the type-SemVer shape gate are enforced in CI — is met.
 
 ---
 
-_Verified: 2026-08-19_
+_Verified: 2026-08-20_
+_Re-verified after gap-closure plan 06-04_
 _Verifier: Claude (gsd-verifier)_

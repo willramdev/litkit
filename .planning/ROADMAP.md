@@ -26,7 +26,7 @@ Full detail: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
 
 **Substrate-first ordering:** the two cross-cutting substrates lead — the type-SemVer `.d.ts` gate (Phase 6) protects docs/CEM/warnings from stealth breaking changes, and the shared dev-gate (Phase 7) is the mechanism both warnings and devtools reuse. Docs, CEM, and Examples read/exercise the stabilized surface; Devtools reuses the dev-gate; Dependency hygiene is orthogonal and lands last to minimize PR noise.
 
-- [ ] **Phase 6: Sharper Types & Plain-JS Ergonomics + Type-SemVer Gate** - Defaulted generics, no required generics, and a `.d.ts` diff gate so type improvements can't ship as a stealth breaking change
+- [x] **Phase 6: Sharper Types & Plain-JS Ergonomics + Type-SemVer Gate** - Defaulted generics, no required generics, and a `.d.ts` diff gate so type improvements can't ship as a stealth breaking change (completed 2026-08-20)
 - [ ] **Phase 7: Dev-Gate & Prod-Stripped Dev Warnings** - One shared dev-gate mechanism plus actionable dev-only warnings, provably stripped from consumer production builds
 - [ ] **Phase 8: Hosted TypeDoc API Reference Site** - Merged `packages`-mode TypeDoc site for all five packages, deployed via an isolated `docs.yml` Pages workflow
 - [ ] **Phase 9: Custom Elements Manifest** - `custom-elements.json` + editor autocomplete data for the three element-exposing packages (forms, query, router)
@@ -48,7 +48,7 @@ Full detail: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
   3. A `tsc --checkJs` smoke consumer (extending `tools/typecheck-smoke/`) passes, objectively proving plain-JS callers never hit a forced generic.
   4. The v1.0 public API is unchanged for `^1` consumers — `attw` + `publint` stay green and every `exports` subpath still resolves its `.d.ts` under node16 + bundler.
 
-**Plans**: 4 plans (3 executed + 1 gap-closure)
+**Plans**: 4/4 plans complete (3 executed + 1 gap-closure)
 **Wave 1**
 
 - [x] 06-01-PLAN.md — TRACER: end-to-end type-SemVer `.d.ts` gate for `kit` (`.gitattributes` LF pin, flatten config, committed snapshot, ci.yml diff step, fail-on-change proof) [TYPE-02]
@@ -60,7 +60,7 @@ Full detail: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
 
 **Gap Closure** *(from 06-VERIFICATION.md — CR-01 blocker + WR-01/02/03 hardening)*
 
-- [ ] 06-04-PLAN.md — wire `npm run typecheck:smoke` into the ci.yml gate job after build with a red/green forced-generic proof (CR-01/WR-02), harden the shape gate against untracked snapshots (WR-01), exact-pin `typescript` (WR-03) [TYPE-02, TYPE-03]
+- [x] 06-04-PLAN.md — wire `npm run typecheck:smoke` into the ci.yml gate job after build with a red/green forced-generic proof (CR-01/WR-02), harden the shape gate against untracked snapshots (WR-01), exact-pin `typescript` (WR-03) [TYPE-02, TYPE-03]
 
 ### Phase 7: Dev-Gate & Prod-Stripped Dev Warnings
 
@@ -156,7 +156,7 @@ Full detail: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
 | 3. Docs | v1.0 | 5/5 | Complete | 2026-08-17 |
 | 4. Release Automation & Publish | v1.0 | 4/4 | Complete | 2026-08-18 |
 | 5. Consumer Install Verification | v1.0 | 2/2 | Complete | 2026-08-18 |
-| 6. Sharper Types & Plain-JS Ergonomics + Type-SemVer Gate | v1.1 | 3/4 | In Progress (gap closure) |  |
+| 6. Sharper Types & Plain-JS Ergonomics + Type-SemVer Gate | v1.1 | 4/4 | Complete   | 2026-08-20 |
 | 7. Dev-Gate & Prod-Stripped Dev Warnings | v1.1 | 0/TBD | Not started | - |
 | 8. Hosted TypeDoc API Reference Site | v1.1 | 0/TBD | Not started | - |
 | 9. Custom Elements Manifest | v1.1 | 0/TBD | Not started | - |
