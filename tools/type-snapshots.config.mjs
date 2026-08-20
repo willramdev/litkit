@@ -74,6 +74,23 @@ const ENTRIES = [
     outFile: 'tools/type-snapshots/forms-zod.d.ts',
     tsconfig: 'packages/forms/tsconfig.build.json',
   },
+  {
+    filePath: 'packages/router/src/index.ts',
+    outFile: 'tools/type-snapshots/router.d.ts',
+    tsconfig: 'packages/router/tsconfig.build.json',
+  },
+  // router ./core subpath (D-11) -> framework-neutral surface
+  {
+    filePath: 'packages/router/src/router-core/index.ts',
+    outFile: 'tools/type-snapshots/router-core.d.ts',
+    tsconfig: 'packages/router/tsconfig.build.json',
+  },
+  // router ./lit subpath (D-11) -> Lit element surface
+  {
+    filePath: 'packages/router/src/router-lit/index.ts',
+    outFile: 'tools/type-snapshots/router-lit.d.ts',
+    tsconfig: 'packages/router/tsconfig.build.json',
+  },
 ];
 
 let wrote = 0;
