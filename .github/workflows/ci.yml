@@ -50,6 +50,14 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      # plain-JS ergonomics gate (TYPE-03, CR-01/WR-02). WR-02 ordering invariant:
+      # this step MUST run after `npm run build` — the five js-*.js checkJs
+      # consumers resolve `@willramdev/*` through each package exports map into
+      # `dist/`, so they only type-check against a freshly built tree. Do NOT
+      # reorder this before the build step. Runs once in the gate job (not per
+      # build-test matrix leg) and needs only the top-level `contents: read`.
+      - name: plain-JS ergonomics gate (checkJs smoke — TYPE-03)
+        run: npm run typecheck:smoke
       # type-SemVer shape gate (TYPE-02, D-01/D-04/D-10): regenerate the committed
       # flattened public .d.ts snapshots, then fail on any drift. The committed
       # snapshot IS the baseline — no branch-vs-main fetch. Ordering invariant:
