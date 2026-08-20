@@ -64,8 +64,16 @@ jobs:
       # build -> type-snapshot -> git diff. Needs only `contents: read`.
       - name: type-snapshot (regenerate flattened public .d.ts)
         run: npm run type-snapshot
-      - name: shape gate (git diff --exit-code tools/type-snapshots/)
-        run: git diff --exit-code tools/type-snapshots/
+      # WR-01: a plain `git diff --exit-code` IGNORES untracked files, so a new
+      # but un-baselined subpath snapshot (e.g. tools/type-snapshots/newpkg.d.ts)
+      # could otherwise ship CI-green. Stage the snapshot dir first, then diff the
+      # staged tree against HEAD — `git add -A` picks up untracked AND deleted
+      # files, so this fails on modified, deleted, OR untracked snapshot drift
+      # while still printing the human-readable diff reviewers rely on (D-03).
+      # Both commands stay pathspec-scoped to tools/type-snapshots/ so unrelated
+      # build output never enters the gate. Local index ops — no token (D-10).
+      - name: shape gate (fail on any tracked-or-untracked snapshot drift)
+        run: git add -A -- tools/type-snapshots/ && git diff --cached --exit-code -- tools/type-snapshots/
       # publint: package.json exports/types correctness across all five packages.
       - name: publint (all packages)
         run: |
