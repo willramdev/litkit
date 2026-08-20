@@ -50,6 +50,14 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      # type-SemVer shape gate (TYPE-02, D-01/D-04/D-10): regenerate the committed
+      # flattened public .d.ts snapshots, then fail on any drift. The committed
+      # snapshot IS the baseline — no branch-vs-main fetch. Ordering invariant:
+      # build -> type-snapshot -> git diff. Needs only `contents: read`.
+      - name: type-snapshot (regenerate flattened public .d.ts)
+        run: npm run type-snapshot
+      - name: shape gate (git diff --exit-code tools/type-snapshots/)
+        run: git diff --exit-code tools/type-snapshots/
       # publint: package.json exports/types correctness across all five packages.
       - name: publint (all packages)
         run: |

@@ -1,0 +1,5 @@
+# Pin LF line endings for the committed type-SemVer snapshots so a Windows-authored
+# snapshot and an Ubuntu-CI regeneration are byte-identical (Phase 6, 06-RESEARCH.md
+# §Pitfall 1). Without this the `git diff --exit-code tools/type-snapshots/` shape
+# gate would red-line on every CI run purely from CRLF/LF churn.
+tools/type-snapshots/** text eol=lf
