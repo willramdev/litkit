@@ -48,7 +48,7 @@ Full detail: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
   3. A `tsc --checkJs` smoke consumer (extending `tools/typecheck-smoke/`) passes, objectively proving plain-JS callers never hit a forced generic.
   4. The v1.0 public API is unchanged for `^1` consumers — `attw` + `publint` stay green and every `exports` subpath still resolves its `.d.ts` under node16 + bundler.
 
-**Plans**: 3/3 plans executed
+**Plans**: 4 plans (3 executed + 1 gap-closure)
 **Wave 1**
 
 - [x] 06-01-PLAN.md — TRACER: end-to-end type-SemVer `.d.ts` gate for `kit` (`.gitattributes` LF pin, flatten config, committed snapshot, ci.yml diff step, fail-on-change proof) [TYPE-02]
@@ -57,6 +57,10 @@ Full detail: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
 
 - [x] 06-02-PLAN.md — expand the shape gate to the four siblings + every subpath (8 flattened snapshots: store/query/forms/forms-zod/router/router-core/router-lit) [TYPE-02]
 - [x] 06-03-PLAN.md — TYPE-01 verify-only audit (no signature edits) + `tsc --checkJs` plain-JS smoke consumer per package [TYPE-01, TYPE-03]
+
+**Gap Closure** *(from 06-VERIFICATION.md — CR-01 blocker + WR-01/02/03 hardening)*
+
+- [ ] 06-04-PLAN.md — wire `npm run typecheck:smoke` into the ci.yml gate job after build with a red/green forced-generic proof (CR-01/WR-02), harden the shape gate against untracked snapshots (WR-01), exact-pin `typescript` (WR-03) [TYPE-02, TYPE-03]
 
 ### Phase 7: Dev-Gate & Prod-Stripped Dev Warnings
 
@@ -152,7 +156,7 @@ Full detail: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
 | 3. Docs | v1.0 | 5/5 | Complete | 2026-08-17 |
 | 4. Release Automation & Publish | v1.0 | 4/4 | Complete | 2026-08-18 |
 | 5. Consumer Install Verification | v1.0 | 2/2 | Complete | 2026-08-18 |
-| 6. Sharper Types & Plain-JS Ergonomics + Type-SemVer Gate | v1.1 | 3/3 | In Progress|  |
+| 6. Sharper Types & Plain-JS Ergonomics + Type-SemVer Gate | v1.1 | 3/4 | In Progress (gap closure) |  |
 | 7. Dev-Gate & Prod-Stripped Dev Warnings | v1.1 | 0/TBD | Not started | - |
 | 8. Hosted TypeDoc API Reference Site | v1.1 | 0/TBD | Not started | - |
 | 9. Custom Elements Manifest | v1.1 | 0/TBD | Not started | - |
