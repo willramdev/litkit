@@ -74,7 +74,22 @@ Full detail: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
   3. A minified consumer production build contains zero dev-warning strings (grep = 0), proving warnings are stripped.
   4. Warnings never crash a no-`process` browser sandbox (no `process is not defined`).
 
-**Plans**: TBD
+**Plans**: 4 plans
+**Wave 1**
+
+- [ ] 07-01-PLAN.md — TRACER: dev-gate mechanism (esm-env DEV) + one real warning site (kit duplicate-registration) + strip/no-process harness wired into ci.yml [WARN-01, WARN-02, WARN-03]
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 07-02-PLAN.md — duplicate the dev-gate to @willramdev/router + duplicate-registration warning + invalid route-config warnings in router-core [WARN-01, WARN-02]
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 07-03-PLAN.md — missing-router warnings across RouteController, SearchParamsController, RouterOutlet, RouterLink [WARN-02]
+
+**Wave 4** *(blocked on Wave 3 completion)*
+
+- [ ] 07-04-PLAN.md — expand the strip harness to all seven warning sites + negative control + phase-wide scope-guard closure [WARN-01, WARN-02, WARN-03]
 
 ### Phase 8: Hosted TypeDoc API Reference Site
 
@@ -157,7 +172,7 @@ Full detail: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
 | 4. Release Automation & Publish | v1.0 | 4/4 | Complete | 2026-08-18 |
 | 5. Consumer Install Verification | v1.0 | 2/2 | Complete | 2026-08-18 |
 | 6. Sharper Types & Plain-JS Ergonomics + Type-SemVer Gate | v1.1 | 4/4 | Complete   | 2026-08-20 |
-| 7. Dev-Gate & Prod-Stripped Dev Warnings | v1.1 | 0/TBD | Not started | - |
+| 7. Dev-Gate & Prod-Stripped Dev Warnings | v1.1 | 0/4 | Not started | - |
 | 8. Hosted TypeDoc API Reference Site | v1.1 | 0/TBD | Not started | - |
 | 9. Custom Elements Manifest | v1.1 | 0/TBD | Not started | - |
 | 10. Examples Integration App | v1.1 | 0/TBD | Not started | - |
