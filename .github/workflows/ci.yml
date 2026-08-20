@@ -50,14 +50,30 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      # plain-JS ergonomics gate (TYPE-03, CR-01/WR-02). WR-02 ordering invariant:
+      # this step MUST run after `npm run build` — the five js-*.js checkJs
+      # consumers resolve `@willramdev/*` through each package exports map into
+      # `dist/`, so they only type-check against a freshly built tree. Do NOT
+      # reorder this before the build step. Runs once in the gate job (not per
+      # build-test matrix leg) and needs only the top-level `contents: read`.
+      - name: plain-JS ergonomics gate (checkJs smoke — TYPE-03)
+        run: npm run typecheck:smoke
       # type-SemVer shape gate (TYPE-02, D-01/D-04/D-10): regenerate the committed
       # flattened public .d.ts snapshots, then fail on any drift. The committed
       # snapshot IS the baseline — no branch-vs-main fetch. Ordering invariant:
       # build -> type-snapshot -> git diff. Needs only `contents: read`.
       - name: type-snapshot (regenerate flattened public .d.ts)
         run: npm run type-snapshot
-      - name: shape gate (git diff --exit-code tools/type-snapshots/)
-        run: git diff --exit-code tools/type-snapshots/
+      # WR-01: a plain `git diff --exit-code` IGNORES untracked files, so a new
+      # but un-baselined subpath snapshot (e.g. tools/type-snapshots/newpkg.d.ts)
+      # could otherwise ship CI-green. Stage the snapshot dir first, then diff the
+      # staged tree against HEAD — `git add -A` picks up untracked AND deleted
+      # files, so this fails on modified, deleted, OR untracked snapshot drift
+      # while still printing the human-readable diff reviewers rely on (D-03).
+      # Both commands stay pathspec-scoped to tools/type-snapshots/ so unrelated
+      # build output never enters the gate. Local index ops — no token (D-10).
+      - name: shape gate (fail on any tracked-or-untracked snapshot drift)
+        run: git add -A -- tools/type-snapshots/ && git diff --cached --exit-code -- tools/type-snapshots/
       # publint: package.json exports/types correctness across all five packages.
       - name: publint (all packages)
         run: |
