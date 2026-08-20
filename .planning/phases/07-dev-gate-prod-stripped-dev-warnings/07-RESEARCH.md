@@ -450,19 +450,22 @@ For each of the six gaps, a jsdom unit test: construct the misuse (element/contr
 | A2 | The team wants NO forms/query warning added (throws suffice) | Silent-Gap Audit | If they want softer warnings there, that changes throw behavior → blocked by D-05; must be raised as an Open Question, not silently implemented |
 | A3 | `router-core/routes.ts` (`defineRoutes`) is the right home for invalid-route-config warnings vs `router.ts` (`createRouter`) | Architecture Patterns | Low — both are core, Lit-free; planner picks the exact function. `defineRoutes` runs once at config time (preferred over per-navigation). |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Forms/query "missing context" — warn or leave as throw?**
    - What we know: `bind`/`field` and query controllers already **throw** actionable errors (audit rows 9-11); D-05 says leave throws unchanged.
    - What's unclear: WARN-02's prose lists "missing provider/context" as a target case, which *sounds* like it wants these covered.
    - Recommendation: Treat them as **already satisfied by throws** (a throw is stronger than a warn). Do NOT add esm-env/warnings to query/forms. If the team specifically wants a dev *warning* in addition, that is a D-05 conflict — surface it in discuss/plan before implementing.
+   - **RESOLVED:** excluded — query/forms already throw; no esm-env/warnings/changeset added to query/forms/store. Enforced by 07-04's phase-wide scope-guard sweep (dep present in exactly two package.json files; existing throws held byte-identical).
 
 2. **RouterLink missing-router (#6) — include or skip?**
    - What we know: a `<router-link>` may legitimately render before context resolves; it degrades to `href="#"`.
    - Recommendation: include a warn-once (host-scoped) but with the softest wording; it is the lowest-signal of the six. Planner's call.
+   - **RESOLVED:** included — warn-once, host-scoped, softest wording, in 07-03 Task 2.
 
 3. **Which invalid-route-config checks to ship?**
    - Recommendation: 2-4 cheap O(n) checks at `defineRoutes` time (no path & no children; duplicate `name`; `redirectTo` + `component`/`render` both present). Avoid deep/expensive validation — this is a dev nudge, not a schema validator.
+   - **RESOLVED:** ship exactly three cheap O(n) `defineRoutes`-time checks (no path & no children; duplicate `name`; `redirectTo` + component/render both present), in 07-02 Task 2.
 
 ## Sources
 
