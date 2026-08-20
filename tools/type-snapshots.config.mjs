@@ -53,6 +53,27 @@ const ENTRIES = [
     outFile: 'tools/type-snapshots/kit.d.ts',
     tsconfig: 'packages/kit/tsconfig.build.json',
   },
+  {
+    filePath: 'packages/store/src/index.ts',
+    outFile: 'tools/type-snapshots/store.d.ts',
+    tsconfig: 'packages/store/tsconfig.build.json',
+  },
+  {
+    filePath: 'packages/query/src/index.ts',
+    outFile: 'tools/type-snapshots/query.d.ts',
+    tsconfig: 'packages/query/tsconfig.build.json',
+  },
+  {
+    filePath: 'packages/forms/src/index.ts',
+    outFile: 'tools/type-snapshots/forms.d.ts',
+    tsconfig: 'packages/forms/tsconfig.build.json',
+  },
+  // forms ./zod subpath (D-11) -> packages/forms/src/zod.ts
+  {
+    filePath: 'packages/forms/src/zod.ts',
+    outFile: 'tools/type-snapshots/forms-zod.d.ts',
+    tsconfig: 'packages/forms/tsconfig.build.json',
+  },
 ];
 
 let wrote = 0;
