@@ -2,19 +2,19 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Developer Experience
-current_phase: 6
+current_phase: 06
 current_phase_name: Sharper Types & Plain-JS Ergonomics + Type-SemVer Gate
 status: executing
-stopped_at: Phase 6 context gathered
-last_updated: "2026-08-19T20:43:44.164Z"
+stopped_at: Completed 06-01-PLAN.md
+last_updated: "2026-08-20T02:01:29.203Z"
 last_activity: 2026-08-19
-last_activity_desc: v1.1 roadmap created (7 phases, 6-12; 23/23 requirements mapped)
-state_head: 0268b2932e52b29ac669eaf315e670266db502cb
+last_activity_desc: Phase 06 execution started
+state_head: 530bcf9226967b9f6c8756381ce7490d972b6493
 progress:
   total_phases: 7
   completed_phases: 0
   total_plans: 3
-  completed_plans: 0
+  completed_plans: 1
   percent: 0
 ---
 
@@ -25,14 +25,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-19)
 
 **Core value:** A consumer building a Lit app against litkit gets first-class docs, editor autocomplete, dev-time guardrails, and debugging — with zero change to the v1.0 runtime contract (externalization, tree-shaking, single-instance dedup, acyclic graph).
-**Current focus:** Phase 6 — Sharper Types & Plain-JS Ergonomics + Type-SemVer Gate (ready to plan)
+**Current focus:** Phase 06 — Sharper Types & Plain-JS Ergonomics + Type-SemVer Gate
 
 ## Current Position
 
-Phase: 6 (Sharper Types & Plain-JS Ergonomics + Type-SemVer Gate) — READY TO EXECUTE
-Plan: — (not yet planned)
+Phase: 06 (Sharper Types & Plain-JS Ergonomics + Type-SemVer Gate) — EXECUTING
+Plan: 2 of 3
 Status: Ready to execute
-Last activity: 2026-08-19 — v1.1 roadmap created (7 phases, 6-12; 23/23 requirements mapped)
+Last activity: 2026-08-19 — Phase 06 execution started
 
 Progress: [░░░░░░░░░░] 0% (v1.1)
 
@@ -56,6 +56,11 @@ Progress: [░░░░░░░░░░] 0% (v1.1)
 - Trend: —
 
 *Updated after each plan completion*
+**Per-Plan Metrics:**
+
+| Plan | Duration | Tasks | Files |
+|------|----------|-------|-------|
+| Phase 06 P01 | 6 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -67,6 +72,7 @@ Full v1.0 decision log archived in PROJECT.md (Key Decisions) and `.planning/mil
 - **Additive/non-breaking invariant**: v1.1 must not break the v1.0 public API, the `lit`/`@tanstack` externalization contract, the `sideEffects` allowlist, the acyclic graph (`kit` imports nothing internal), or the two-workflow token-safe CI/release split (docs deploy is its own `docs.yml`, never widening `ci.yml`).
 - Read-only `ci.yml` vs auth-bearing `release.yml` token split — preserve when touching CI; the new `docs.yml` is a third, isolated workflow.
 - Per-entry ESM Vite build keeps `@customElement` registrations inside the `sideEffects`-allowlisted entries — relevant to CEM (Phase 9) and devtools tree-shaking (Phase 11).
+- [Phase 06]: type-SemVer shape gate: committed flattened .d.ts + git diff --exit-code (D-01), driven by a dts-bundle-generator@9.5.1 ESM runner (require()-based --config cannot unwrap ESM default); LF-pinned via .gitattributes before first snapshot commit (Pitfall 1).
 
 ### Pending Todos
 
@@ -88,9 +94,9 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-19T19:37:21.039Z
-Stopped at: Phase 6 context gathered
-Resume file: C:/repos/litkit/.planning/phases/06-sharper-types-plain-js-ergonomics-type-semver-gate/06-CONTEXT.md
+Last session: 2026-08-20T02:01:29.191Z
+Stopped at: Completed 06-01-PLAN.md
+Resume file: None
 
 ## Operator Next Steps
 

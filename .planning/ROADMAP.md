@@ -48,10 +48,10 @@ Full detail: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
   3. A `tsc --checkJs` smoke consumer (extending `tools/typecheck-smoke/`) passes, objectively proving plain-JS callers never hit a forced generic.
   4. The v1.0 public API is unchanged for `^1` consumers — `attw` + `publint` stay green and every `exports` subpath still resolves its `.d.ts` under node16 + bundler.
 
-**Plans**: 3 plans
+**Plans**: 1/3 plans executed
 **Wave 1**
 
-- [ ] 06-01-PLAN.md — TRACER: end-to-end type-SemVer `.d.ts` gate for `kit` (`.gitattributes` LF pin, flatten config, committed snapshot, ci.yml diff step, fail-on-change proof) [TYPE-02]
+- [x] 06-01-PLAN.md — TRACER: end-to-end type-SemVer `.d.ts` gate for `kit` (`.gitattributes` LF pin, flatten config, committed snapshot, ci.yml diff step, fail-on-change proof) [TYPE-02]
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -152,7 +152,7 @@ Full detail: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
 | 3. Docs | v1.0 | 5/5 | Complete | 2026-08-17 |
 | 4. Release Automation & Publish | v1.0 | 4/4 | Complete | 2026-08-18 |
 | 5. Consumer Install Verification | v1.0 | 2/2 | Complete | 2026-08-18 |
-| 6. Sharper Types & Plain-JS Ergonomics + Type-SemVer Gate | v1.1 | 0/3 | Planned | - |
+| 6. Sharper Types & Plain-JS Ergonomics + Type-SemVer Gate | v1.1 | 1/3 | In Progress|  |
 | 7. Dev-Gate & Prod-Stripped Dev Warnings | v1.1 | 0/TBD | Not started | - |
 | 8. Hosted TypeDoc API Reference Site | v1.1 | 0/TBD | Not started | - |
 | 9. Custom Elements Manifest | v1.1 | 0/TBD | Not started | - |

@@ -14,7 +14,7 @@ Requirements for the DX milestone. Each maps to exactly one roadmap phase (trace
 ### Sharper Types & Plain-JS Ergonomics (TYPE)
 
 - [ ] **TYPE-01**: No public API requires an explicit generic — defaulted generics (`<T = unknown>`) sharpen editor autocomplete/inference on the existing surfaces for both TS and JS callers
-- [ ] **TYPE-02**: A `.d.ts` snapshot/diff CI gate catches unintended (breaking) public-type changes so "sharper types" cannot ship as a stealth breaking change in a minor
+- [x] **TYPE-02**: A `.d.ts` snapshot/diff CI gate catches unintended (breaking) public-type changes so "sharper types" cannot ship as a stealth breaking change in a minor
 - [ ] **TYPE-03**: Plain-JS ergonomics are objectively verified by a `tsc --checkJs` smoke consumer (extends the existing `tools/typecheck-smoke/` harness) — no public API forces a generic on JS callers
 
 ### Dev-Time Warnings (WARN)
@@ -97,7 +97,7 @@ Each v1.1 requirement maps to exactly one phase. Phase numbering continues from 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | TYPE-01 | Phase 6 | Pending |
-| TYPE-02 | Phase 6 | Pending |
+| TYPE-02 | Phase 6 | Complete |
 | TYPE-03 | Phase 6 | Pending |
 | WARN-01 | Phase 7 | Pending |
 | WARN-02 | Phase 7 | Pending |
