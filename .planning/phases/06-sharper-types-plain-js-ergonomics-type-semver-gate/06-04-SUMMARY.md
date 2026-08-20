@@ -189,6 +189,14 @@ None - no external service configuration required.
 - Phase 06 SC3 (TYPE-03) is now enforced in CI, and SC2/TYPE-02 is future-proofed against untracked snapshots (WR-01) and emit drift from a caret TS bump (WR-03). The gaps CR-01/WR-01/WR-02/WR-03 from 06-VERIFICATION.md are closed.
 - Forward note (from the WR-03 threat register, T-06-04-REP): a future intentional `typescript` bump must be treated as a deliberate snapshot regeneration (Pitfall 5), and flagged for the Dependabot planner.
 
+## Self-Check: PASSED
+
+- `.planning/phases/06-sharper-types-plain-js-ergonomics-type-semver-gate/06-04-SUMMARY.md` — FOUND
+- Commit `51c0cab` (Task 1) — FOUND
+- Commit `00a3634` (Task 2) — FOUND
+- Commit `daac0f3` (Task 3) — FOUND
+- Working tree clean after all commits
+
 ---
 *Phase: 06-sharper-types-plain-js-ergonomics-type-semver-gate*
 *Completed: 2026-08-20*
