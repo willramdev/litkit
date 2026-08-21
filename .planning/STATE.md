@@ -2,19 +2,19 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Developer Experience
-current_phase: 8
+current_phase: 08
 current_phase_name: Hosted TypeDoc API Reference Site
 status: executing
-stopped_at: Phase 07 complete, ready to plan Phase 8
-last_updated: "2026-08-21T04:48:51.288Z"
-last_activity: 2026-08-20
-last_activity_desc: Phase 07 complete, transitioned to Phase 8
-state_head: 2e96d9bb6dd7cbfa79c7d9c3d85eae9e61da543e
+stopped_at: Completed 08-02-PLAN.md
+last_updated: "2026-08-21T13:36:53.020Z"
+last_activity: 2026-08-21
+last_activity_desc: Phase 08 execution started
+state_head: fca58708355a09b67e56d232bdaca7583eb25426
 progress:
   total_phases: 7
   completed_phases: 2
   total_plans: 11
-  completed_plans: 8
+  completed_plans: 9
   percent: 29
 ---
 
@@ -25,16 +25,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-19)
 
 **Core value:** A consumer building a Lit app against litkit gets first-class docs, editor autocomplete, dev-time guardrails, and debugging — with zero change to the v1.0 runtime contract (externalization, tree-shaking, single-instance dedup, acyclic graph).
-**Current focus:** Phase 07 — Dev-Gate & Prod-Stripped Dev Warnings
+**Current focus:** Phase 08 — Hosted TypeDoc API Reference Site
 
 ## Current Position
 
-Phase: 8 (Hosted TypeDoc API Reference Site) — READY TO EXECUTE
-Plan: Not started
+Phase: 08 (Hosted TypeDoc API Reference Site) — EXECUTING
+Plan: 2 of 3
 Status: Ready to execute
-Last activity: 2026-08-20 — Phase 07 complete, transitioned to Phase 8
+Last activity: 2026-08-21 — Phase 08 execution started
 
-Progress: [█░░░░░░░░░] 14% (v1.1)
+Progress: [███░░░░░░░] 29% (v1.1)
 
 ## Performance Metrics
 
@@ -68,6 +68,7 @@ Progress: [█░░░░░░░░░] 14% (v1.1)
 | Phase 07 P02 | 8min | 3 tasks | 8 files |
 | Phase 07 P03 | 6 min | 2 tasks | 8 files |
 | Phase 07 P04 | 10 min | 2 tasks | 2 files |
+| Phase 08 P08-02 | 2 min | 1 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -84,6 +85,7 @@ Full v1.0 decision log archived in PROJECT.md (Key Decisions) and `.planning/mil
 - [Phase 06]: [Phase 06]: 06-03: TYPE-01 satisfied verify-only (zero signature edits — every public generic infers from a required value arg); TYPE-03 proven by 5 per-package checkJs consumers wired into typecheck:smoke; consistency-alignment sweep rejected per D-05
 - [Phase 07]: [Phase 07] 07-01: esm-env DEV dev-gate wired into kit (externalized in vite.config), single [litkit] prefix, warn-once via module-level Set; define() warns collision-only
 - [Phase 07]: [Phase 07] 07-01: non-vacuous strip control uses resolve.conditions:['development'] not Vite mode (vite build forces production export condition in Vite 8) — note for 07-04
+- [Phase 08]: 08-02: repository.url owner corrected willram->willramdev across all 5 manifests (DOCS-07); verified by grep-for-zero + JSON.parse, not source-link resolution (Pitfall 1)
 
 ### Pending Todos
 
@@ -105,8 +107,8 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-21T02:53:07.457Z
-Stopped at: Phase 07 complete, ready to plan Phase 8
+Last session: 2026-08-21T13:36:44.789Z
+Stopped at: Completed 08-02-PLAN.md
 Resume file: None
 
 ## Operator Next Steps
