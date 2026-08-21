@@ -1,0 +1,51 @@
+name: docs
+
+# Isolated GitHub Pages workflow for litkit — the fourth workflow, disjoint from
+# ci.yml (read-only), release.yml (write-scoped publish), and verify-consumer.yml.
+# On push to main it builds the TypeDoc API site (Plan 08-01 configs) and deploys
+# it to the /litkit/ project-site subpath. Deploy auth is the built-in GITHUB_TOKEN
+# via id-token/OIDC only (no PAT). This workflow owns the Pages scopes ALONE and
+# never widens the sibling workflows' token scopes.
+on:
+  push:
+    branches: [main]
+
+# Least privilege: read repo contents, write only to Pages + the OIDC id-token.
+# This is the sole write scope this workflow needs — it does NOT grant contents,
+# packages, or pull-requests write (those belong to release.yml alone), and it
+# never widens the read-only ci.yml or the auth-bearing release.yml.
+permissions:
+  contents: read     # checkout + npm ci read the repo tree
+  pages: write       # publish the built site to GitHub Pages
+  id-token: write    # OIDC token deploy-pages exchanges for the github-pages env
+
+# Serialize Pages deploys and never cancel an in-flight publish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx typedoc            # emits ./docs with relative links (no base flag)
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: docs
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
