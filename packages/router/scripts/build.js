@@ -6,7 +6,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
 
 // ESM-only externals (D-01). lit and all lit/* subpaths stay external.
-const external = ["lit", /^lit\//];
+// esm-env stays external so the bare `import { DEV } from 'esm-env'` survives in
+// every dist output — the consumer's bundler resolves it and strips dev warnings.
+const external = ["lit", /^lit\//, "esm-env"];
 
 // Build each entry in its own Vite pass so the emitted `dist/<name>.js` is a
 // self-contained bundle rather than a thin re-export facade over a shared
