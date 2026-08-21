@@ -96,6 +96,38 @@ describe('RouteController', () => {
     expect(ctrl.query).toEqual({});
     expect(ctrl.meta).toEqual({});
   });
+
+  it('warns exactly once with [litkit] prefix when no Router is available, preserving the no-op', () => {
+    // Host with a dispatchEvent stub so requestRouter resolves to undefined
+    // (nothing intercepts the context-request event — no provider present).
+    const host = { ...createMockHost(), dispatchEvent: vi.fn(() => true) };
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const ctrl = new RouteController(host as any); // no router argument
+
+    // Two hostConnected() calls on the SAME instance → warn-once dedupe.
+    ctrl.hostConnected();
+    ctrl.hostConnected();
+
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(String(warnSpy.mock.calls[0][0])).toMatch(/^\[litkit\]/);
+    // Behavior unchanged: still a no-op, no match tracked.
+    expect(ctrl.match).toBeNull();
+
+    warnSpy.mockRestore();
+  });
+
+  it('emits zero warnings on the happy path (Router supplied)', () => {
+    const host = createMockHost();
+    const router = createMockRouter({ current: mockMatch({ pathname: '/ok' }) });
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const ctrl = new RouteController(host as any, router);
+    ctrl.hostConnected();
+
+    expect(warnSpy).not.toHaveBeenCalled();
+    warnSpy.mockRestore();
+  });
 });
 
 describe('routeState factory', () => {

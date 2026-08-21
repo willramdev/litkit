@@ -143,6 +143,39 @@ describe('SearchParamsController', () => {
     expect(host.requestUpdate).not.toHaveBeenCalled();
   });
 
+  it('warns exactly once with [litkit] prefix when no Router is available, preserving the no-op', () => {
+    // dispatchEvent stub → requestRouter resolves to undefined (no provider).
+    const host = { ...createMockHost(), dispatchEvent: vi.fn(() => true) };
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const ctrl = new SearchParamsController(host as any); // no router argument
+
+    // Two hostConnected() calls on the SAME instance → warn-once dedupe.
+    ctrl.hostConnected();
+    ctrl.hostConnected();
+
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(String(warnSpy.mock.calls[0][0])).toMatch(/^\[litkit\]/);
+    // Behavior unchanged: still a no-op, params stay empty.
+    expect(ctrl.params.toString()).toBe('');
+
+    warnSpy.mockRestore();
+  });
+
+  it('emits zero warnings on the happy path (Router supplied)', () => {
+    const host = createMockHost();
+    const router = createMockRouter({
+      current: mockMatch({ pathname: '/ok', searchParams: new URLSearchParams('a=1') }),
+    });
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const ctrl = new SearchParamsController(host as any, router);
+    ctrl.hostConnected();
+
+    expect(warnSpy).not.toHaveBeenCalled();
+    warnSpy.mockRestore();
+  });
+
   it('preserves hash when setting params', () => {
     const host = createMockHost();
     const match = mockMatch({

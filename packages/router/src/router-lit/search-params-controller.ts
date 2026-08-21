@@ -1,6 +1,7 @@
 import type { ReactiveController, ReactiveControllerHost } from "lit";
 import type { Router, RouteMatch } from "../router-core/types.ts";
 import { requestRouter } from "./router-context.ts";
+import { devWarnOnce } from "../internal/dev.ts";
 
 /**
  * Reactive controller that provides two-way access to URL search params.
@@ -67,7 +68,16 @@ export class SearchParamsController implements ReactiveController {
     if (!this._router) {
       this._router = requestRouter(this.host);
     }
-    if (!this._router) return;
+    if (!this._router) {
+      devWarnOnce(
+        "search-params-no-router",
+        "SearchParamsController: no Router was found. Pass one to the " +
+          "constructor (new SearchParamsController(host, router)) or wrap the " +
+          "host in a <router-provider>. Search params will not track route " +
+          "changes until a Router is available.",
+      );
+      return;
+    }
 
     this._match = this._router.current;
     this._unsubscribe = this._router.subscribe((match) => {

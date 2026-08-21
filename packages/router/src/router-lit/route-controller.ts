@@ -1,6 +1,7 @@
 import type { ReactiveController, ReactiveControllerHost } from "lit";
 import type { RouteMatch, Router } from "../router-core/types.ts";
 import { requestRouter } from "./router-context.ts";
+import { devWarnOnce } from "../internal/dev.ts";
 
 /**
  * A reactive controller that subscribes to router changes and triggers
@@ -53,7 +54,16 @@ export class RouteController implements ReactiveController {
     if (!this._router) {
       this._router = requestRouter(this.host);
     }
-    if (!this._router) return;
+    if (!this._router) {
+      devWarnOnce(
+        "route-controller-no-router",
+        "RouteController: no Router was found. Pass one to the constructor " +
+          "(new RouteController(host, router)) or wrap the host in a " +
+          "<router-provider>. The controller will not track route changes " +
+          "until a Router is available.",
+      );
+      return;
+    }
 
     this._match = this._router.current;
     this._unsubscribe = this._router.subscribe((match) => {
