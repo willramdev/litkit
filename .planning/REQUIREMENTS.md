@@ -25,7 +25,7 @@ Requirements for the DX milestone. Each maps to exactly one roadmap phase (trace
 
 ### Hosted API Docs Site (DOCS)
 
-- [ ] **DOCS-05**: A hosted TypeDoc site covers all five packages via `entryPointStrategy: "packages"`, with per-package entry points aligned to each `exports` map (router `./core`/`./lit`, forms `./zod`)
+- [x] **DOCS-05**: A hosted TypeDoc site covers all five packages via `entryPointStrategy: "packages"`, with per-package entry points aligned to each `exports` map (router `./core`/`./lit`, forms `./zod`)
 - [ ] **DOCS-06**: Docs deploy via a dedicated `docs.yml` GitHub Pages workflow (isolated from the read-only `ci.yml` and auth-bearing `release.yml`; `pages: write` + `id-token: write`), served under the `/litkit/` base path
 - [x] **DOCS-07**: Stale `repository.url` (`github.com/willram/litkit`) is corrected to the shipped `@willramdev` owner across package manifests so TypeDoc source links and CEM repo association resolve
 
@@ -102,7 +102,7 @@ Each v1.1 requirement maps to exactly one phase. Phase numbering continues from 
 | WARN-01 | Phase 7 | Complete |
 | WARN-02 | Phase 7 | Complete |
 | WARN-03 | Phase 7 | Complete |
-| DOCS-05 | Phase 8 | Pending |
+| DOCS-05 | Phase 8 | Complete |
 | DOCS-06 | Phase 8 | Pending |
 | DOCS-07 | Phase 8 | Complete |
 | CEM-01 | Phase 9 | Pending |

@@ -102,10 +102,10 @@ Full detail: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
   2. Docs deploy from a dedicated `docs.yml` GitHub Pages workflow (`pages: write` + `id-token: write`), served under the `/litkit/` base path — the read-only `ci.yml` and auth-bearing `release.yml` are untouched.
   3. `repository.url` is corrected from `github.com/willram/litkit` to the shipped `@willramdev` owner across package manifests, so TypeDoc source links (and CEM repo association) resolve.
 
-**Plans**: 1/3 plans executed
+**Plans**: 2/3 plans executed
 **Wave 1** *(parallel — no file overlap)*
 
-- [ ] 08-01-PLAN.md — TRACER: local TypeDoc packages-mode build over all five packages (root + 5 per-package `typedoc.json` with source entry points aligned to each `exports` map, `docs` script, `/docs/` gitignore) [DOCS-05]
+- [x] 08-01-PLAN.md — TRACER: local TypeDoc packages-mode build over all five packages (root + 5 per-package `typedoc.json` with source entry points aligned to each `exports` map, `docs` script, `/docs/` gitignore) [DOCS-05]
 - [x] 08-02-PLAN.md — correct `repository.url` owner to `willramdev` across the five package manifests (metadata-only) [DOCS-07]
 
 **Wave 2** *(blocked on 08-01)*
@@ -181,7 +181,7 @@ Full detail: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
 | 5. Consumer Install Verification | v1.0 | 2/2 | Complete | 2026-08-18 |
 | 6. Sharper Types & Plain-JS Ergonomics + Type-SemVer Gate | v1.1 | 4/4 | Complete   | 2026-08-20 |
 | 7. Dev-Gate & Prod-Stripped Dev Warnings | v1.1 | 4/4 | Complete    | 2026-08-20 |
-| 8. Hosted TypeDoc API Reference Site | v1.1 | 1/3 | In Progress|  |
+| 8. Hosted TypeDoc API Reference Site | v1.1 | 2/3 | In Progress|  |
 | 9. Custom Elements Manifest | v1.1 | 0/TBD | Not started | - |
 | 10. Examples Integration App | v1.1 | 0/TBD | Not started | - |
 | 11. Devtools & Debugging | v1.1 | 0/TBD | Not started | - |

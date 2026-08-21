@@ -5,16 +5,16 @@ milestone_name: Developer Experience
 current_phase: 08
 current_phase_name: Hosted TypeDoc API Reference Site
 status: executing
-stopped_at: Completed 08-02-PLAN.md
-last_updated: "2026-08-21T13:36:53.020Z"
+stopped_at: Completed 08-01-PLAN.md
+last_updated: "2026-08-21T19:28:29.788Z"
 last_activity: 2026-08-21
 last_activity_desc: Phase 08 execution started
-state_head: fca58708355a09b67e56d232bdaca7583eb25426
+state_head: 57082105e892a4d9d2a9bccec1eb0f663d9f05d2
 progress:
   total_phases: 7
   completed_phases: 2
   total_plans: 11
-  completed_plans: 9
+  completed_plans: 10
   percent: 29
 ---
 
@@ -30,7 +30,7 @@ See: .planning/PROJECT.md (updated 2026-08-19)
 ## Current Position
 
 Phase: 08 (Hosted TypeDoc API Reference Site) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-08-21 — Phase 08 execution started
 
@@ -69,6 +69,7 @@ Progress: [███░░░░░░░] 29% (v1.1)
 | Phase 07 P03 | 6 min | 2 tasks | 8 files |
 | Phase 07 P04 | 10 min | 2 tasks | 2 files |
 | Phase 08 P08-02 | 2 min | 1 tasks | 5 files |
+| Phase 08 P08-01 | 14min | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -86,6 +87,8 @@ Full v1.0 decision log archived in PROJECT.md (Key Decisions) and `.planning/mil
 - [Phase 07]: [Phase 07] 07-01: esm-env DEV dev-gate wired into kit (externalized in vite.config), single [litkit] prefix, warn-once via module-level Set; define() warns collision-only
 - [Phase 07]: [Phase 07] 07-01: non-vacuous strip control uses resolve.conditions:['development'] not Vite mode (vite build forces production export condition in Vite 8) — note for 07-04
 - [Phase 08]: 08-02: repository.url owner corrected willram->willramdev across all 5 manifests (DOCS-07); verified by grep-for-zero + JSON.parse, not source-link resolution (Pitfall 1)
+- [Phase 08]: [Phase 08]: 08-01: TypeDoc packages-mode build converts all 5 packages from src across 8 entry points (forms .,/zod; router .,/core,/lit); treatWarningsAsErrors at root + validation.notExported/invalidLink=false filters by-design-unexported internals (protects Phase 06 type-SemVer snapshots)
+- [Phase 08]: [Phase 08]: 08-01: doc warnings fixed at source not by weakening the gate — link directive @param retagged to prose (Lit directive signature has no bindable params); root highlightLanguages extended with ini for README .npmrc block
 
 ### Pending Todos
 
@@ -107,8 +110,8 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-21T13:36:44.789Z
-Stopped at: Completed 08-02-PLAN.md
+Last session: 2026-08-21T19:28:15.835Z
+Stopped at: Completed 08-01-PLAN.md
 Resume file: None
 
 ## Operator Next Steps
