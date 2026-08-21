@@ -12,7 +12,7 @@
   "author": "William Ramanand",
   "repository": {
     "type": "git",
-    "url": "https://github.com/willram/litkit.git",
+    "url": "https://github.com/willramdev/litkit.git",
     "directory": "packages/kit"
   },
   "type": "module",
