@@ -3,18 +3,18 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Developer Experience
 current_phase: 07
-current_phase_name: dev-gate-prod-stripped-dev-warnings
+current_phase_name: Dev-Gate & Prod-Stripped Dev Warnings
 status: executing
-stopped_at: Phase 07 context gathered
-last_updated: "2026-08-20T23:52:00.322Z"
+stopped_at: Completed 07-01-PLAN.md
+last_updated: "2026-08-21T02:32:15.872Z"
 last_activity: 2026-08-20
-last_activity_desc: Phase 06 marked complete
-state_head: 5f69527082fd7e022ca450cb7fafe01b139aa627
+last_activity_desc: Phase 07 execution started
+state_head: 0c7d7100a94c6973fb7e43960c403b76b6ee626a
 progress:
   total_phases: 7
   completed_phases: 1
   total_plans: 8
-  completed_plans: 4
+  completed_plans: 5
   percent: 14
 ---
 
@@ -25,16 +25,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-19)
 
 **Core value:** A consumer building a Lit app against litkit gets first-class docs, editor autocomplete, dev-time guardrails, and debugging — with zero change to the v1.0 runtime contract (externalization, tree-shaking, single-instance dedup, acyclic graph).
-**Current focus:** Phase 06 — Sharper Types & Plain-JS Ergonomics + Type-SemVer Gate
+**Current focus:** Phase 07 — Dev-Gate & Prod-Stripped Dev Warnings
 
 ## Current Position
 
-Phase: 07 (dev-gate-prod-stripped-dev-warnings) — READY TO EXECUTE
+Phase: 07 (Dev-Gate & Prod-Stripped Dev Warnings) — EXECUTING
 Plan: 2 of 4
 Status: Ready to execute
-Last activity: 2026-08-20 — Phase 06 marked complete
+Last activity: 2026-08-20 — Phase 07 execution started
 
-Progress: [░░░░░░░░░░] 0% (v1.1)
+Progress: [█░░░░░░░░░] 14% (v1.1)
 
 ## Performance Metrics
 
@@ -63,6 +63,7 @@ Progress: [░░░░░░░░░░] 0% (v1.1)
 | Phase 06 P01 | 6 | 2 tasks | 6 files |
 | Phase 06 P02 | 3min | 2 tasks | 8 files |
 | Phase 06 P03 | 4min | 3 tasks | 8 files |
+| Phase 07 P01 | 12 | 3 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -77,6 +78,8 @@ Full v1.0 decision log archived in PROJECT.md (Key Decisions) and `.planning/mil
 - [Phase 06]: type-SemVer shape gate: committed flattened .d.ts + git diff --exit-code (D-01), driven by a dts-bundle-generator@9.5.1 ESM runner (require()-based --config cannot unwrap ESM default); LF-pinned via .gitattributes before first snapshot commit (Pitfall 1).
 - [Phase 06]: 06-02: type-SemVer shape gate expanded to 8 flattened snapshots (all 5 packages + forms/zod, router/core, router/lit subpaths); ci.yml unchanged
 - [Phase 06]: [Phase 06]: 06-03: TYPE-01 satisfied verify-only (zero signature edits — every public generic infers from a required value arg); TYPE-03 proven by 5 per-package checkJs consumers wired into typecheck:smoke; consistency-alignment sweep rejected per D-05
+- [Phase 07]: [Phase 07] 07-01: esm-env DEV dev-gate wired into kit (externalized in vite.config), single [litkit] prefix, warn-once via module-level Set; define() warns collision-only
+- [Phase 07]: [Phase 07] 07-01: non-vacuous strip control uses resolve.conditions:['development'] not Vite mode (vite build forces production export condition in Vite 8) — note for 07-04
 
 ### Pending Todos
 
@@ -98,9 +101,9 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-20T23:03:27.364Z
-Stopped at: Phase 07 context gathered
-Resume file: .planning/phases/07-dev-gate-prod-stripped-dev-warnings/07-CONTEXT.md
+Last session: 2026-08-21T02:32:06.027Z
+Stopped at: Completed 07-01-PLAN.md
+Resume file: None
 
 ## Operator Next Steps
 

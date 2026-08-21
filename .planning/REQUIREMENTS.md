@@ -19,9 +19,9 @@ Requirements for the DX milestone. Each maps to exactly one roadmap phase (trace
 
 ### Dev-Time Warnings (WARN)
 
-- [ ] **WARN-01**: A shared dev-gate mechanism (esm-env `DEV`, or a `typeof process`-guarded `NODE_ENV`) is chosen once — it survives litkit's own build so the **consumer's** bundler dead-code-eliminates it; NOT `import.meta.env.DEV` (Vite-only), NOT a build-time `define`
-- [ ] **WARN-02**: Dev-only warnings cover the top misuse cases — missing provider/context, controller used before `hostConnected`, invalid route config, duplicate element registration, and clear API-misuse messages
-- [ ] **WARN-03**: Warnings are verified stripped from production consumer builds (minified-consumer grep = 0 dev strings) and never crash a no-`process` browser sandbox (`process is not defined`)
+- [x] **WARN-01**: A shared dev-gate mechanism (esm-env `DEV`, or a `typeof process`-guarded `NODE_ENV`) is chosen once — it survives litkit's own build so the **consumer's** bundler dead-code-eliminates it; NOT `import.meta.env.DEV` (Vite-only), NOT a build-time `define`
+- [x] **WARN-02**: Dev-only warnings cover the top misuse cases — missing provider/context, controller used before `hostConnected`, invalid route config, duplicate element registration, and clear API-misuse messages
+- [x] **WARN-03**: Warnings are verified stripped from production consumer builds (minified-consumer grep = 0 dev strings) and never crash a no-`process` browser sandbox (`process is not defined`)
 
 ### Hosted API Docs Site (DOCS)
 
@@ -99,9 +99,9 @@ Each v1.1 requirement maps to exactly one phase. Phase numbering continues from 
 | TYPE-01 | Phase 6 | Complete |
 | TYPE-02 | Phase 6 | Complete |
 | TYPE-03 | Phase 6 | Complete |
-| WARN-01 | Phase 7 | Pending |
-| WARN-02 | Phase 7 | Pending |
-| WARN-03 | Phase 7 | Pending |
+| WARN-01 | Phase 7 | Complete |
+| WARN-02 | Phase 7 | Complete |
+| WARN-03 | Phase 7 | Complete |
 | DOCS-05 | Phase 8 | Pending |
 | DOCS-06 | Phase 8 | Pending |
 | DOCS-07 | Phase 8 | Pending |
