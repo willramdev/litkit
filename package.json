@@ -13,6 +13,7 @@
     "typecheck:smoke": "tsc -p tools/typecheck-smoke/tsconfig.node16.json && tsc -p tools/typecheck-smoke/tsconfig.bundler.json && tsc -p tools/typecheck-smoke/tsconfig.checkjs.json",
     "type-snapshot": "node tools/type-snapshots.config.mjs",
     "verify:consumer": "node scripts/verify-consumer.mjs",
+    "dev-warning-strip": "node scripts/dev-warning-strip.mjs",
     "doc-check": "npm run build && node tools/doc-check/extract-snippets.mjs && tsc -p tools/doc-check/tsconfig.node16.json && tsc -p tools/doc-check/tsconfig.bundler.json",
     "doc-check:snippets": "node tools/doc-check/extract-snippets.mjs && tsc -p tools/doc-check/tsconfig.node16.json && tsc -p tools/doc-check/tsconfig.bundler.json",
     "test": "npm run test --workspaces --if-present",

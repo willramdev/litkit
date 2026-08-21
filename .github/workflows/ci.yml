@@ -74,6 +74,13 @@ jobs:
       # build output never enters the gate. Local index ops — no token (D-10).
       - name: shape gate (fail on any tracked-or-untracked snapshot drift)
         run: git add -A -- tools/type-snapshots/ && git diff --cached --exit-code -- tools/type-snapshots/
+      # dev-warning strip + no-process sandbox (WARN-03): a real minified prod
+      # consumer build must contain zero `[litkit]` strings, and importing kit's
+      # dist with process unset must not throw `process is not defined`. Consumes
+      # the built dist/ (runs after `npm run build` above). Read-only — no token
+      # (D-09); do NOT widen the top-level `permissions: contents: read`.
+      - name: dev-warning strip + no-process sandbox (WARN-03)
+        run: npm run dev-warning-strip
       # publint: package.json exports/types correctness across all five packages.
       - name: publint (all packages)
         run: |
