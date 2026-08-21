@@ -1,6 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi, afterEach } from "vitest";
 import { defineRoutes, resolveRoute, findRouteByName } from "../router-core/routes.ts";
 import { compiledMatcherFactory } from "../router-core/matcher.ts";
+import type { RouteDefinition } from "../router-core/types.ts";
 
 // Use compiled matcher for consistent testing across environments
 const factory = compiledMatcherFactory;
@@ -240,5 +241,66 @@ describe("findRouteByName", () => {
 
   it("returns undefined for unknown name", () => {
     expect(findRouteByName(routes, "nope")).toBeUndefined();
+  });
+});
+
+describe("dev-warning on invalid route config", () => {
+  let warnSpy: ReturnType<typeof vi.spyOn>;
+
+  afterEach(() => {
+    warnSpy?.mockRestore();
+  });
+
+  it("warns once (with [litkit] prefix) on a route with no path and no children", () => {
+    warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    // A plain-JS caller can omit path; the type requires it, so cast.
+    defineRoutes([{ name: "cfg-no-path" } as RouteDefinition], factory);
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(String(warnSpy.mock.calls[0][0])).toMatch(/^\[litkit\]/);
+  });
+
+  it("warns once on two sibling routes sharing the same name (on the second, not the first)", () => {
+    warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    defineRoutes(
+      [
+        { path: "/cfg-dup-a", name: "cfg-dup-name" },
+        { path: "/cfg-dup-b", name: "cfg-dup-name" },
+      ],
+      factory,
+    );
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(String(warnSpy.mock.calls[0][0])).toMatch(/duplicate route name/);
+  });
+
+  it("warns once on a route with both redirectTo and component set", () => {
+    warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    defineRoutes(
+      [{ path: "/cfg-rr", name: "cfg-redirect-render", redirectTo: "/elsewhere", component: "some-el" }],
+      factory,
+    );
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(String(warnSpy.mock.calls[0][0])).toMatch(/redirect and render/);
+  });
+
+  it("emits zero warnings for a legitimate nested route tree (regression guard)", () => {
+    warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    defineRoutes(
+      [
+        { path: "/", name: "cfg-ok-home", component: "home-page" },
+        {
+          path: "/admin",
+          name: "cfg-ok-admin",
+          component: "admin-layout",
+          children: [
+            { path: "", name: "cfg-ok-admin-home", component: "admin-dashboard" },
+            { path: "users", name: "cfg-ok-admin-users", component: "admin-users" },
+          ],
+        },
+        { path: "/legacy", name: "cfg-ok-legacy", redirectTo: "/" },
+        { path: "*", name: "cfg-ok-not-found", component: "not-found-page" },
+      ],
+      factory,
+    );
+    expect(warnSpy).not.toHaveBeenCalled();
   });
 });
