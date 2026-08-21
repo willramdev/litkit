@@ -1,0 +1,3 @@
+{
+  "entryPoints": ["src/index.ts", "src/router-core/index.ts", "src/router-lit/index.ts"]
+}

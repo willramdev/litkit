@@ -175,8 +175,8 @@ class LinkDirective extends AsyncDirective {
 /**
  * Directive for client-side navigation links with automatic active class management.
  *
- * @param input - Navigation target (string path or NavigationTarget object)
- * @param router - Router instance
- * @param options - Optional configuration for active class names
+ * Invoke with the navigation target (a string path or `NavigationTarget` object),
+ * the `Router` instance, and an optional `LinkOptions` configuration for the active
+ * class names. See {@link LinkDirective.render} for the argument signature.
  */
 export const link = directive(LinkDirective);

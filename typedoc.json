@@ -1,10 +1,11 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "entryPointStrategy": "packages",
-  "entryPoints": ["packages/kit", "packages/query", "packages/store"],
+  "entryPoints": ["packages/*"],
   "out": "docs",
   "hostedBaseUrl": "https://willramdev.github.io/litkit/",
   "name": "litkit API",
+  "highlightLanguages": ["bash", "console", "css", "html", "ini", "javascript", "json", "jsonc", "json5", "yaml", "tsx", "typescript"],
   "treatWarningsAsErrors": true,
   "validation": {
     "notExported": false,
