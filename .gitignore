@@ -12,6 +12,8 @@ dist
 dist-ssr
 coverage
 tools/doc-check/.snippets/
+# TypeDoc build output (rebuilt in docs.yml)
+/docs
 *.local
 
 # Editor directories and files

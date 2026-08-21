@@ -12,6 +12,7 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "typecheck:smoke": "tsc -p tools/typecheck-smoke/tsconfig.node16.json && tsc -p tools/typecheck-smoke/tsconfig.bundler.json && tsc -p tools/typecheck-smoke/tsconfig.checkjs.json",
     "type-snapshot": "node tools/type-snapshots.config.mjs",
+    "docs": "typedoc",
     "verify:consumer": "node scripts/verify-consumer.mjs",
     "dev-warning-strip": "node scripts/dev-warning-strip.mjs",
     "doc-check": "npm run build && node tools/doc-check/extract-snippets.mjs && tsc -p tools/doc-check/tsconfig.node16.json && tsc -p tools/doc-check/tsconfig.bundler.json",
@@ -37,6 +38,7 @@
     "@changesets/cli": "^3.0.0",
     "@vitest/coverage-v8": "^4.1.9",
     "dts-bundle-generator": "9.5.1",
-    "publint": "^0.3.23"
+    "publint": "^0.3.23",
+    "typedoc": "0.28.20"
   }
 }
