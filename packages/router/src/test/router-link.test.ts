@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createMockRouter, mockMatch } from '../router-core/testing.ts';
 import { html, render } from 'lit';
 import '../router-lit/router-link.ts';
@@ -184,6 +184,30 @@ describe('RouterLink', () => {
 
     a = getAnchor();
     expect(a.classList.contains('active')).toBe(true);
+  });
+
+  it('warns once ([litkit], softer wording) with no router and still degrades to href="#"', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    // No .router property, no ancestor <router-provider> → requestRouter resolves undefined.
+    render(html`<router-link>Home</router-link>`, container);
+    const linkEl = container.querySelector('router-link')!;
+    await linkEl.updateComplete;
+
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(String(warnSpy.mock.calls[0][0])).toMatch(/^\[litkit\]/);
+
+    // Existing degrade-gracefully behavior unchanged: anchor renders with href="#".
+    const a = getAnchor();
+    expect(a).toBeTruthy();
+    expect(a.getAttribute('href')).toBe('#');
+
+    // A re-render (attribute change) must NOT re-warn — warn-once holds.
+    linkEl.setAttribute('to', '/still-no-router');
+    await linkEl.updateComplete;
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+
+    warnSpy.mockRestore();
   });
 
   it('projects slotted content into the anchor', async () => {

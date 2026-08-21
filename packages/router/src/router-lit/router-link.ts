@@ -3,6 +3,7 @@ import { property } from "lit/decorators.js";
 import type { NavigationInput, Router, RouteChangeCallback } from "../router-core/types.ts";
 import { requestRouter } from "./router-context.ts";
 import { define } from "../define.ts";
+import { devWarnOnce } from "../internal/dev.ts";
 
 const DEFAULT_ACTIVE_CLASS = "active";
 const DEFAULT_EXACT_ACTIVE_CLASS = "exact-active";
@@ -77,7 +78,15 @@ export class RouterLink extends LitElement {
   private subscribeToRouter(): void {
     this._unsubscribe?.();
     const router = this.effectiveRouter;
-    if (!router) return;
+    if (!router) {
+      devWarnOnce(
+        "router-link-no-router",
+        "<router-link>: no Router is available yet — the link will render as a " +
+          'static "#" placeholder until one is provided. If this persists, wrap ' +
+          "the link in a <router-provider> or set its .router property.",
+      );
+      return;
+    }
 
     const callback: RouteChangeCallback = () => {
       this.requestUpdate();

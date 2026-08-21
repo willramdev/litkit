@@ -3,6 +3,7 @@ import { property, state } from "lit/decorators.js";
 import type { Router, RouteMatch, MatchedRoute, RouteDefinition } from "../router-core/types.ts";
 import { requestRouter } from "./router-context.ts";
 import { define } from "../define.ts";
+import { devWarnOnce } from "../internal/dev.ts";
 
 const pendingRouteLoads = new WeakMap<RouteDefinition, Promise<unknown>>();
 
@@ -63,6 +64,11 @@ export class RouterOutlet extends LitElement {
 
     const router = this.effectiveRouter;
     if (!router) {
+      devWarnOnce(
+        "router-outlet-no-router",
+        "<router-outlet>: no Router was found — nothing will render. " +
+          "Wrap the outlet in a <router-provider> or set its .router property.",
+      );
       this._match = null;
       return;
     }

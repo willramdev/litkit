@@ -37,11 +37,39 @@ describe('RouterOutlet', () => {
     expect(customElements.get('router-outlet')).toBeDefined();
   });
 
-  it('renders nothing when no router is set', async () => {
+  it('renders nothing and warns once ([litkit]) when no router is set — even across a re-render', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const outlet = createElement();
+    await renderOutlet(outlet); // render pass 1: connectedCallback → subscribeToRouter
+
+    expect(outlet.childElementCount).toBe(0);
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(String(warnSpy.mock.calls[0][0])).toMatch(/^\[litkit\]/);
+
+    // Force a second render pass on the SAME instance — warn-once must hold.
+    outlet.manageFocus = false;
+    outlet.requestUpdate();
+    await outlet.updateComplete;
+
+    expect(warnSpy).toHaveBeenCalledTimes(1); // still exactly once
+    expect(outlet.childElementCount).toBe(0);
+
+    warnSpy.mockRestore();
+    cleanup(outlet);
+  });
+
+  it('does not re-warn for a second no-router outlet instance (module-level warn-once)', async () => {
+    // The key was already consumed by the earlier no-router test; a fresh
+    // instance must stay silent — proving the dedupe is process-wide, not
+    // per-instance (T-07-DOS console-flood guard).
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const outlet = createElement();
     await renderOutlet(outlet);
 
     expect(outlet.childElementCount).toBe(0);
+    expect(warnSpy).not.toHaveBeenCalled();
+
+    warnSpy.mockRestore();
     cleanup(outlet);
   });
 
