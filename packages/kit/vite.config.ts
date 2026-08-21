@@ -9,7 +9,7 @@ export default defineConfig({
       formats: ['es'],
     },
     rollupOptions: {
-      external: ['lit', /^lit\//],
+      external: ['lit', /^lit\//, 'esm-env'],
     },
     copyPublicDir: false,
     sourcemap: true,

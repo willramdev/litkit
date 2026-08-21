@@ -39,6 +39,9 @@
     "test": "vitest run",
     "prepublishOnly": "npm run typecheck && npm run build"
   },
+  "dependencies": {
+    "esm-env": "^1.2.2"
+  },
   "peerDependencies": {
     "lit": "^3.0.0"
   },
