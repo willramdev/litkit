@@ -45,8 +45,8 @@ created: 2026-08-21
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
 | 8-01-01 | 01 | 1 | DOCS-05 | — | N/A | smoke | `npx typedoc --emit none` (exit 0, no `[warning]`/`[error]`) | ❌ W0 | ⬜ pending |
 | 8-01-02 | 01 | 1 | DOCS-05 | — | N/A | smoke | `typedoc --json` — assert each package/subpath module present (8 entry points) | ❌ W0 | ⬜ pending |
-| 8-02-01 | 02 | — | DOCS-06 | T-8-04 | Least-privilege workflow tokens | static | assert `docs.yml` has `pages: write` + `id-token: write`; `git diff` shows `ci.yml`/`release.yml` untouched | ❌ W0 | ⬜ pending |
-| 8-03-01 | 03 | — | DOCS-07 | — | N/A | smoke | `! grep -rn "willram/litkit" --include=package.json .` (expect 0 matches) | ❌ W0 | ⬜ pending |
+| 8-02-01 | 02 | — | DOCS-07 | — | N/A | smoke | `! git grep -n "willram/litkit" -- '*package.json'` (expect 0 matches) | ❌ W0 | ⬜ pending |
+| 8-03-01 | 03 | — | DOCS-06 | T-8-04 | Least-privilege workflow tokens | static | assert `docs.yml` has `pages: write` + `id-token: write`; `git diff --exit-code` shows `ci.yml`/`release.yml` untouched | ❌ W0 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 

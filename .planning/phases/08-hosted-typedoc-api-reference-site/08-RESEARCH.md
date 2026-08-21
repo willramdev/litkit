@@ -347,16 +347,18 @@ jobs:
 | A2 | `packageOptions.entryPoints: ["src/index.ts"]` is honored for packages that have no own `typedoc.json` | Architecture Pattern 1 | If not honored, kit/query/store document nothing until each gets an explicit `typedoc.json` (safe fallback — recommend explicit-everywhere) — see Open Questions #1 |
 | A3 | Output dir `docs/` is free to use (none exists today) | Code Examples | Verified no `docs/` dir exists `[VERIFIED: ls]` — low risk; any dedicated dir works |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Does a sub-package's own `typedoc.json` override `packageOptions`, and what happens if neither sets `entryPoints`?**
    - What we know: `packageOptions` supplies per-package defaults; child configs exist and are read; root non-`packageOptions` keys are NOT copied to children `[CITED: typedoc Options.Input]`.
    - What's unclear: exact precedence direction, and the fallback when neither specifies entry points (docs did not state it verbatim this session).
    - Recommendation: **Sidestep entirely — give each of the five packages its own `typedoc.json` with explicit `entryPoints`.** This is unambiguous, directly satisfies "entry points aligned to each `exports` map," and removes reliance on precedence/fallback. Treat `packageOptions` as the home for shared *non-entry* conversion options only.
+   - **RESOLVED:** sidestep adopted in plan 08-01 (Tasks 1–2 give all five packages an explicit `typedoc.json` with `entryPoints`); no reliance on precedence/fallback. Phase-goal risk nil.
 
 2. **Should the root `package.json` gain a `repository` field?**
    - What we know: it currently has none `[VERIFIED: package.json:1-42]`; TypeDoc doesn't need it (uses git origin).
    - Recommendation: add it for correctness/consistency (low cost), but it is not required by any DOCS-05/06/07 success criterion.
+   - **RESOLVED:** DECLINED in plan 08-01 `<artifacts_produced>` — omitted to avoid cross-plan root-manifest contention and keep Wave 1 parallel; not required by any DOCS success criterion.
 
 ## Environment Availability
 
