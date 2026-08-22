@@ -1,0 +1,2431 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "src/array-controller.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "ArrayController",
+          "members": [
+            {
+              "kind": "field",
+              "name": "_engine",
+              "type": {
+                "text": "FormEngine<any>"
+              },
+              "privacy": "private",
+              "default": "engine"
+            },
+            {
+              "kind": "field",
+              "name": "_path",
+              "type": {
+                "text": "string"
+              },
+              "privacy": "private",
+              "default": "path"
+            },
+            {
+              "kind": "field",
+              "name": "items",
+              "type": {
+                "text": "Item[]"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "length",
+              "type": {
+                "text": "number"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "push",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "Item"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "insert",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "index",
+                  "type": {
+                    "text": "number"
+                  }
+                },
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "Item"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "remove",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "index",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "swap",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "a",
+                  "type": {
+                    "text": "number"
+                  }
+                },
+                {
+                  "name": "b",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "move",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "from",
+                  "type": {
+                    "text": "number"
+                  }
+                },
+                {
+                  "name": "to",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "fields",
+              "return": {
+                "type": {
+                  "text": "unknown[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "callback",
+                  "type": {
+                    "text": "(field: FieldInstance<Item>, index: number) => unknown"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ArrayController",
+          "declaration": {
+            "name": "ArrayController",
+            "module": "src/array-controller.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/bind.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "fieldErrorId",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          },
+          "parameters": [
+            {
+              "name": "path",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Element directive that two-way-binds a form field to a native or custom\nelement.\n\n```html\n<input type=\"email\" ${bind(this.form, 'email')} />\n<lit-form .form=${this.form}>\n  <form>\n    <input type=\"email\" ${bind('email')} />\n  </form>\n</lit-form>\n```"
+        },
+        {
+          "kind": "function",
+          "name": "bind",
+          "return": {
+            "type": {
+              "text": "ReturnType<typeof bindDirective>"
+            }
+          },
+          "parameters": [
+            {
+              "name": "form",
+              "type": {
+                "text": "FormInstance<T>"
+              }
+            },
+            {
+              "name": "path",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "text": "BindOptions"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "bind",
+          "return": {
+            "type": {
+              "text": "ReturnType<typeof bindDirective>"
+            }
+          },
+          "parameters": [
+            {
+              "name": "path",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "text": "BindOptions"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "bind",
+          "return": {
+            "type": {
+              "text": "ReturnType<typeof bindDirective>"
+            }
+          },
+          "parameters": [
+            {
+              "name": "formOrPath",
+              "type": {
+                "text": "FormInstance<any> | string"
+              }
+            },
+            {
+              "name": "pathOrOptions",
+              "optional": true,
+              "type": {
+                "text": "string | BindOptions"
+              }
+            },
+            {
+              "name": "maybeOptions",
+              "optional": true,
+              "type": {
+                "text": "BindOptions"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "fieldErrorId",
+          "declaration": {
+            "name": "fieldErrorId",
+            "module": "src/bind.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "bind",
+          "declaration": {
+            "name": "bind",
+            "module": "src/bind.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "bind",
+          "declaration": {
+            "name": "bind",
+            "module": "src/bind.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "bind",
+          "declaration": {
+            "name": "bind",
+            "module": "src/bind.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/create-form.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "createForm",
+          "return": {
+            "type": {
+              "text": "FormInstance<T>"
+            }
+          },
+          "parameters": [
+            {
+              "name": "host",
+              "type": {
+                "text": "ReactiveControllerHost"
+              }
+            },
+            {
+              "name": "config",
+              "type": {
+                "text": "FormConfig<T>"
+              }
+            }
+          ],
+          "description": "Create a form bound to a Lit host element.\n\nUsage (as a class field initializer):\n```ts\nform = createForm(this, {\n  initialValues: { email: '', password: '' },\n  validators: {\n    email: [required(), email()],\n    password: [required()],\n  },\n  onSubmit: async ({ value }) => { console.log(value); },\n});\n```"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "createForm",
+          "declaration": {
+            "name": "createForm",
+            "module": "src/create-form.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/field-controller.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "FieldController",
+          "members": [
+            {
+              "kind": "field",
+              "name": "_engine",
+              "type": {
+                "text": "FormEngine<any>"
+              },
+              "privacy": "private",
+              "default": "engine"
+            },
+            {
+              "kind": "field",
+              "name": "_path",
+              "type": {
+                "text": "string"
+              },
+              "privacy": "private",
+              "default": "path"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "V"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "error",
+              "type": {
+                "text": "string | undefined"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "errors",
+              "type": {
+                "text": "string[]"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "touched",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "dirty",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "valid",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "validating",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "setValue",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "V"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "setTouched",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "touched",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "setErrors",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "errors",
+                  "type": {
+                    "text": "string[]"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "validate",
+              "return": {
+                "type": {
+                  "text": "Promise<string[]>"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "onInput"
+            },
+            {
+              "kind": "field",
+              "name": "onChange"
+            },
+            {
+              "kind": "field",
+              "name": "onBlur"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "FieldController",
+          "declaration": {
+            "name": "FieldController",
+            "module": "src/field-controller.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/field.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "field",
+          "return": {
+            "type": {
+              "text": "ReturnType<typeof fieldDirective>"
+            }
+          },
+          "parameters": [
+            {
+              "name": "form",
+              "type": {
+                "text": "FormInstance<T>"
+              }
+            },
+            {
+              "name": "path",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "renderFn",
+              "type": {
+                "text": "(field: FieldInstance) => unknown"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "field",
+          "return": {
+            "type": {
+              "text": "ReturnType<typeof fieldDirective>"
+            }
+          },
+          "parameters": [
+            {
+              "name": "path",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "renderFn",
+              "type": {
+                "text": "(field: FieldInstance) => unknown"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "field",
+          "return": {
+            "type": {
+              "text": "ReturnType<typeof fieldDirective>"
+            }
+          },
+          "parameters": [
+            {
+              "name": "formOrPath",
+              "type": {
+                "text": "FormInstance<any> | string"
+              }
+            },
+            {
+              "name": "pathOrRenderFn",
+              "type": {
+                "text": "string | ((field: FieldInstance) => unknown)"
+              }
+            },
+            {
+              "name": "maybeRenderFn",
+              "optional": true,
+              "type": {
+                "text": "(field: FieldInstance) => unknown"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "field",
+          "declaration": {
+            "name": "field",
+            "module": "src/field.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "field",
+          "declaration": {
+            "name": "field",
+            "module": "src/field.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "field",
+          "declaration": {
+            "name": "field",
+            "module": "src/field.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/form-context.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "LIT_FORM_REQUEST",
+          "type": {
+            "text": "string"
+          },
+          "default": "'lit-form:request-form'"
+        },
+        {
+          "kind": "function",
+          "name": "requestFormContext",
+          "return": {
+            "type": {
+              "text": "FormInstance<any> | undefined"
+            }
+          },
+          "parameters": [
+            {
+              "name": "target",
+              "type": {
+                "text": "EventTarget"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "attachFormProvider",
+          "return": {
+            "type": {
+              "text": "() => void"
+            }
+          },
+          "parameters": [
+            {
+              "name": "target",
+              "type": {
+                "text": "EventTarget"
+              }
+            },
+            {
+              "name": "getForm",
+              "type": {
+                "text": "() => FormInstance<any> | null | undefined"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "LIT_FORM_REQUEST",
+          "declaration": {
+            "name": "LIT_FORM_REQUEST",
+            "module": "src/form-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "requestFormContext",
+          "declaration": {
+            "name": "requestFormContext",
+            "module": "src/form-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "attachFormProvider",
+          "declaration": {
+            "name": "attachFormProvider",
+            "module": "src/form-context.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/form-controller.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Core form controller.  Implements both Lit's `ReactiveController` (for\nlifecycle integration) and our public `FormInstance` interface.\n\nExported publicly as both the direct controller and via the `form()` factory.",
+          "name": "FormController",
+          "members": [
+            {
+              "kind": "field",
+              "name": "_engine",
+              "type": {
+                "text": "FormEngine<T>"
+              },
+              "privacy": "private",
+              "default": "new FormEngine<T>({ initialValues: config.initialValues, fieldConfigs, formValidators: config.formValidators ?? [], asyncFormValidators: config.asyncFormValidators ?? [], defaultAsyncDebounceMs: defaultDebounce, defaultValidateOn, onSubmit: config.onSubmit ? async (value: T) => { await config.onSubmit!({ value }); } : undefined, onSubmitInvalid: config.onSubmitInvalid ? () => { config.onSubmitInvalid!({ errors: this._engine.getAllFieldErrors(), }); } : undefined, })"
+            },
+            {
+              "kind": "field",
+              "name": "_host",
+              "type": {
+                "text": "ReactiveControllerHost"
+              },
+              "privacy": "private",
+              "default": "host"
+            },
+            {
+              "kind": "field",
+              "name": "_fields",
+              "privacy": "private",
+              "default": "new Map<string, FieldController<any>>()"
+            },
+            {
+              "kind": "field",
+              "name": "_arrays",
+              "privacy": "private",
+              "default": "new Map<string, ArrayController<any>>()"
+            },
+            {
+              "kind": "field",
+              "name": "_groups",
+              "privacy": "private",
+              "default": "new Map<string, GroupController<any>>()"
+            },
+            {
+              "kind": "field",
+              "name": "_unsubscribe",
+              "type": {
+                "text": "(() => void) | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "hostConnected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "hostDisconnected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "T"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "errors",
+              "type": {
+                "text": "Record<string, string[]>"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "formErrors",
+              "type": {
+                "text": "string[]"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "valid",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "dirty",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "touched",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "submitting",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "submitted",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "handleSubmit"
+            },
+            {
+              "kind": "method",
+              "name": "reset",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "values",
+                  "optional": true,
+                  "type": {
+                    "text": "T"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "setValues",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "partial",
+                  "type": {
+                    "text": "Partial<T>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "setValue",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "P"
+                  }
+                },
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "FieldValue<T, P>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "validate",
+              "return": {
+                "type": {
+                  "text": "Promise<Record<string, string[]>>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setErrors",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "errors",
+                  "type": {
+                    "text": "Record<string, string | string[]>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "destroyField",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "field",
+              "return": {
+                "type": {
+                  "text": "FieldInstance<FieldValue<T, P>>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "P"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "array",
+              "return": {
+                "type": {
+                  "text": "ArrayInstance<FieldArrayItem<T, P>>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "P"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "group",
+              "return": {
+                "type": {
+                  "text": "GroupInstance<Pick<T, P>>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "paths",
+                  "type": {
+                    "text": "P[]"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "FormController",
+          "declaration": {
+            "name": "FormController",
+            "module": "src/form-controller.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/group-controller.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "GroupController",
+          "members": [
+            {
+              "kind": "field",
+              "name": "_engine",
+              "type": {
+                "text": "FormEngine<any>"
+              },
+              "privacy": "private",
+              "default": "engine"
+            },
+            {
+              "kind": "field",
+              "name": "_paths",
+              "type": {
+                "text": "string[]"
+              },
+              "privacy": "private",
+              "default": "paths"
+            },
+            {
+              "kind": "field",
+              "name": "_fields",
+              "privacy": "private",
+              "default": "new Map<string, FieldController<any>>()"
+            },
+            {
+              "kind": "field",
+              "name": "errors",
+              "type": {
+                "text": "Record<string, string[]>"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "valid",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "dirty",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "touched",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "field",
+              "return": {
+                "type": {
+                  "text": "FieldInstance<T[P]>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "P"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "validate",
+              "return": {
+                "type": {
+                  "text": "Promise<Record<string, string[]>>"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "GroupController",
+          "declaration": {
+            "name": "GroupController",
+            "module": "src/group-controller.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/index.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "form",
+          "return": {
+            "type": {
+              "text": "(host: ReactiveElement) => FormController<T>"
+            }
+          },
+          "parameters": [
+            {
+              "name": "config",
+              "type": {
+                "text": "FormConfig<T>"
+              }
+            }
+          ],
+          "description": "Controller factory — creates a form controller bound to the host."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "FormController",
+          "declaration": {
+            "name": "FormController",
+            "module": "./form-controller.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createForm",
+          "declaration": {
+            "name": "createForm",
+            "module": "./create-form.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "bind",
+          "declaration": {
+            "name": "bind",
+            "module": "./bind.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "fieldErrorId",
+          "declaration": {
+            "name": "fieldErrorId",
+            "module": "./bind.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "field",
+          "declaration": {
+            "name": "field",
+            "module": "./field.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "LIT_FORM_REQUEST",
+          "declaration": {
+            "name": "LIT_FORM_REQUEST",
+            "module": "./form-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "attachFormProvider",
+          "declaration": {
+            "name": "attachFormProvider",
+            "module": "./form-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "requestFormContext",
+          "declaration": {
+            "name": "requestFormContext",
+            "module": "./form-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "LitForm",
+          "declaration": {
+            "name": "LitForm",
+            "module": "./lit-form.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "form",
+          "declaration": {
+            "name": "form",
+            "module": "src/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "required",
+          "declaration": {
+            "name": "required",
+            "module": "./validators.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "email",
+          "declaration": {
+            "name": "email",
+            "module": "./validators.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "minLength",
+          "declaration": {
+            "name": "minLength",
+            "module": "./validators.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "maxLength",
+          "declaration": {
+            "name": "maxLength",
+            "module": "./validators.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "min",
+          "declaration": {
+            "name": "min",
+            "module": "./validators.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "max",
+          "declaration": {
+            "name": "max",
+            "module": "./validators.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "pattern",
+          "declaration": {
+            "name": "pattern",
+            "module": "./validators.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FormConfig",
+          "declaration": {
+            "name": "FormConfig",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FormInstance",
+          "declaration": {
+            "name": "FormInstance",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FieldInstance",
+          "declaration": {
+            "name": "FieldInstance",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "ArrayInstance",
+          "declaration": {
+            "name": "ArrayInstance",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "GroupInstance",
+          "declaration": {
+            "name": "GroupInstance",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FieldValidatorConfig",
+          "declaration": {
+            "name": "FieldValidatorConfig",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "BindOptions",
+          "declaration": {
+            "name": "BindOptions",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "Validator",
+          "declaration": {
+            "name": "Validator",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "AsyncValidator",
+          "declaration": {
+            "name": "AsyncValidator",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FormValidator",
+          "declaration": {
+            "name": "FormValidator",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "AsyncFormValidator",
+          "declaration": {
+            "name": "AsyncFormValidator",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "ValidateOn",
+          "declaration": {
+            "name": "ValidateOn",
+            "module": "./types.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/lit-form.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Provides a `FormInstance` to descendant controls and enhances a native child\n`<form>` by wiring submit/reset to the controller.\n\nNote: slotted controls are not true descendants of a shadow-DOM `<form>`, so\n`lit-form` intentionally provides context around a user-authored native form\ninstead of trying to own one internally.",
+          "name": "LitForm",
+          "slots": [
+            {
+              "description": "default slot wrapping the user-authored `<form>`",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "form",
+              "privacy": "public",
+              "type": {
+                "text": "FormInstance"
+              },
+              "default": "null",
+              "description": "the FormInstance driving submit/reset"
+            },
+            {
+              "kind": "field",
+              "name": "nativeValidation",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "native-validation"
+            },
+            {
+              "kind": "field",
+              "name": "#observer",
+              "privacy": "private",
+              "default": "new MutationObserver(() => { this.#syncForms(); })"
+            },
+            {
+              "kind": "field",
+              "name": "#detachProvider",
+              "privacy": "private",
+              "type": {
+                "text": "() => void | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#handleSubmit",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "#handleReset",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "#handleSlotChange",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#syncForms",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "keep native browser form validation on (default false)",
+              "name": "native-validation",
+              "default": "false",
+              "fieldName": "nativeValidation"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "lit-form",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "LitForm",
+          "declaration": {
+            "name": "LitForm",
+            "module": "src/lit-form.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "lit-form",
+          "declaration": {
+            "name": "LitForm",
+            "module": "src/lit-form.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/types.ts",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/validators.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "required",
+          "return": {
+            "type": {
+              "text": "Validator"
+            }
+          },
+          "parameters": [
+            {
+              "name": "message",
+              "default": "'This field is required'"
+            }
+          ],
+          "description": "Validates that the field is not empty, null, or false."
+        },
+        {
+          "kind": "function",
+          "name": "email",
+          "return": {
+            "type": {
+              "text": "Validator"
+            }
+          },
+          "parameters": [
+            {
+              "name": "message",
+              "default": "'Invalid email address'"
+            }
+          ],
+          "description": "Validates that the field contains a valid email address."
+        },
+        {
+          "kind": "function",
+          "name": "minLength",
+          "return": {
+            "type": {
+              "text": "Validator"
+            }
+          },
+          "parameters": [
+            {
+              "name": "len",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "message",
+              "optional": true,
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Validates that the string is at least `len` characters long."
+        },
+        {
+          "kind": "function",
+          "name": "maxLength",
+          "return": {
+            "type": {
+              "text": "Validator"
+            }
+          },
+          "parameters": [
+            {
+              "name": "len",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "message",
+              "optional": true,
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Validates that the string is at most `len` characters long."
+        },
+        {
+          "kind": "function",
+          "name": "pattern",
+          "return": {
+            "type": {
+              "text": "Validator"
+            }
+          },
+          "parameters": [
+            {
+              "name": "regex",
+              "type": {
+                "text": "RegExp"
+              }
+            },
+            {
+              "name": "message",
+              "default": "'Invalid format'"
+            }
+          ],
+          "description": "Validates that the string matches the given regular expression."
+        },
+        {
+          "kind": "function",
+          "name": "min",
+          "return": {
+            "type": {
+              "text": "Validator"
+            }
+          },
+          "parameters": [
+            {
+              "name": "minVal",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "message",
+              "optional": true,
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Validates that the number is at least `minVal`."
+        },
+        {
+          "kind": "function",
+          "name": "max",
+          "return": {
+            "type": {
+              "text": "Validator"
+            }
+          },
+          "parameters": [
+            {
+              "name": "maxVal",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "message",
+              "optional": true,
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Validates that the number is at most `maxVal`."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "required",
+          "declaration": {
+            "name": "required",
+            "module": "src/validators.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "email",
+          "declaration": {
+            "name": "email",
+            "module": "src/validators.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "minLength",
+          "declaration": {
+            "name": "minLength",
+            "module": "src/validators.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "maxLength",
+          "declaration": {
+            "name": "maxLength",
+            "module": "src/validators.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "pattern",
+          "declaration": {
+            "name": "pattern",
+            "module": "src/validators.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "min",
+          "declaration": {
+            "name": "min",
+            "module": "src/validators.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "max",
+          "declaration": {
+            "name": "max",
+            "module": "src/validators.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/zod.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "zodValidator",
+          "return": {
+            "type": {
+              "text": "Record<string, Validator[]>"
+            }
+          },
+          "parameters": [
+            {
+              "name": "schema",
+              "type": {
+                "text": "ZodLikeObjectSchema"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "zodFieldValidator",
+          "return": {
+            "type": {
+              "text": "Validator"
+            }
+          },
+          "parameters": [
+            {
+              "name": "fieldSchema",
+              "type": {
+                "text": "ZodLikeType"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "zodFormValidator",
+          "return": {
+            "type": {
+              "text": "(values: T) => Record<string, string> | string | undefined"
+            }
+          },
+          "parameters": [
+            {
+              "name": "schema",
+              "type": {
+                "text": "ZodLikeObjectSchema"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "zodValidator",
+          "declaration": {
+            "name": "zodValidator",
+            "module": "src/zod.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "zodFieldValidator",
+          "declaration": {
+            "name": "zodFieldValidator",
+            "module": "src/zod.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "zodFormValidator",
+          "declaration": {
+            "name": "zodFormValidator",
+            "module": "src/zod.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/internal/engine.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "FormEngine",
+          "members": [
+            {
+              "kind": "field",
+              "name": "_form",
+              "type": {
+                "text": "FormApi<T, any, any, any, any, any, any, any, any, any, any, any>"
+              },
+              "privacy": "private",
+              "default": "new FormApi<T, any, any, any, any, any, any, any, any, any, any, any>({ defaultValues: config.initialValues, validators: this._buildFormValidators( config.formValidators, config.asyncFormValidators, config.defaultValidateOn, ), onSubmit: config.onSubmit ? async ({ value }: { value: T }) => { await config.onSubmit!(value); } : undefined, onSubmitInvalid: config.onSubmitInvalid ? () => config.onSubmitInvalid!() : undefined, } as any)"
+            },
+            {
+              "kind": "field",
+              "name": "_fields",
+              "privacy": "private",
+              "default": "new Map<string, EngineFieldApi>()"
+            },
+            {
+              "kind": "field",
+              "name": "_fieldConfigs",
+              "type": {
+                "text": "Map<string, FieldConfig>"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_serverErrors",
+              "privacy": "private",
+              "default": "new Map<string, string[]>()"
+            },
+            {
+              "kind": "field",
+              "name": "_destroyed",
+              "privacy": "private",
+              "default": "new Set<string>()"
+            },
+            {
+              "kind": "field",
+              "name": "_onChange",
+              "type": {
+                "text": "(() => void) | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "method",
+              "name": "mount",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "subscribe",
+              "return": {
+                "type": {
+                  "text": "() => void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "callback",
+                  "type": {
+                    "text": "() => void"
+                  }
+                }
+              ],
+              "description": "Subscribe to any state change (form or field).\r\nReturns an unsubscribe function."
+            },
+            {
+              "kind": "method",
+              "name": "_notify",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getValues",
+              "return": {
+                "type": {
+                  "text": "T"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "isValid",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "isDirty",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "isTouched",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "isSubmitting",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "isSubmitted",
+              "type": {
+                "text": "boolean"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "handleSubmit",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "reset",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "values",
+                  "optional": true,
+                  "type": {
+                    "text": "T"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "setValues",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "partial",
+                  "type": {
+                    "text": "Partial<T>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "validateAllFields",
+              "return": {
+                "type": {
+                  "text": "Promise<Record<string, string[]>>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "validateField",
+              "return": {
+                "type": {
+                  "text": "Promise<string[]>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_ensureField",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "EngineFieldApi"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Lazily create & mount a TanStack FieldApi the first time a path is\r\naccessed.  Subsequent calls for the same path return the cached instance."
+            },
+            {
+              "kind": "method",
+              "name": "getFieldValue",
+              "return": {
+                "type": {
+                  "text": "unknown"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getFieldErrors",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getFieldMeta",
+              "return": {
+                "type": {
+                  "text": "{\r\n    isTouched: boolean;\r\n    isDirty: boolean;\r\n    isValid: boolean;\r\n    isValidating: boolean;\r\n  }"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "setFieldValue",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "unknown"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "handleFieldBlur",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "setFieldTouched",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "touched",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "setServerErrors",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "errors",
+                  "type": {
+                    "text": "Record<string, string[]>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "setServerFieldErrors",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "errors",
+                  "type": {
+                    "text": "string[]"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "destroyField",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getFormErrors",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "description": "Errors returned by form-level validators (not per-field)."
+            },
+            {
+              "kind": "method",
+              "name": "getAllFieldErrors",
+              "return": {
+                "type": {
+                  "text": "Record<string, string[]>"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "pushFieldValue",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "unknown"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "insertFieldValue",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "index",
+                  "type": {
+                    "text": "number"
+                  }
+                },
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "unknown"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "removeFieldValue",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "index",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "swapFieldValues",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "a",
+                  "type": {
+                    "text": "number"
+                  }
+                },
+                {
+                  "name": "b",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "moveFieldValue",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "path",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "from",
+                  "type": {
+                    "text": "number"
+                  }
+                },
+                {
+                  "name": "to",
+                  "type": {
+                    "text": "number"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_buildFieldValidators",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Record<string, unknown>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "fc",
+                  "type": {
+                    "text": "FieldConfig"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_buildFormValidators",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "Record<string, unknown>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "sync",
+                  "type": {
+                    "text": "FormValidator<T>[]"
+                  }
+                },
+                {
+                  "name": "async_",
+                  "type": {
+                    "text": "AsyncFormValidator<T>[]"
+                  }
+                },
+                {
+                  "name": "validateOn",
+                  "type": {
+                    "text": "ValidateOn"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "FormEngine",
+          "declaration": {
+            "name": "FormEngine",
+            "module": "src/internal/engine.ts"
+          }
+        }
+      ]
+    }
+  ]
+}

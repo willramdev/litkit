@@ -3,3 +3,12 @@
 # §Pitfall 1). Without this the `git diff --exit-code tools/type-snapshots/` shape
 # gate would red-line on every CI run purely from CRLF/LF churn.
 tools/type-snapshots/** text eol=lf
+
+# Pin LF line endings for the committed Custom Elements Manifest + editor-data
+# artifacts (Phase 9, 09-RESEARCH.md §Pitfall 3). Same rationale as the snapshot
+# pin above: a Windows-authored artifact and an Ubuntu-CI regeneration must be
+# byte-identical or the `git diff --cached --exit-code` freshness gate false-fails
+# on CRLF/LF churn alone. Globs cover all three element packages up front.
+packages/*/custom-elements.json      text eol=lf
+packages/*/vscode.*-custom-data.json text eol=lf
+packages/*/web-types.json            text eol=lf

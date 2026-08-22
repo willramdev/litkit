@@ -1,0 +1,46 @@
+{
+  "$schema": "https://raw.githubusercontent.com/JetBrains/web-types/master/schema/web-types.json",
+  "name": "@willramdev/forms",
+  "version": "1.0.0",
+  "description-markup": "markdown",
+  "contributions": {
+    "html": {
+      "elements": [
+        {
+          "name": "lit-form",
+          "description": "Provides a `FormInstance` to descendant controls and enhances a native child\n`<form>` by wiring submit/reset to the controller.\n\nNote: slotted controls are not true descendants of a shadow-DOM `<form>`, so\n`lit-form` intentionally provides context around a user-authored native form\ninstead of trying to own one internally.\n---\n\n\n### **Slots:**\n - _default_ - default slot wrapping the user-authored `<form>`",
+          "doc-url": "",
+          "attributes": [
+            {
+              "name": "native-validation",
+              "description": "keep native browser form validation on (default false)",
+              "value": { "type": "boolean", "default": "false" }
+            }
+          ],
+          "slots": [
+            {
+              "name": "",
+              "description": "default slot wrapping the user-authored `<form>`"
+            }
+          ],
+          "events": [],
+          "js": {
+            "properties": [
+              {
+                "name": "form",
+                "description": "the FormInstance driving submit/reset",
+                "type": "FormInstance"
+              },
+              { "name": "nativeValidation", "type": "boolean" }
+            ],
+            "events": []
+          }
+        }
+      ]
+    },
+    "css": {
+      "properties": [],
+      "pseudo-elements": []
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vscode-html-languageservice/main/docs/customData.schema.json",
+  "version": 1.1,
+  "tags": [
+    {
+      "name": "lit-form",
+      "description": "Provides a `FormInstance` to descendant controls and enhances a native child\n`<form>` by wiring submit/reset to the controller.\n\nNote: slotted controls are not true descendants of a shadow-DOM `<form>`, so\n`lit-form` intentionally provides context around a user-authored native form\ninstead of trying to own one internally.\n---\n\n\n### **Slots:**\n - _default_ - default slot wrapping the user-authored `<form>`",
+      "attributes": [
+        {
+          "name": "native-validation",
+          "description": "keep native browser form validation on (default false)",
+          "values": []
+        }
+      ],
+      "references": []
+    }
+  ]
+}
