@@ -6,6 +6,10 @@ import { createRouter, defineRoutes } from '@willramdev/router'
 // side-effect import in main.ts) before the outlet first navigates, or the
 // outlet warns and renders nothing.
 export const router = createRouter({
-  routes: defineRoutes([{ path: '/', component: 'home-view' }]),
+  routes: defineRoutes([
+    { path: '/', component: 'home-view' },
+    { path: '/data', component: 'data-view' },
+    { path: '/form', component: 'form-view' },
+  ]),
   mode: 'history',
 })
