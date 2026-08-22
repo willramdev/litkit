@@ -5,7 +5,12 @@ import type { QueryClient } from '@tanstack/query-core'
 import { attachQueryClientProvider } from './query-client-context.ts'
 import { createQueryClient } from './index.ts'
 
-/** Custom element that provides a `QueryClient` to descendant components via DOM context. */
+/**
+ * Custom element that provides a `QueryClient` to descendant components via DOM context.
+ *
+ * @prop {QueryClient} client - the QueryClient provided to descendants (defaults to createQueryClient())
+ * @slot - default slot for the subtree that consumes the QueryClient
+ */
 @customElement('lit-query-client-provider')
 export class LitQueryClientProvider extends LitElement {
   @property({ attribute: false })

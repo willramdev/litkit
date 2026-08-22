@@ -24,11 +24,17 @@
     "dist",
     "README.md",
     "LICENSE",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "custom-elements.json",
+    "vscode.html-custom-data.json",
+    "vscode.css-custom-data.json",
+    "web-types.json"
   ],
   "main": "./dist/query.js",
   "module": "./dist/query.js",
   "types": "./dist/index.d.ts",
+  "customElements": "./custom-elements.json",
+  "web-types": "./web-types.json",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -37,7 +43,8 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build && tsc -p tsconfig.build.json",
+    "cem": "cem analyze",
+    "build": "vite build && tsc -p tsconfig.build.json && npm run cem",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "test": "vitest run",
@@ -48,7 +55,10 @@
     "lit": "^3.0.0"
   },
   "devDependencies": {
+    "@custom-elements-manifest/analyzer": "^0.11.0",
     "@tanstack/query-core": "^5.91.0",
+    "custom-element-jet-brains-integration": "^1.7.0",
+    "custom-element-vs-code-integration": "^1.5.0",
     "lit": "^3.3.2",
     "typescript": "^6.0.3",
     "vite": "^8.0.1",

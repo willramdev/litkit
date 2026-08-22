@@ -1,0 +1,39 @@
+{
+  "$schema": "https://raw.githubusercontent.com/JetBrains/web-types/master/schema/web-types.json",
+  "name": "@willramdev/query",
+  "version": "1.0.0",
+  "description-markup": "markdown",
+  "contributions": {
+    "html": {
+      "elements": [
+        {
+          "name": "lit-query-client-provider",
+          "description": "Custom element that provides a `QueryClient` to descendant components via DOM context.\n---\n\n\n### **Slots:**\n - _default_ - default slot for the subtree that consumes the QueryClient",
+          "doc-url": "",
+          "attributes": [],
+          "slots": [
+            {
+              "name": "",
+              "description": "default slot for the subtree that consumes the QueryClient"
+            }
+          ],
+          "events": [],
+          "js": {
+            "properties": [
+              {
+                "name": "client",
+                "description": "the QueryClient provided to descendants (defaults to createQueryClient())",
+                "type": "QueryClient"
+              }
+            ],
+            "events": []
+          }
+        }
+      ]
+    },
+    "css": {
+      "properties": [],
+      "pseudo-elements": []
+    }
+  }
+}

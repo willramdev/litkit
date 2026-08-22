@@ -1,0 +1,875 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "src/index.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "createQueryClient",
+          "return": {
+            "type": {
+              "text": "QueryClient"
+            }
+          },
+          "parameters": [
+            {
+              "name": "config",
+              "optional": true,
+              "type": {
+                "text": "QueryClientConfig"
+              }
+            }
+          ],
+          "description": "Shorthand for `new QueryClient(config)`."
+        },
+        {
+          "kind": "function",
+          "name": "queryOptions",
+          "return": {
+            "type": {
+              "text": "QueryObserverOptions<TQueryFnData, TError, TData, TQueryData, TQueryKey>"
+            }
+          },
+          "parameters": [
+            {
+              "name": "options",
+              "type": {
+                "text": "QueryObserverOptions<TQueryFnData, TError, TData, TQueryData, TQueryKey>"
+              }
+            }
+          ],
+          "description": "Identity function for type inference on query options."
+        },
+        {
+          "kind": "function",
+          "name": "mutationOptions",
+          "return": {
+            "type": {
+              "text": "MutationObserverOptions<TData, TError, TVariables, TOnMutateResult>"
+            }
+          },
+          "parameters": [
+            {
+              "name": "options",
+              "type": {
+                "text": "MutationObserverOptions<TData, TError, TVariables, TOnMutateResult>"
+              }
+            }
+          ],
+          "description": "Identity function for type inference on mutation options."
+        },
+        {
+          "kind": "function",
+          "name": "query",
+          "return": {
+            "type": {
+              "text": "ControllerFactory<\r\n  QueryController<TQueryFnData, TError, TData, TQueryData, TQueryKey>\r\n>"
+            }
+          },
+          "parameters": [
+            {
+              "name": "optionsInput",
+              "type": {
+                "text": "| QueryObserverOptions<TQueryFnData, TError, TData, TQueryData, TQueryKey>\r\n    | (() => QueryObserverOptions<TQueryFnData, TError, TData, TQueryData, TQueryKey>)"
+              }
+            },
+            {
+              "name": "config",
+              "optional": true,
+              "type": {
+                "text": "QueryControllerConfig"
+              }
+            }
+          ],
+          "description": "Controller factory — creates a `QueryController` bound to the host."
+        },
+        {
+          "kind": "function",
+          "name": "mutation",
+          "return": {
+            "type": {
+              "text": "ControllerFactory<MutationController<TData, TError, TVariables, TOnMutateResult>>"
+            }
+          },
+          "parameters": [
+            {
+              "name": "optionsInput",
+              "type": {
+                "text": "| MutationObserverOptions<TData, TError, TVariables, TOnMutateResult>\r\n    | (() => MutationObserverOptions<TData, TError, TVariables, TOnMutateResult>)"
+              }
+            },
+            {
+              "name": "config",
+              "optional": true,
+              "type": {
+                "text": "MutationControllerConfig"
+              }
+            }
+          ],
+          "description": "Controller factory — creates a `MutationController` bound to the host."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "package": "@tanstack/query-core"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "MutationController",
+          "declaration": {
+            "name": "MutationController",
+            "module": "./mutation-controller.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "MutationControllerConfig",
+          "declaration": {
+            "name": "MutationControllerConfig",
+            "module": "./mutation-controller.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "QueryController",
+          "declaration": {
+            "name": "QueryController",
+            "module": "./query-controller.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "QueryControllerConfig",
+          "declaration": {
+            "name": "QueryControllerConfig",
+            "module": "./query-controller.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "LIT_QUERY_CLIENT_REQUEST",
+          "declaration": {
+            "name": "LIT_QUERY_CLIENT_REQUEST",
+            "module": "./query-client-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "attachQueryClientProvider",
+          "declaration": {
+            "name": "attachQueryClientProvider",
+            "module": "./query-client-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "requestQueryClient",
+          "declaration": {
+            "name": "requestQueryClient",
+            "module": "./query-client-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "LitQueryClientProvider",
+          "declaration": {
+            "name": "LitQueryClientProvider",
+            "module": "./query-client-provider.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createQueryClient",
+          "declaration": {
+            "name": "createQueryClient",
+            "module": "src/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "queryOptions",
+          "declaration": {
+            "name": "queryOptions",
+            "module": "src/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "mutationOptions",
+          "declaration": {
+            "name": "mutationOptions",
+            "module": "src/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "query",
+          "declaration": {
+            "name": "query",
+            "module": "src/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "mutation",
+          "declaration": {
+            "name": "mutation",
+            "module": "src/index.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/mutation-controller.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Reactive controller wrapping TanStack's `MutationObserver`.",
+          "name": "MutationController",
+          "members": [
+            {
+              "kind": "field",
+              "name": "#host",
+              "privacy": "private",
+              "type": {
+                "text": "MutationControllerHost"
+              },
+              "readonly": true,
+              "default": "host"
+            },
+            {
+              "kind": "field",
+              "name": "#optionsInput",
+              "privacy": "private",
+              "type": {
+                "text": "MutationOptionsInput<\r\n    TData,\r\n    TError,\r\n    TVariables,\r\n    TOnMutateResult\r\n  >"
+              },
+              "default": "optionsInput"
+            },
+            {
+              "kind": "field",
+              "name": "#client",
+              "privacy": "private",
+              "type": {
+                "text": "QueryClient | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#observer",
+              "privacy": "private",
+              "type": {
+                "text": "MutationObserver<TData, TError, TVariables, TOnMutateResult> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#result",
+              "privacy": "private",
+              "type": {
+                "text": "MutationObserverResult<TData, TError, TVariables, TOnMutateResult> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#unsubscribe",
+              "privacy": "private",
+              "type": {
+                "text": "() => void | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#connected",
+              "privacy": "private",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "client",
+              "type": {
+                "text": "QueryClient"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "observer",
+              "type": {
+                "text": "MutationObserver<\r\n    TData,\r\n    TError,\r\n    TVariables,\r\n    TOnMutateResult\r\n  >"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "result",
+              "type": {
+                "text": "MutationObserverResult<\r\n    TData,\r\n    TError,\r\n    TVariables,\r\n    TOnMutateResult\r\n  >"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "hostConnected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "hostUpdate",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "hostDisconnected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setOptions",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "optionsInput",
+                  "type": {
+                    "text": "MutationOptionsInput<\r\n      TData,\r\n      TError,\r\n      TVariables,\r\n      TOnMutateResult\r\n    >"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "mutate",
+              "return": {
+                "type": {
+                  "text": "Promise<TData>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "variables",
+                  "type": {
+                    "text": "TVariables"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "reset",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#syncObserver",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#subscribe",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#unsubscribeObserver",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#readOptions",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "MutationObserverOptions<\r\n    TData,\r\n    TError,\r\n    TVariables,\r\n    TOnMutateResult\r\n  >"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#resolveClient",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "QueryClient"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "MutationController",
+          "declaration": {
+            "name": "MutationController",
+            "module": "src/mutation-controller.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/query-client-context.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "LIT_QUERY_CLIENT_REQUEST",
+          "type": {
+            "text": "string"
+          },
+          "default": "'lit-query:request-client'",
+          "description": "Custom event name used to request a `QueryClient` from the DOM context."
+        },
+        {
+          "kind": "function",
+          "name": "requestQueryClient",
+          "return": {
+            "type": {
+              "text": "QueryClient | undefined"
+            }
+          },
+          "parameters": [
+            {
+              "name": "target",
+              "type": {
+                "text": "EventTarget"
+              }
+            }
+          ],
+          "description": "Dispatches a context-request event to resolve a `QueryClient` from an ancestor provider."
+        },
+        {
+          "kind": "function",
+          "name": "attachQueryClientProvider",
+          "return": {
+            "type": {
+              "text": "() => void"
+            }
+          },
+          "parameters": [
+            {
+              "name": "target",
+              "type": {
+                "text": "EventTarget"
+              }
+            },
+            {
+              "name": "getClient",
+              "type": {
+                "text": "() => QueryClient"
+              }
+            }
+          ],
+          "description": "Attaches a `QueryClient` provider to a DOM element. Returns a cleanup function."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "LIT_QUERY_CLIENT_REQUEST",
+          "declaration": {
+            "name": "LIT_QUERY_CLIENT_REQUEST",
+            "module": "src/query-client-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "requestQueryClient",
+          "declaration": {
+            "name": "requestQueryClient",
+            "module": "src/query-client-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "attachQueryClientProvider",
+          "declaration": {
+            "name": "attachQueryClientProvider",
+            "module": "src/query-client-context.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/query-client-provider.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Custom element that provides a `QueryClient` to descendant components via DOM context.",
+          "name": "LitQueryClientProvider",
+          "slots": [
+            {
+              "description": "default slot for the subtree that consumes the QueryClient",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "client",
+              "type": {
+                "text": "QueryClient"
+              },
+              "description": "the QueryClient provided to descendants (defaults to createQueryClient())"
+            },
+            {
+              "kind": "field",
+              "name": "#detachProvider",
+              "privacy": "private",
+              "type": {
+                "text": "() => void | undefined"
+              }
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "lit-query-client-provider",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "LitQueryClientProvider",
+          "declaration": {
+            "name": "LitQueryClientProvider",
+            "module": "src/query-client-provider.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "lit-query-client-provider",
+          "declaration": {
+            "name": "LitQueryClientProvider",
+            "module": "src/query-client-provider.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/query-controller.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Reactive controller wrapping TanStack's `QueryObserver`. Syncs query options on every host update.",
+          "name": "QueryController",
+          "members": [
+            {
+              "kind": "field",
+              "name": "#host",
+              "privacy": "private",
+              "type": {
+                "text": "QueryControllerHost"
+              },
+              "readonly": true,
+              "default": "host"
+            },
+            {
+              "kind": "field",
+              "name": "#optionsInput",
+              "privacy": "private",
+              "type": {
+                "text": "QueryOptionsInput<\r\n    TQueryFnData,\r\n    TError,\r\n    TData,\r\n    TQueryData,\r\n    TQueryKey\r\n  >"
+              },
+              "default": "optionsInput"
+            },
+            {
+              "kind": "field",
+              "name": "#client",
+              "privacy": "private",
+              "type": {
+                "text": "QueryClient | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#observer",
+              "privacy": "private",
+              "type": {
+                "text": "QueryObserver<\r\n    TQueryFnData,\r\n    TError,\r\n    TData,\r\n    TQueryData,\r\n    TQueryKey\r\n  > | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#result",
+              "privacy": "private",
+              "type": {
+                "text": "QueryObserverResult<TData, TError> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#unsubscribe",
+              "privacy": "private",
+              "type": {
+                "text": "() => void | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#connected",
+              "privacy": "private",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "#mountedClient",
+              "privacy": "private",
+              "type": {
+                "text": "QueryClient | undefined"
+              },
+              "description": "The client we currently hold a `mount()` reference on, if any."
+            },
+            {
+              "kind": "field",
+              "name": "client",
+              "type": {
+                "text": "QueryClient"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "observer",
+              "type": {
+                "text": "QueryObserver<\r\n    TQueryFnData,\r\n    TError,\r\n    TData,\r\n    TQueryData,\r\n    TQueryKey\r\n  >"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "result",
+              "type": {
+                "text": "QueryObserverResult<TData, TError>"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "hostConnected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "hostUpdate",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "hostDisconnected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setOptions",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "optionsInput",
+                  "type": {
+                    "text": "QueryOptionsInput<\r\n      TQueryFnData,\r\n      TError,\r\n      TData,\r\n      TQueryData,\r\n      TQueryKey\r\n    >"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "refetch",
+              "return": {
+                "type": {
+                  "text": "Promise<QueryObserverResult<TData, TError>>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "options",
+                  "optional": true,
+                  "type": {
+                    "text": "RefetchOptions"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "cancel",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "options",
+                  "optional": true,
+                  "type": {
+                    "text": "CancelOptions"
+                  }
+                }
+              ],
+              "description": "Cancel the in-flight query for this controller's exact query key."
+            },
+            {
+              "kind": "method",
+              "name": "#syncObserver",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#mountClient",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "client",
+                  "type": {
+                    "text": "QueryClient"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#unmountClient",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#subscribe",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#unsubscribeObserver",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#readOptions",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "QueryObserverOptions<\r\n    TQueryFnData,\r\n    TError,\r\n    TData,\r\n    TQueryData,\r\n    TQueryKey\r\n  >"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#resolveClient",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "QueryClient"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "QueryController",
+          "declaration": {
+            "name": "QueryController",
+            "module": "src/query-controller.ts"
+          }
+        }
+      ]
+    }
+  ]
+}
