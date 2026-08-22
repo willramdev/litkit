@@ -5,16 +5,16 @@ milestone_name: Developer Experience
 current_phase: 09
 current_phase_name: Custom Elements Manifest
 status: executing
-stopped_at: Completed 09-01-PLAN.md
-last_updated: "2026-08-22T18:22:32.394Z"
+stopped_at: Completed 09-02-PLAN.md
+last_updated: "2026-08-22T18:30:16.500Z"
 last_activity: 2026-08-22
 last_activity_desc: Phase 09 execution started
-state_head: 49cf3a8f0102e074e9ef36522f78786180360433
+state_head: 32b2bbeb703b1ab195daebf40c0ebf63e975e10d
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 14
-  completed_plans: 11
+  completed_plans: 13
   percent: 43
 ---
 
@@ -30,7 +30,7 @@ See: .planning/PROJECT.md (updated 2026-08-22)
 ## Current Position
 
 Phase: 09 (Custom Elements Manifest) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-08-22 — Phase 09 execution started
 
@@ -73,6 +73,7 @@ Progress: [████░░░░░░] 43% (v1.1)
 | Phase 08 P08-01 | 14min | 2 tasks | 10 files |
 | Phase 08 P08-03 | 3 min | 2 tasks | 1 files |
 | Phase 09 P01 | 22min | 2 tasks | 13 files |
+| Phase 09 P02 | 3min | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -97,6 +98,7 @@ Full v1.0 decision log archived in PROJECT.md (Key Decisions) and `.planning/mil
 - [Phase 09]: [Phase 09]: 09-01: CEM tracer through @willramdev/forms — @custom-elements-manifest/analyzer@0.11 (litelement:true, packagejson:false) chained into build; two editor plugins (custom-element-vs-code-integration@1.5 → vscode.*-custom-data.json, custom-element-jet-brains-integration@1.7 → web-types.json), NOT one plugin (D-07 premise corrected). Artifacts committed at package root, LF-pinned, byte-stable.
 - [Phase 09]: [Phase 09]: 09-01: shared gate infra reused by 09-02/09-03 — tools/cem-check/assert-tags.mjs tag-set EQUALITY gate (sorts both sides, throws on missing manifest) + known-tags.json committed contract (grows per package); two ci.yml gate-job steps (CEM freshness git add -A/git diff --cached --exit-code + completeness) after npm run build, permissions:contents:read unchanged, release.yml untouched.
 - [Phase 09]: [Phase 09]: 09-01: .vscode/settings.json html.customData created for D-08 dogfooding but left UNCOMMITTED — repo .gitignore ignores .vscode/*; matches D-08's 'repo-local, not committed-artifact, not gated' framing. 09-02/09-03 need not edit it (all three package paths pre-listed).
+- [Phase 09]: 09-02: query CEM config adds src/demo.ts exclude (forms did not need it) — keeps lit-query-demo-* out of the manifest and the EQUALITY gate green
 
 ### Pending Todos
 
@@ -117,8 +119,8 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-22T18:22:10.889Z
-Stopped at: Completed 09-01-PLAN.md
+Last session: 2026-08-22T18:30:15.140Z
+Stopped at: Completed 09-02-PLAN.md
 Resume file: None
 
 ## Operator Next Steps
