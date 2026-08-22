@@ -149,8 +149,16 @@ Full detail: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
   2. `resolve.dedupe` + an `npm ls` single-version check prove exactly one instance of `lit` and each `@tanstack/*` — the exact v1.0 dedup invariant holds.
   3. The app is excluded from releases (`private: true` + Changesets `ignore`) so it never triggers a version bump or publish.
 
-**Plans**: TBD
+**Plans**: 2 plans
 **UI hint**: yes
+
+**Wave 1**
+
+- [ ] 10-01-PLAN.md — TRACER: workspace wiring (npm `"*"` deps, root workspaces edit) + one end-to-end route (router shell + store seam) against the real built packages; `scripts/check-single-instance.mjs` + release exclusion (`private:true` + Changesets `ignore`) + read-only CI wiring [EXPL-01, EXPL-02, EXPL-03]
+
+**Wave 2** *(blocked on 10-01)*
+
+- [ ] 10-02-PLAN.md — expand to full four-seam coverage: query seam (`data-view`) + forms seam (`form-view`) wired into the shared navigation shell, single-instance canary re-confirmed under full dependency load [EXPL-01, EXPL-02]
 
 ### Phase 11: Devtools & Debugging
 
@@ -195,7 +203,7 @@ Full detail: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
 | 7. Dev-Gate & Prod-Stripped Dev Warnings | v1.1 | 4/4 | Complete    | 2026-08-20 |
 | 8. Hosted TypeDoc API Reference Site | v1.1 | 3/3 | Complete    | 2026-08-22 |
 | 9. Custom Elements Manifest | v1.1 | 3/3 | Complete    | 2026-08-22 |
-| 10. Examples Integration App | v1.1 | 0/TBD | Not started | - |
+| 10. Examples Integration App | v1.1 | 0/2 | Planned | - |
 | 11. Devtools & Debugging | v1.1 | 0/TBD | Not started | - |
 | 12. Dependency Hygiene | v1.1 | 0/TBD | Not started | - |
 
