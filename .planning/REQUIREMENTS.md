@@ -38,9 +38,9 @@ Requirements for the DX milestone. Each maps to exactly one roadmap phase (trace
 
 ### Examples Integration App (EXPL)
 
-- [ ] **EXPL-01**: A private, never-published `examples/` workspace app consumes the local `@willramdev/*` packages and covers the cross-package integration seams (router + query + forms + store)
-- [ ] **EXPL-02**: The examples app is an externalization canary — `resolve.dedupe` + an `npm ls` single-version check prove one instance of `lit` and each `@tanstack/*` (the exact v1.0 dedup invariant)
-- [ ] **EXPL-03**: The examples app is excluded from releases (`private: true` + Changesets `ignore`) so it never triggers a version bump or publish
+- [x] **EXPL-01**: A private, never-published `examples/` workspace app consumes the local `@willramdev/*` packages and covers the cross-package integration seams (router + query + forms + store)
+- [x] **EXPL-02**: The examples app is an externalization canary — `resolve.dedupe` + an `npm ls` single-version check prove one instance of `lit` and each `@tanstack/*` (the exact v1.0 dedup invariant)
+- [x] **EXPL-03**: The examples app is excluded from releases (`private: true` + Changesets `ignore`) so it never triggers a version bump or publish
 
 ### Devtools & Debugging (DTOOL)
 
@@ -109,9 +109,9 @@ Each v1.1 requirement maps to exactly one phase. Phase numbering continues from 
 | CEM-02 | Phase 9 | Complete |
 | CEM-03 | Phase 9 | Complete |
 | CEM-04 | Phase 9 | Complete |
-| EXPL-01 | Phase 10 | Pending |
-| EXPL-02 | Phase 10 | Pending |
-| EXPL-03 | Phase 10 | Pending |
+| EXPL-01 | Phase 10 | Complete |
+| EXPL-02 | Phase 10 | Complete |
+| EXPL-03 | Phase 10 | Complete |
 | DTOOL-01 | Phase 11 | Pending |
 | DTOOL-02 | Phase 11 | Pending |
 | DTOOL-03 | Phase 11 | Pending |

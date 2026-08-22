@@ -5,16 +5,16 @@ milestone_name: Developer Experience
 current_phase: 10
 current_phase_name: Examples Integration App
 status: executing
-stopped_at: Phase 09 complete, ready to plan Phase 10
-last_updated: "2026-08-22T19:49:47.775Z"
+stopped_at: Completed 10-01-PLAN.md
+last_updated: "2026-08-22T20:00:55.964Z"
 last_activity: 2026-08-22
-last_activity_desc: Phase 09 complete, transitioned to Phase 10
-state_head: c2e147f71470f39c0de61c8040ca98949cc4c4e4
+last_activity_desc: Phase 10 execution started
+state_head: 4c20fb5a1ae3badf2a88836aa67bbcbc44c67001
 progress:
   total_phases: 7
   completed_phases: 4
   total_plans: 16
-  completed_plans: 14
+  completed_plans: 15
   percent: 57
 ---
 
@@ -25,16 +25,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-22)
 
 **Core value:** A consumer building a Lit app against litkit gets first-class docs, editor autocomplete, dev-time guardrails, and debugging — with zero change to the v1.0 runtime contract (externalization, tree-shaking, single-instance dedup, acyclic graph).
-**Current focus:** Phase 09 — Custom Elements Manifest
+**Current focus:** Phase 10 — Examples Integration App
 
 ## Current Position
 
-Phase: 10 (Examples Integration App) — READY TO EXECUTE
-Plan: Not started
+Phase: 10 (Examples Integration App) — EXECUTING
+Plan: 2 of 2
 Status: Ready to execute
-Last activity: 2026-08-22 — Phase 09 complete, transitioned to Phase 10
+Last activity: 2026-08-22 — Phase 10 execution started
 
-Progress: [████░░░░░░] 43% (v1.1)
+Progress: [██████░░░░] 57% (v1.1)
 
 ## Performance Metrics
 
@@ -76,6 +76,7 @@ Progress: [████░░░░░░] 43% (v1.1)
 | Phase 09 P01 | 22min | 2 tasks | 13 files |
 | Phase 09 P02 | 3min | 2 tasks | 9 files |
 | Phase 09 P03 | 3min | 3 tasks | 11 files |
+| Phase 10 P01 | 3min | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -102,6 +103,8 @@ Full v1.0 decision log archived in PROJECT.md (Key Decisions) and `.planning/mil
 - [Phase 09]: [Phase 09]: 09-01: .vscode/settings.json html.customData created for D-08 dogfooding but left UNCOMMITTED — repo .gitignore ignores .vscode/*; matches D-08's 'repo-local, not committed-artifact, not gated' framing. 09-02/09-03 need not edit it (all three package paths pre-listed).
 - [Phase 09]: 09-02: query CEM config adds src/demo.ts exclude (forms did not need it) — keeps lit-query-demo-* out of the manifest and the EQUALITY gate green
 - [Phase 09]: Router CEM: JSDoc @tag populated tagName first-run for define()-wrapper elements — no @tagname/@customElement fallback needed; router-outlet deliberately not @slot (light DOM)
+- [Phase 10]: examples/ uses plain "*" workspace deps (not workspace:*) — npm 11 throws EUNSUPPORTEDPROTOCOL
+- [Phase 10]: examples app-mode vite.config.ts is the inverse of package library configs: bundle + resolve.dedupe, no build.lib/external
 
 ### Pending Todos
 
@@ -122,8 +125,8 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-22T18:36:29.095Z
-Stopped at: Phase 09 complete, ready to plan Phase 10
+Last session: 2026-08-22T20:00:43.525Z
+Stopped at: Completed 10-01-PLAN.md
 Resume file: None
 
 ## Operator Next Steps
