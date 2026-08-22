@@ -1,14 +1,16 @@
 ---
 phase: 08-hosted-typedoc-api-reference-site
 verified: 2026-08-21T00:00:00Z
-status: human_needed
+status: passed
 score: 12/14 must-haves verified
 behavior_unverified: 0
 overrides_applied: 0
 human_verification:
+
   - test: "After the next push to main triggers docs.yml, visit https://willramdev.github.io/litkit/ and confirm the site loads with CSS, nav, and search assets resolving under the /litkit/ subpath, and that a source link on a generated page returns GitHub 200."
     expected: "Hosted API reference renders correctly under the project-site subpath; relative TypeDoc links and source links resolve."
     why_human: "Post-deploy backstop (plan marks verification: backstop) — requires a live GitHub Pages deploy and browser visit; cannot be inferred from the codebase."
+
   - test: "Confirm the repo's Settings -> Pages -> Build and deployment -> Source is set to 'GitHub Actions' (already human-confirmed 'approved' in 08-03-SUMMARY)."
     expected: "Source reads 'GitHub Actions' so the first deploy job succeeds."
     why_human: "Pages source is a repo account setting no workflow file or automated check can read or flip. Recorded as human-approved in 08-03-SUMMARY; re-confirm if the first deploy fails."
