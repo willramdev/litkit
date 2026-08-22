@@ -1,4 +1,5 @@
 {
   "forms": ["lit-form"],
-  "query": ["lit-query-client-provider"]
+  "query": ["lit-query-client-provider"],
+  "router": ["router-link", "router-outlet", "router-provider"]
 }
