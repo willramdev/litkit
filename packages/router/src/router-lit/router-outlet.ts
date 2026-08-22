@@ -7,6 +7,21 @@ import { devWarnOnce } from "../internal/dev.ts";
 
 const pendingRouteLoads = new WeakMap<RouteDefinition, Promise<unknown>>();
 
+/**
+ * `<router-outlet>` renders the component matched for its depth into light DOM.
+ *
+ * It resolves its `Router` from an explicit `.router` property or, failing that,
+ * from an ancestor `<router-provider>` context. On navigation errors it dispatches
+ * a bubbling, composed `router-error` CustomEvent.
+ *
+ * Registered via the idempotent `define()` wrapper, so the analyzer cannot
+ * statically resolve the tag name — `@tag` supplies it (D-11).
+ *
+ * @tag router-outlet
+ * @attr {boolean} managefocus - Move focus to the freshly-rendered route element after navigation (default true; Lit lowercases the attribute)
+ * @fires router-error - CustomEvent{ detail: { type, error, route } } dispatched on a render/load error (bubbles, composed)
+ * @prop {Router} router - Explicit router (else resolved from `<router-provider>` context)
+ */
 export class RouterOutlet extends LitElement {
   @property({ attribute: false })
   router?: Router;

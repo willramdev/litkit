@@ -22,6 +22,9 @@ const DEFAULT_EXACT_ACTIVE_CLASS = "exact-active";
  * Browser-native behavior is preserved:
  *   - ctrl/cmd+click opens in new tab
  *   - middle-click opens in new tab
+ *
+ * @tag router-link
+ * @slot - Default slot for the link's visible content
  */
 export class RouterLink extends LitElement {
   /** Router instance (required). */

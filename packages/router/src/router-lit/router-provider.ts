@@ -17,6 +17,10 @@ import { define } from "../define.ts";
  * Descendants can resolve the router using `requestRouter(this)` or
  * it will be auto-resolved by `<router-outlet>`, `<router-link>`,
  * `RouteController`, and `SearchParamsController`.
+ *
+ * @tag router-provider
+ * @prop {Router} router - The Router provided to descendants (required)
+ * @slot - Default slot for the routed app subtree
  */
 export class RouterProvider extends LitElement {
   @property({ attribute: false })
