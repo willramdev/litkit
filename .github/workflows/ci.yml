@@ -74,6 +74,25 @@ jobs:
       # build output never enters the gate. Local index ops — no token (D-10).
       - name: shape gate (fail on any tracked-or-untracked snapshot drift)
         run: git add -A -- tools/type-snapshots/ && git diff --cached --exit-code -- tools/type-snapshots/
+      # CEM freshness gate (Phase 9, D-06/D-12): `npm run build` above chains
+      # `cem analyze` into each element package, regenerating custom-elements.json
+      # + the VS Code custom-data + JetBrains web-types artifacts. Stage them first
+      # (git add -A picks up untracked AND deleted files — a new package's manifest
+      # can't ship CI-green un-baselined) then diff the staged tree against HEAD.
+      # Same shape as the shape gate above; both commands stay pathspec-scoped to
+      # the three artifact globs so unrelated build output never enters the gate.
+      # LF-pinned in .gitattributes so Windows-author == Ubuntu-CI byte-for-byte.
+      # Local index ops — no token; do NOT widen `permissions: contents: read`.
+      - name: CEM freshness gate (fail on any manifest/editor-data drift)
+        run: |
+          git add -A -- 'packages/*/custom-elements.json' 'packages/*/vscode.*-custom-data.json' 'packages/*/web-types.json'
+          git diff --cached --exit-code -- 'packages/*/custom-elements.json' 'packages/*/vscode.*-custom-data.json' 'packages/*/web-types.json'
+      # CEM completeness gate (Phase 9, D-09): assert each manifest's generated
+      # tagName set EQUALS the committed tools/cem-check/known-tags.json contract.
+      # Equality catches a hollow declaration (missing real tag) AND a leaked demo
+      # tag. Reads committed manifests + the known-tag file — no token needed.
+      - name: CEM completeness gate (tag-set equality)
+        run: node tools/cem-check/assert-tags.mjs
       # dev-warning strip + no-process sandbox (WARN-03): a real minified prod
       # consumer build must contain zero `[litkit]` strings, and importing kit's
       # dist with process unset must not throw `process is not defined`. Consumes
