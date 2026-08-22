@@ -185,24 +185,6 @@
       "declarations": [
         {
           "kind": "function",
-          "name": "fieldErrorId",
-          "return": {
-            "type": {
-              "text": "string"
-            }
-          },
-          "parameters": [
-            {
-              "name": "path",
-              "type": {
-                "text": "string"
-              }
-            }
-          ],
-          "description": "Element directive that two-way-binds a form field to a native or custom\nelement.\n\n```html\n<input type=\"email\" ${bind(this.form, 'email')} />\n<lit-form .form=${this.form}>\n  <form>\n    <input type=\"email\" ${bind('email')} />\n  </form>\n</lit-form>\n```"
-        },
-        {
-          "kind": "function",
           "name": "bind",
           "return": {
             "type": {
@@ -285,38 +267,56 @@
               }
             }
           ]
+        },
+        {
+          "kind": "function",
+          "name": "fieldErrorId",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          },
+          "parameters": [
+            {
+              "name": "path",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Element directive that two-way-binds a form field to a native or custom\nelement.\n\n```html\n<input type=\"email\" ${bind(this.form, 'email')} />\n<lit-form .form=${this.form}>\n  <form>\n    <input type=\"email\" ${bind('email')} />\n  </form>\n</lit-form>\n```"
         }
       ],
       "exports": [
         {
           "kind": "js",
+          "name": "bind",
+          "declaration": {
+            "name": "bind",
+            "module": "src/bind.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "bind",
+          "declaration": {
+            "name": "bind",
+            "module": "src/bind.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "bind",
+          "declaration": {
+            "name": "bind",
+            "module": "src/bind.ts"
+          }
+        },
+        {
+          "kind": "js",
           "name": "fieldErrorId",
           "declaration": {
             "name": "fieldErrorId",
-            "module": "src/bind.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "bind",
-          "declaration": {
-            "name": "bind",
-            "module": "src/bind.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "bind",
-          "declaration": {
-            "name": "bind",
-            "module": "src/bind.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "bind",
-          "declaration": {
-            "name": "bind",
             "module": "src/bind.ts"
           }
         }
@@ -659,23 +659,6 @@
         },
         {
           "kind": "function",
-          "name": "requestFormContext",
-          "return": {
-            "type": {
-              "text": "FormInstance<any> | undefined"
-            }
-          },
-          "parameters": [
-            {
-              "name": "target",
-              "type": {
-                "text": "EventTarget"
-              }
-            }
-          ]
-        },
-        {
-          "kind": "function",
           "name": "attachFormProvider",
           "return": {
             "type": {
@@ -696,6 +679,23 @@
               }
             }
           ]
+        },
+        {
+          "kind": "function",
+          "name": "requestFormContext",
+          "return": {
+            "type": {
+              "text": "FormInstance<any> | undefined"
+            }
+          },
+          "parameters": [
+            {
+              "name": "target",
+              "type": {
+                "text": "EventTarget"
+              }
+            }
+          ]
         }
       ],
       "exports": [
@@ -709,17 +709,17 @@
         },
         {
           "kind": "js",
-          "name": "requestFormContext",
+          "name": "attachFormProvider",
           "declaration": {
-            "name": "requestFormContext",
+            "name": "attachFormProvider",
             "module": "src/form-context.ts"
           }
         },
         {
           "kind": "js",
-          "name": "attachFormProvider",
+          "name": "requestFormContext",
           "declaration": {
-            "name": "attachFormProvider",
+            "name": "requestFormContext",
             "module": "src/form-context.ts"
           }
         }
@@ -1162,217 +1162,9 @@
       "exports": [
         {
           "kind": "js",
-          "name": "FormController",
-          "declaration": {
-            "name": "FormController",
-            "module": "./form-controller.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "createForm",
-          "declaration": {
-            "name": "createForm",
-            "module": "./create-form.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "bind",
-          "declaration": {
-            "name": "bind",
-            "module": "./bind.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "fieldErrorId",
-          "declaration": {
-            "name": "fieldErrorId",
-            "module": "./bind.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "field",
-          "declaration": {
-            "name": "field",
-            "module": "./field.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "LIT_FORM_REQUEST",
-          "declaration": {
-            "name": "LIT_FORM_REQUEST",
-            "module": "./form-context.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "attachFormProvider",
-          "declaration": {
-            "name": "attachFormProvider",
-            "module": "./form-context.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "requestFormContext",
-          "declaration": {
-            "name": "requestFormContext",
-            "module": "./form-context.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "LitForm",
-          "declaration": {
-            "name": "LitForm",
-            "module": "./lit-form.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "form",
-          "declaration": {
-            "name": "form",
-            "module": "src/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "required",
-          "declaration": {
-            "name": "required",
-            "module": "./validators.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "email",
-          "declaration": {
-            "name": "email",
-            "module": "./validators.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "minLength",
-          "declaration": {
-            "name": "minLength",
-            "module": "./validators.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "maxLength",
-          "declaration": {
-            "name": "maxLength",
-            "module": "./validators.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "min",
-          "declaration": {
-            "name": "min",
-            "module": "./validators.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "max",
-          "declaration": {
-            "name": "max",
-            "module": "./validators.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "pattern",
-          "declaration": {
-            "name": "pattern",
-            "module": "./validators.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "FormConfig",
-          "declaration": {
-            "name": "FormConfig",
-            "module": "./types.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "FormInstance",
-          "declaration": {
-            "name": "FormInstance",
-            "module": "./types.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "FieldInstance",
-          "declaration": {
-            "name": "FieldInstance",
-            "module": "./types.ts"
-          }
-        },
-        {
-          "kind": "js",
           "name": "ArrayInstance",
           "declaration": {
             "name": "ArrayInstance",
-            "module": "./types.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "GroupInstance",
-          "declaration": {
-            "name": "GroupInstance",
-            "module": "./types.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "FieldValidatorConfig",
-          "declaration": {
-            "name": "FieldValidatorConfig",
-            "module": "./types.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "BindOptions",
-          "declaration": {
-            "name": "BindOptions",
-            "module": "./types.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "Validator",
-          "declaration": {
-            "name": "Validator",
-            "module": "./types.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "AsyncValidator",
-          "declaration": {
-            "name": "AsyncValidator",
-            "module": "./types.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "FormValidator",
-          "declaration": {
-            "name": "FormValidator",
             "module": "./types.ts"
           }
         },
@@ -1386,299 +1178,130 @@
         },
         {
           "kind": "js",
+          "name": "AsyncValidator",
+          "declaration": {
+            "name": "AsyncValidator",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "BindOptions",
+          "declaration": {
+            "name": "BindOptions",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FieldInstance",
+          "declaration": {
+            "name": "FieldInstance",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FieldValidatorConfig",
+          "declaration": {
+            "name": "FieldValidatorConfig",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FormConfig",
+          "declaration": {
+            "name": "FormConfig",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FormController",
+          "declaration": {
+            "name": "FormController",
+            "module": "./form-controller.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FormInstance",
+          "declaration": {
+            "name": "FormInstance",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "FormValidator",
+          "declaration": {
+            "name": "FormValidator",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "GroupInstance",
+          "declaration": {
+            "name": "GroupInstance",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "LIT_FORM_REQUEST",
+          "declaration": {
+            "name": "LIT_FORM_REQUEST",
+            "module": "./form-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "LitForm",
+          "declaration": {
+            "name": "LitForm",
+            "module": "./lit-form.ts"
+          }
+        },
+        {
+          "kind": "js",
           "name": "ValidateOn",
           "declaration": {
             "name": "ValidateOn",
             "module": "./types.ts"
           }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/lit-form.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Provides a `FormInstance` to descendant controls and enhances a native child\n`<form>` by wiring submit/reset to the controller.\n\nNote: slotted controls are not true descendants of a shadow-DOM `<form>`, so\n`lit-form` intentionally provides context around a user-authored native form\ninstead of trying to own one internally.",
-          "name": "LitForm",
-          "slots": [
-            {
-              "description": "default slot wrapping the user-authored `<form>`",
-              "name": ""
-            }
-          ],
-          "members": [
-            {
-              "kind": "field",
-              "name": "form",
-              "privacy": "public",
-              "type": {
-                "text": "FormInstance"
-              },
-              "default": "null",
-              "description": "the FormInstance driving submit/reset"
-            },
-            {
-              "kind": "field",
-              "name": "nativeValidation",
-              "privacy": "public",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false",
-              "attribute": "native-validation"
-            },
-            {
-              "kind": "field",
-              "name": "#observer",
-              "privacy": "private",
-              "default": "new MutationObserver(() => { this.#syncForms(); })"
-            },
-            {
-              "kind": "field",
-              "name": "#detachProvider",
-              "privacy": "private",
-              "type": {
-                "text": "() => void | undefined"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "#handleSubmit",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "#handleReset",
-              "privacy": "private"
-            },
-            {
-              "kind": "field",
-              "name": "#handleSlotChange",
-              "privacy": "private"
-            },
-            {
-              "kind": "method",
-              "name": "#syncForms",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            }
-          ],
-          "attributes": [
-            {
-              "type": {
-                "text": "boolean"
-              },
-              "description": "keep native browser form validation on (default false)",
-              "name": "native-validation",
-              "default": "false",
-              "fieldName": "nativeValidation"
-            }
-          ],
-          "superclass": {
-            "name": "LitElement",
-            "package": "lit"
-          },
-          "tagName": "lit-form",
-          "customElement": true
-        }
-      ],
-      "exports": [
+        },
         {
           "kind": "js",
-          "name": "LitForm",
+          "name": "Validator",
           "declaration": {
-            "name": "LitForm",
-            "module": "src/lit-form.ts"
+            "name": "Validator",
+            "module": "./types.ts"
           }
         },
         {
-          "kind": "custom-element-definition",
-          "name": "lit-form",
+          "kind": "js",
+          "name": "attachFormProvider",
           "declaration": {
-            "name": "LitForm",
-            "module": "src/lit-form.ts"
+            "name": "attachFormProvider",
+            "module": "./form-context.ts"
           }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/types.ts",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/validators.ts",
-      "declarations": [
-        {
-          "kind": "function",
-          "name": "required",
-          "return": {
-            "type": {
-              "text": "Validator"
-            }
-          },
-          "parameters": [
-            {
-              "name": "message",
-              "default": "'This field is required'"
-            }
-          ],
-          "description": "Validates that the field is not empty, null, or false."
         },
-        {
-          "kind": "function",
-          "name": "email",
-          "return": {
-            "type": {
-              "text": "Validator"
-            }
-          },
-          "parameters": [
-            {
-              "name": "message",
-              "default": "'Invalid email address'"
-            }
-          ],
-          "description": "Validates that the field contains a valid email address."
-        },
-        {
-          "kind": "function",
-          "name": "minLength",
-          "return": {
-            "type": {
-              "text": "Validator"
-            }
-          },
-          "parameters": [
-            {
-              "name": "len",
-              "type": {
-                "text": "number"
-              }
-            },
-            {
-              "name": "message",
-              "optional": true,
-              "type": {
-                "text": "string"
-              }
-            }
-          ],
-          "description": "Validates that the string is at least `len` characters long."
-        },
-        {
-          "kind": "function",
-          "name": "maxLength",
-          "return": {
-            "type": {
-              "text": "Validator"
-            }
-          },
-          "parameters": [
-            {
-              "name": "len",
-              "type": {
-                "text": "number"
-              }
-            },
-            {
-              "name": "message",
-              "optional": true,
-              "type": {
-                "text": "string"
-              }
-            }
-          ],
-          "description": "Validates that the string is at most `len` characters long."
-        },
-        {
-          "kind": "function",
-          "name": "pattern",
-          "return": {
-            "type": {
-              "text": "Validator"
-            }
-          },
-          "parameters": [
-            {
-              "name": "regex",
-              "type": {
-                "text": "RegExp"
-              }
-            },
-            {
-              "name": "message",
-              "default": "'Invalid format'"
-            }
-          ],
-          "description": "Validates that the string matches the given regular expression."
-        },
-        {
-          "kind": "function",
-          "name": "min",
-          "return": {
-            "type": {
-              "text": "Validator"
-            }
-          },
-          "parameters": [
-            {
-              "name": "minVal",
-              "type": {
-                "text": "number"
-              }
-            },
-            {
-              "name": "message",
-              "optional": true,
-              "type": {
-                "text": "string"
-              }
-            }
-          ],
-          "description": "Validates that the number is at least `minVal`."
-        },
-        {
-          "kind": "function",
-          "name": "max",
-          "return": {
-            "type": {
-              "text": "Validator"
-            }
-          },
-          "parameters": [
-            {
-              "name": "maxVal",
-              "type": {
-                "text": "number"
-              }
-            },
-            {
-              "name": "message",
-              "optional": true,
-              "type": {
-                "text": "string"
-              }
-            }
-          ],
-          "description": "Validates that the number is at most `maxVal`."
-        }
-      ],
-      "exports": [
         {
           "kind": "js",
-          "name": "required",
+          "name": "bind",
           "declaration": {
-            "name": "required",
-            "module": "src/validators.ts"
+            "name": "bind",
+            "module": "./bind.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createForm",
+          "declaration": {
+            "name": "createForm",
+            "module": "./create-form.ts"
           }
         },
         {
@@ -1686,39 +1309,31 @@
           "name": "email",
           "declaration": {
             "name": "email",
-            "module": "src/validators.ts"
+            "module": "./validators.ts"
           }
         },
         {
           "kind": "js",
-          "name": "minLength",
+          "name": "field",
           "declaration": {
-            "name": "minLength",
-            "module": "src/validators.ts"
+            "name": "field",
+            "module": "./field.ts"
           }
         },
         {
           "kind": "js",
-          "name": "maxLength",
+          "name": "fieldErrorId",
           "declaration": {
-            "name": "maxLength",
-            "module": "src/validators.ts"
+            "name": "fieldErrorId",
+            "module": "./bind.ts"
           }
         },
         {
           "kind": "js",
-          "name": "pattern",
+          "name": "form",
           "declaration": {
-            "name": "pattern",
-            "module": "src/validators.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "min",
-          "declaration": {
-            "name": "min",
-            "module": "src/validators.ts"
+            "name": "form",
+            "module": "src/index.ts"
           }
         },
         {
@@ -1726,90 +1341,55 @@
           "name": "max",
           "declaration": {
             "name": "max",
-            "module": "src/validators.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/zod.ts",
-      "declarations": [
-        {
-          "kind": "function",
-          "name": "zodValidator",
-          "return": {
-            "type": {
-              "text": "Record<string, Validator[]>"
-            }
-          },
-          "parameters": [
-            {
-              "name": "schema",
-              "type": {
-                "text": "ZodLikeObjectSchema"
-              }
-            }
-          ]
-        },
-        {
-          "kind": "function",
-          "name": "zodFieldValidator",
-          "return": {
-            "type": {
-              "text": "Validator"
-            }
-          },
-          "parameters": [
-            {
-              "name": "fieldSchema",
-              "type": {
-                "text": "ZodLikeType"
-              }
-            }
-          ]
-        },
-        {
-          "kind": "function",
-          "name": "zodFormValidator",
-          "return": {
-            "type": {
-              "text": "(values: T) => Record<string, string> | string | undefined"
-            }
-          },
-          "parameters": [
-            {
-              "name": "schema",
-              "type": {
-                "text": "ZodLikeObjectSchema"
-              }
-            }
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "zodValidator",
-          "declaration": {
-            "name": "zodValidator",
-            "module": "src/zod.ts"
+            "module": "./validators.ts"
           }
         },
         {
           "kind": "js",
-          "name": "zodFieldValidator",
+          "name": "maxLength",
           "declaration": {
-            "name": "zodFieldValidator",
-            "module": "src/zod.ts"
+            "name": "maxLength",
+            "module": "./validators.ts"
           }
         },
         {
           "kind": "js",
-          "name": "zodFormValidator",
+          "name": "min",
           "declaration": {
-            "name": "zodFormValidator",
-            "module": "src/zod.ts"
+            "name": "min",
+            "module": "./validators.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "minLength",
+          "declaration": {
+            "name": "minLength",
+            "module": "./validators.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "pattern",
+          "declaration": {
+            "name": "pattern",
+            "module": "./validators.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "requestFormContext",
+          "declaration": {
+            "name": "requestFormContext",
+            "module": "./form-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "required",
+          "declaration": {
+            "name": "required",
+            "module": "./validators.ts"
           }
         }
       ]
@@ -2423,6 +2003,426 @@
           "declaration": {
             "name": "FormEngine",
             "module": "src/internal/engine.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/lit-form.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Provides a `FormInstance` to descendant controls and enhances a native child\n`<form>` by wiring submit/reset to the controller.\n\nNote: slotted controls are not true descendants of a shadow-DOM `<form>`, so\n`lit-form` intentionally provides context around a user-authored native form\ninstead of trying to own one internally.",
+          "name": "LitForm",
+          "slots": [
+            {
+              "description": "default slot wrapping the user-authored `<form>`",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "form",
+              "privacy": "public",
+              "type": {
+                "text": "FormInstance"
+              },
+              "default": "null",
+              "description": "the FormInstance driving submit/reset"
+            },
+            {
+              "kind": "field",
+              "name": "nativeValidation",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "native-validation"
+            },
+            {
+              "kind": "field",
+              "name": "#observer",
+              "privacy": "private",
+              "default": "new MutationObserver(() => { this.#syncForms(); })"
+            },
+            {
+              "kind": "field",
+              "name": "#detachProvider",
+              "privacy": "private",
+              "type": {
+                "text": "() => void | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#handleSubmit",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "#handleReset",
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "#handleSlotChange",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "#syncForms",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "keep native browser form validation on (default false)",
+              "name": "native-validation",
+              "default": "false",
+              "fieldName": "nativeValidation"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "lit-form",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "LitForm",
+          "declaration": {
+            "name": "LitForm",
+            "module": "src/lit-form.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "lit-form",
+          "declaration": {
+            "name": "LitForm",
+            "module": "src/lit-form.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/types.ts",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/validators.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "email",
+          "return": {
+            "type": {
+              "text": "Validator"
+            }
+          },
+          "parameters": [
+            {
+              "name": "message",
+              "default": "'Invalid email address'"
+            }
+          ],
+          "description": "Validates that the field contains a valid email address."
+        },
+        {
+          "kind": "function",
+          "name": "max",
+          "return": {
+            "type": {
+              "text": "Validator"
+            }
+          },
+          "parameters": [
+            {
+              "name": "maxVal",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "message",
+              "optional": true,
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Validates that the number is at most `maxVal`."
+        },
+        {
+          "kind": "function",
+          "name": "maxLength",
+          "return": {
+            "type": {
+              "text": "Validator"
+            }
+          },
+          "parameters": [
+            {
+              "name": "len",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "message",
+              "optional": true,
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Validates that the string is at most `len` characters long."
+        },
+        {
+          "kind": "function",
+          "name": "min",
+          "return": {
+            "type": {
+              "text": "Validator"
+            }
+          },
+          "parameters": [
+            {
+              "name": "minVal",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "message",
+              "optional": true,
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Validates that the number is at least `minVal`."
+        },
+        {
+          "kind": "function",
+          "name": "minLength",
+          "return": {
+            "type": {
+              "text": "Validator"
+            }
+          },
+          "parameters": [
+            {
+              "name": "len",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "name": "message",
+              "optional": true,
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Validates that the string is at least `len` characters long."
+        },
+        {
+          "kind": "function",
+          "name": "pattern",
+          "return": {
+            "type": {
+              "text": "Validator"
+            }
+          },
+          "parameters": [
+            {
+              "name": "regex",
+              "type": {
+                "text": "RegExp"
+              }
+            },
+            {
+              "name": "message",
+              "default": "'Invalid format'"
+            }
+          ],
+          "description": "Validates that the string matches the given regular expression."
+        },
+        {
+          "kind": "function",
+          "name": "required",
+          "return": {
+            "type": {
+              "text": "Validator"
+            }
+          },
+          "parameters": [
+            {
+              "name": "message",
+              "default": "'This field is required'"
+            }
+          ],
+          "description": "Validates that the field is not empty, null, or false."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "email",
+          "declaration": {
+            "name": "email",
+            "module": "src/validators.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "max",
+          "declaration": {
+            "name": "max",
+            "module": "src/validators.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "maxLength",
+          "declaration": {
+            "name": "maxLength",
+            "module": "src/validators.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "min",
+          "declaration": {
+            "name": "min",
+            "module": "src/validators.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "minLength",
+          "declaration": {
+            "name": "minLength",
+            "module": "src/validators.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "pattern",
+          "declaration": {
+            "name": "pattern",
+            "module": "src/validators.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "required",
+          "declaration": {
+            "name": "required",
+            "module": "src/validators.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/zod.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "zodFieldValidator",
+          "return": {
+            "type": {
+              "text": "Validator"
+            }
+          },
+          "parameters": [
+            {
+              "name": "fieldSchema",
+              "type": {
+                "text": "ZodLikeType"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "zodFormValidator",
+          "return": {
+            "type": {
+              "text": "(values: T) => Record<string, string> | string | undefined"
+            }
+          },
+          "parameters": [
+            {
+              "name": "schema",
+              "type": {
+                "text": "ZodLikeObjectSchema"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "zodValidator",
+          "return": {
+            "type": {
+              "text": "Record<string, Validator[]>"
+            }
+          },
+          "parameters": [
+            {
+              "name": "schema",
+              "type": {
+                "text": "ZodLikeObjectSchema"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "zodFieldValidator",
+          "declaration": {
+            "name": "zodFieldValidator",
+            "module": "src/zod.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "zodFormValidator",
+          "declaration": {
+            "name": "zodFormValidator",
+            "module": "src/zod.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "zodValidator",
+          "declaration": {
+            "name": "zodValidator",
+            "module": "src/zod.ts"
           }
         }
       ]

@@ -23,6 +23,7 @@
 
 import { customElementVsCodePlugin } from 'custom-element-vs-code-integration';
 import { customElementJetBrainsPlugin } from 'custom-element-jet-brains-integration';
+import { cemSortPlugin } from '../../tools/cem-check/cem-sort-plugin.mjs';
 
 export default {
   globs: ['src/**/*.ts'],
@@ -31,6 +32,7 @@ export default {
   litelement: true, // reads @customElement decorator AND static properties (Pitfall 4)
   packagejson: false, // do NOT let the analyzer rewrite package.json (Open Q4)
   plugins: [
+    cemSortPlugin(), // FIRST: deterministic module/decl order — byte-stable rebuild (09-VERIFICATION gap)
     customElementVsCodePlugin({ outdir: '.' }), // -> vscode.html/css-custom-data.json
     customElementJetBrainsPlugin({ outdir: '.', packageJson: false }), // -> web-types.json
   ],

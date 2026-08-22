@@ -64,25 +64,9 @@
       "exports": [
         {
           "kind": "js",
-          "name": "MatchResult",
+          "name": "CompiledPathMatcher",
           "declaration": {
-            "name": "MatchResult",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "RouteMatcher",
-          "declaration": {
-            "name": "RouteMatcher",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "RouteDefinition",
-          "declaration": {
-            "name": "RouteDefinition",
+            "name": "CompiledPathMatcher",
             "module": "./router-core/index.ts"
           }
         },
@@ -96,22 +80,6 @@
         },
         {
           "kind": "js",
-          "name": "MatchedRoute",
-          "declaration": {
-            "name": "MatchedRoute",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "RouteMatch",
-          "declaration": {
-            "name": "RouteMatch",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
           "name": "GuardReturn",
           "declaration": {
             "name": "GuardReturn",
@@ -120,41 +88,33 @@
         },
         {
           "kind": "js",
-          "name": "NavigationTarget",
+          "name": "LIT_ROUTER_REQUEST",
           "declaration": {
-            "name": "NavigationTarget",
+            "name": "LIT_ROUTER_REQUEST",
+            "module": "./router-lit/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "LinkOptions",
+          "declaration": {
+            "name": "LinkOptions",
+            "module": "./router-lit/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "MatchResult",
+          "declaration": {
+            "name": "MatchResult",
             "module": "./router-core/index.ts"
           }
         },
         {
           "kind": "js",
-          "name": "NavigationInput",
+          "name": "MatchedRoute",
           "declaration": {
-            "name": "NavigationInput",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "RouterMode",
-          "declaration": {
-            "name": "RouterMode",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "ScrollBehaviorOption",
-          "declaration": {
-            "name": "ScrollBehaviorOption",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "RouterOptions",
-          "declaration": {
-            "name": "RouterOptions",
+            "name": "MatchedRoute",
             "module": "./router-core/index.ts"
           }
         },
@@ -168,169 +128,9 @@
         },
         {
           "kind": "js",
-          "name": "RouterNavigationError",
+          "name": "MockRouter",
           "declaration": {
-            "name": "RouterNavigationError",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "RouteChangeCallback",
-          "declaration": {
-            "name": "RouteChangeCallback",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "Router",
-          "declaration": {
-            "name": "Router",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "CompiledPathMatcher",
-          "declaration": {
-            "name": "CompiledPathMatcher",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "URLPatternMatcher",
-          "declaration": {
-            "name": "URLPatternMatcher",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "supportsURLPattern",
-          "declaration": {
-            "name": "supportsURLPattern",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "urlPatternMatcherFactory",
-          "declaration": {
-            "name": "urlPatternMatcherFactory",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "compiledMatcherFactory",
-          "declaration": {
-            "name": "compiledMatcherFactory",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "autoMatcherFactory",
-          "declaration": {
-            "name": "autoMatcherFactory",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "defineRoutes",
-          "declaration": {
-            "name": "defineRoutes",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "resolveRoute",
-          "declaration": {
-            "name": "resolveRoute",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "findRouteByName",
-          "declaration": {
-            "name": "findRouteByName",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "createRouter",
-          "declaration": {
-            "name": "createRouter",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "buildPath",
-          "declaration": {
-            "name": "buildPath",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "joinPaths",
-          "declaration": {
-            "name": "joinPaths",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "stripBasePath",
-          "declaration": {
-            "name": "stripBasePath",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "parseQuery",
-          "declaration": {
-            "name": "parseQuery",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "buildQueryString",
-          "declaration": {
-            "name": "buildQueryString",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "isBrowser",
-          "declaration": {
-            "name": "isBrowser",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "createMockRouter",
-          "declaration": {
-            "name": "createMockRouter",
-            "module": "./router-core/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "mockMatch",
-          "declaration": {
-            "name": "mockMatch",
+            "name": "MockRouter",
             "module": "./router-core/index.ts"
           }
         },
@@ -344,9 +144,105 @@
         },
         {
           "kind": "js",
-          "name": "MockRouter",
+          "name": "NavigationInput",
           "declaration": {
-            "name": "MockRouter",
+            "name": "NavigationInput",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "NavigationTarget",
+          "declaration": {
+            "name": "NavigationTarget",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RoutableElement",
+          "declaration": {
+            "name": "RoutableElement",
+            "module": "./router-lit/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouteChangeCallback",
+          "declaration": {
+            "name": "RouteChangeCallback",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouteController",
+          "declaration": {
+            "name": "RouteController",
+            "module": "./router-lit/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouteDefinition",
+          "declaration": {
+            "name": "RouteDefinition",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouteMatch",
+          "declaration": {
+            "name": "RouteMatch",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouteMatcher",
+          "declaration": {
+            "name": "RouteMatcher",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "Router",
+          "declaration": {
+            "name": "Router",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouterLink",
+          "declaration": {
+            "name": "RouterLink",
+            "module": "./router-lit/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouterMode",
+          "declaration": {
+            "name": "RouterMode",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouterNavigationError",
+          "declaration": {
+            "name": "RouterNavigationError",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouterOptions",
+          "declaration": {
+            "name": "RouterOptions",
             "module": "./router-core/index.ts"
           }
         },
@@ -368,10 +264,114 @@
         },
         {
           "kind": "js",
-          "name": "RouterLink",
+          "name": "ScrollBehaviorOption",
           "declaration": {
-            "name": "RouterLink",
+            "name": "ScrollBehaviorOption",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "SearchParamsController",
+          "declaration": {
+            "name": "SearchParamsController",
             "module": "./router-lit/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "URLPatternMatcher",
+          "declaration": {
+            "name": "URLPatternMatcher",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "attachRouterProvider",
+          "declaration": {
+            "name": "attachRouterProvider",
+            "module": "./router-lit/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "autoMatcherFactory",
+          "declaration": {
+            "name": "autoMatcherFactory",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "buildPath",
+          "declaration": {
+            "name": "buildPath",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "buildQueryString",
+          "declaration": {
+            "name": "buildQueryString",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "compiledMatcherFactory",
+          "declaration": {
+            "name": "compiledMatcherFactory",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createMockRouter",
+          "declaration": {
+            "name": "createMockRouter",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createRouter",
+          "declaration": {
+            "name": "createRouter",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "defineRoutes",
+          "declaration": {
+            "name": "defineRoutes",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "findRouteByName",
+          "declaration": {
+            "name": "findRouteByName",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "isBrowser",
+          "declaration": {
+            "name": "isBrowser",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "joinPaths",
+          "declaration": {
+            "name": "joinPaths",
+            "module": "./router-core/index.ts"
           }
         },
         {
@@ -384,25 +384,41 @@
         },
         {
           "kind": "js",
-          "name": "LinkOptions",
+          "name": "mockMatch",
           "declaration": {
-            "name": "LinkOptions",
+            "name": "mockMatch",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "parseQuery",
+          "declaration": {
+            "name": "parseQuery",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "requestRouter",
+          "declaration": {
+            "name": "requestRouter",
             "module": "./router-lit/index.ts"
           }
         },
         {
           "kind": "js",
-          "name": "RouteController",
+          "name": "resolveRoute",
           "declaration": {
-            "name": "RouteController",
-            "module": "./router-lit/index.ts"
+            "name": "resolveRoute",
+            "module": "./router-core/index.ts"
           }
         },
         {
           "kind": "js",
-          "name": "SearchParamsController",
+          "name": "route",
           "declaration": {
-            "name": "SearchParamsController",
+            "name": "route",
             "module": "./router-lit/index.ts"
           }
         },
@@ -424,42 +440,26 @@
         },
         {
           "kind": "js",
-          "name": "LIT_ROUTER_REQUEST",
+          "name": "stripBasePath",
           "declaration": {
-            "name": "LIT_ROUTER_REQUEST",
-            "module": "./router-lit/index.ts"
+            "name": "stripBasePath",
+            "module": "./router-core/index.ts"
           }
         },
         {
           "kind": "js",
-          "name": "requestRouter",
+          "name": "supportsURLPattern",
           "declaration": {
-            "name": "requestRouter",
-            "module": "./router-lit/index.ts"
+            "name": "supportsURLPattern",
+            "module": "./router-core/index.ts"
           }
         },
         {
           "kind": "js",
-          "name": "attachRouterProvider",
+          "name": "urlPatternMatcherFactory",
           "declaration": {
-            "name": "attachRouterProvider",
-            "module": "./router-lit/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "route",
-          "declaration": {
-            "name": "route",
-            "module": "./router-lit/index.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "RoutableElement",
-          "declaration": {
-            "name": "RoutableElement",
-            "module": "./router-lit/index.ts"
+            "name": "urlPatternMatcherFactory",
+            "module": "./router-core/index.ts"
           }
         }
       ]
@@ -668,26 +668,10 @@
       "exports": [
         {
           "kind": "js",
-          "name": "MatchResult",
+          "name": "CompiledPathMatcher",
           "declaration": {
-            "name": "MatchResult",
-            "module": "./types.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "RouteMatcher",
-          "declaration": {
-            "name": "RouteMatcher",
-            "module": "./types.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "RouteDefinition",
-          "declaration": {
-            "name": "RouteDefinition",
-            "module": "./types.ts"
+            "name": "CompiledPathMatcher",
+            "module": "./compiled-matcher.ts"
           }
         },
         {
@@ -695,22 +679,6 @@
           "name": "CompiledRoute",
           "declaration": {
             "name": "CompiledRoute",
-            "module": "./types.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "MatchedRoute",
-          "declaration": {
-            "name": "MatchedRoute",
-            "module": "./types.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "RouteMatch",
-          "declaration": {
-            "name": "RouteMatch",
             "module": "./types.ts"
           }
         },
@@ -724,41 +692,17 @@
         },
         {
           "kind": "js",
-          "name": "NavigationTarget",
+          "name": "MatchResult",
           "declaration": {
-            "name": "NavigationTarget",
+            "name": "MatchResult",
             "module": "./types.ts"
           }
         },
         {
           "kind": "js",
-          "name": "NavigationInput",
+          "name": "MatchedRoute",
           "declaration": {
-            "name": "NavigationInput",
-            "module": "./types.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "RouterMode",
-          "declaration": {
-            "name": "RouterMode",
-            "module": "./types.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "ScrollBehaviorOption",
-          "declaration": {
-            "name": "ScrollBehaviorOption",
-            "module": "./types.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "RouterOptions",
-          "declaration": {
-            "name": "RouterOptions",
+            "name": "MatchedRoute",
             "module": "./types.ts"
           }
         },
@@ -772,9 +716,33 @@
         },
         {
           "kind": "js",
-          "name": "RouterNavigationError",
+          "name": "MockRouter",
           "declaration": {
-            "name": "RouterNavigationError",
+            "name": "MockRouter",
+            "module": "./testing.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "MockRouterOptions",
+          "declaration": {
+            "name": "MockRouterOptions",
+            "module": "./testing.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "NavigationInput",
+          "declaration": {
+            "name": "NavigationInput",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "NavigationTarget",
+          "declaration": {
+            "name": "NavigationTarget",
             "module": "./types.ts"
           }
         },
@@ -788,6 +756,30 @@
         },
         {
           "kind": "js",
+          "name": "RouteDefinition",
+          "declaration": {
+            "name": "RouteDefinition",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouteMatch",
+          "declaration": {
+            "name": "RouteMatch",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouteMatcher",
+          "declaration": {
+            "name": "RouteMatcher",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
           "name": "Router",
           "declaration": {
             "name": "Router",
@@ -796,10 +788,34 @@
         },
         {
           "kind": "js",
-          "name": "CompiledPathMatcher",
+          "name": "RouterMode",
           "declaration": {
-            "name": "CompiledPathMatcher",
-            "module": "./compiled-matcher.ts"
+            "name": "RouterMode",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouterNavigationError",
+          "declaration": {
+            "name": "RouterNavigationError",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouterOptions",
+          "declaration": {
+            "name": "RouterOptions",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "ScrollBehaviorOption",
+          "declaration": {
+            "name": "ScrollBehaviorOption",
+            "module": "./types.ts"
           }
         },
         {
@@ -808,6 +824,118 @@
           "declaration": {
             "name": "URLPatternMatcher",
             "module": "./url-pattern-matcher.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "autoMatcherFactory",
+          "declaration": {
+            "name": "autoMatcherFactory",
+            "module": "./matcher.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "buildPath",
+          "declaration": {
+            "name": "buildPath",
+            "module": "./path.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "buildQueryString",
+          "declaration": {
+            "name": "buildQueryString",
+            "module": "./query.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "compiledMatcherFactory",
+          "declaration": {
+            "name": "compiledMatcherFactory",
+            "module": "./matcher.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createMockRouter",
+          "declaration": {
+            "name": "createMockRouter",
+            "module": "./testing.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createRouter",
+          "declaration": {
+            "name": "createRouter",
+            "module": "./router.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "defineRoutes",
+          "declaration": {
+            "name": "defineRoutes",
+            "module": "./routes.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "findRouteByName",
+          "declaration": {
+            "name": "findRouteByName",
+            "module": "./routes.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "isBrowser",
+          "declaration": {
+            "name": "isBrowser",
+            "module": "./env.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "joinPaths",
+          "declaration": {
+            "name": "joinPaths",
+            "module": "./path.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "mockMatch",
+          "declaration": {
+            "name": "mockMatch",
+            "module": "./testing.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "parseQuery",
+          "declaration": {
+            "name": "parseQuery",
+            "module": "./query.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "resolveRoute",
+          "declaration": {
+            "name": "resolveRoute",
+            "module": "./routes.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "stripBasePath",
+          "declaration": {
+            "name": "stripBasePath",
+            "module": "./path.ts"
           }
         },
         {
@@ -825,134 +953,6 @@
             "name": "urlPatternMatcherFactory",
             "module": "./matcher.ts"
           }
-        },
-        {
-          "kind": "js",
-          "name": "compiledMatcherFactory",
-          "declaration": {
-            "name": "compiledMatcherFactory",
-            "module": "./matcher.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "autoMatcherFactory",
-          "declaration": {
-            "name": "autoMatcherFactory",
-            "module": "./matcher.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "defineRoutes",
-          "declaration": {
-            "name": "defineRoutes",
-            "module": "./routes.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "resolveRoute",
-          "declaration": {
-            "name": "resolveRoute",
-            "module": "./routes.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "findRouteByName",
-          "declaration": {
-            "name": "findRouteByName",
-            "module": "./routes.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "createRouter",
-          "declaration": {
-            "name": "createRouter",
-            "module": "./router.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "buildPath",
-          "declaration": {
-            "name": "buildPath",
-            "module": "./path.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "joinPaths",
-          "declaration": {
-            "name": "joinPaths",
-            "module": "./path.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "stripBasePath",
-          "declaration": {
-            "name": "stripBasePath",
-            "module": "./path.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "parseQuery",
-          "declaration": {
-            "name": "parseQuery",
-            "module": "./query.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "buildQueryString",
-          "declaration": {
-            "name": "buildQueryString",
-            "module": "./query.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "isBrowser",
-          "declaration": {
-            "name": "isBrowser",
-            "module": "./env.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "createMockRouter",
-          "declaration": {
-            "name": "createMockRouter",
-            "module": "./testing.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "mockMatch",
-          "declaration": {
-            "name": "mockMatch",
-            "module": "./testing.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "MockRouterOptions",
-          "declaration": {
-            "name": "MockRouterOptions",
-            "module": "./testing.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "MockRouter",
-          "declaration": {
-            "name": "MockRouter",
-            "module": "./testing.ts"
-          }
         }
       ]
     },
@@ -960,6 +960,34 @@
       "kind": "javascript-module",
       "path": "src/router-core/matcher.ts",
       "declarations": [
+        {
+          "kind": "function",
+          "name": "autoMatcherFactory",
+          "return": {
+            "type": {
+              "text": "MatcherFactory"
+            }
+          },
+          "description": "Auto-detect the best matcher factory for the current environment.\nUses URLPattern when available, falls back to compiled regex."
+        },
+        {
+          "kind": "function",
+          "name": "compiledMatcherFactory",
+          "return": {
+            "type": {
+              "text": "RouteMatcher"
+            }
+          },
+          "parameters": [
+            {
+              "name": "pattern",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Creates a matcher using the compiled regex fallback.\nWorks in all browsers."
+        },
         {
           "kind": "variable",
           "name": "supportsURLPattern",
@@ -985,50 +1013,14 @@
             }
           ],
           "description": "Creates a matcher using the native URLPattern API.\nThrows if URLPattern is not available."
-        },
-        {
-          "kind": "function",
-          "name": "compiledMatcherFactory",
-          "return": {
-            "type": {
-              "text": "RouteMatcher"
-            }
-          },
-          "parameters": [
-            {
-              "name": "pattern",
-              "type": {
-                "text": "string"
-              }
-            }
-          ],
-          "description": "Creates a matcher using the compiled regex fallback.\nWorks in all browsers."
-        },
-        {
-          "kind": "function",
-          "name": "autoMatcherFactory",
-          "return": {
-            "type": {
-              "text": "MatcherFactory"
-            }
-          },
-          "description": "Auto-detect the best matcher factory for the current environment.\nUses URLPattern when available, falls back to compiled regex."
         }
       ],
       "exports": [
         {
           "kind": "js",
-          "name": "supportsURLPattern",
+          "name": "autoMatcherFactory",
           "declaration": {
-            "name": "supportsURLPattern",
-            "module": "src/router-core/matcher.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "urlPatternMatcherFactory",
-          "declaration": {
-            "name": "urlPatternMatcherFactory",
+            "name": "autoMatcherFactory",
             "module": "src/router-core/matcher.ts"
           }
         },
@@ -1042,9 +1034,17 @@
         },
         {
           "kind": "js",
-          "name": "autoMatcherFactory",
+          "name": "supportsURLPattern",
           "declaration": {
-            "name": "autoMatcherFactory",
+            "name": "supportsURLPattern",
+            "module": "src/router-core/matcher.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "urlPatternMatcherFactory",
+          "declaration": {
+            "name": "urlPatternMatcherFactory",
             "module": "src/router-core/matcher.ts"
           }
         }
@@ -1161,24 +1161,6 @@
       "declarations": [
         {
           "kind": "function",
-          "name": "parseQuery",
-          "return": {
-            "type": {
-              "text": "Record<string, string | string[]>"
-            }
-          },
-          "parameters": [
-            {
-              "name": "searchParams",
-              "type": {
-                "text": "URLSearchParams"
-              }
-            }
-          ],
-          "description": "Parse a URLSearchParams into a plain object.\r\nSingle-value keys become strings; repeated keys become string arrays."
-        },
-        {
-          "kind": "function",
           "name": "buildQueryString",
           "return": {
             "type": {
@@ -1194,22 +1176,40 @@
             }
           ],
           "description": "Serialize a query object into a query string (without leading `?`).\r\n\r\nArray values become repeated keys (`tag=a&tag=b`), the inverse of\r\nparseQuery. `undefined` array entries are skipped."
+        },
+        {
+          "kind": "function",
+          "name": "parseQuery",
+          "return": {
+            "type": {
+              "text": "Record<string, string | string[]>"
+            }
+          },
+          "parameters": [
+            {
+              "name": "searchParams",
+              "type": {
+                "text": "URLSearchParams"
+              }
+            }
+          ],
+          "description": "Parse a URLSearchParams into a plain object.\r\nSingle-value keys become strings; repeated keys become string arrays."
         }
       ],
       "exports": [
         {
           "kind": "js",
-          "name": "parseQuery",
+          "name": "buildQueryString",
           "declaration": {
-            "name": "parseQuery",
+            "name": "buildQueryString",
             "module": "src/router-core/query.ts"
           }
         },
         {
           "kind": "js",
-          "name": "buildQueryString",
+          "name": "parseQuery",
           "declaration": {
-            "name": "buildQueryString",
+            "name": "parseQuery",
             "module": "src/router-core/query.ts"
           }
         }
@@ -1279,6 +1279,30 @@
           "description": "Compile route definitions into an array of CompiledRoute objects.\nOptionally accepts a custom matcher factory."
         },
         {
+          "kind": "function",
+          "name": "findRouteByName",
+          "return": {
+            "type": {
+              "text": "CompiledRoute | undefined"
+            }
+          },
+          "parameters": [
+            {
+              "name": "routes",
+              "type": {
+                "text": "CompiledRoute[]"
+              }
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Find a compiled route by name."
+        },
+        {
           "kind": "variable",
           "name": "fullPath"
         },
@@ -1323,30 +1347,6 @@
             }
           ],
           "description": "Resolve a URL against compiled routes.\nReturns the first matching RouteMatch, or null."
-        },
-        {
-          "kind": "function",
-          "name": "findRouteByName",
-          "return": {
-            "type": {
-              "text": "CompiledRoute | undefined"
-            }
-          },
-          "parameters": [
-            {
-              "name": "routes",
-              "type": {
-                "text": "CompiledRoute[]"
-              }
-            },
-            {
-              "name": "name",
-              "type": {
-                "text": "string"
-              }
-            }
-          ],
-          "description": "Find a compiled route by name."
         }
       ],
       "exports": [
@@ -1360,17 +1360,17 @@
         },
         {
           "kind": "js",
-          "name": "resolveRoute",
+          "name": "findRouteByName",
           "declaration": {
-            "name": "resolveRoute",
+            "name": "findRouteByName",
             "module": "src/router-core/routes.ts"
           }
         },
         {
           "kind": "js",
-          "name": "findRouteByName",
+          "name": "resolveRoute",
           "declaration": {
-            "name": "findRouteByName",
+            "name": "resolveRoute",
             "module": "src/router-core/routes.ts"
           }
         }
@@ -1565,6 +1565,46 @@
       "exports": [
         {
           "kind": "js",
+          "name": "LIT_ROUTER_REQUEST",
+          "declaration": {
+            "name": "LIT_ROUTER_REQUEST",
+            "module": "./router-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "LinkOptions",
+          "declaration": {
+            "name": "LinkOptions",
+            "module": "./link.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RoutableElement",
+          "declaration": {
+            "name": "RoutableElement",
+            "module": "./route-decorator.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouteController",
+          "declaration": {
+            "name": "RouteController",
+            "module": "./route-controller.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouterLink",
+          "declaration": {
+            "name": "RouterLink",
+            "module": "./router-link.ts"
+          }
+        },
+        {
+          "kind": "js",
           "name": "RouterOutlet",
           "declaration": {
             "name": "RouterOutlet",
@@ -1581,58 +1621,10 @@
         },
         {
           "kind": "js",
-          "name": "RouterLink",
-          "declaration": {
-            "name": "RouterLink",
-            "module": "./router-link.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "link",
-          "declaration": {
-            "name": "link",
-            "module": "./link.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "LinkOptions",
-          "declaration": {
-            "name": "LinkOptions",
-            "module": "./link.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "RouteController",
-          "declaration": {
-            "name": "RouteController",
-            "module": "./route-controller.ts"
-          }
-        },
-        {
-          "kind": "js",
           "name": "SearchParamsController",
           "declaration": {
             "name": "SearchParamsController",
             "module": "./search-params-controller.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "LIT_ROUTER_REQUEST",
-          "declaration": {
-            "name": "LIT_ROUTER_REQUEST",
-            "module": "./router-context.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "requestRouter",
-          "declaration": {
-            "name": "requestRouter",
-            "module": "./router-context.ts"
           }
         },
         {
@@ -1645,17 +1637,25 @@
         },
         {
           "kind": "js",
-          "name": "route",
+          "name": "link",
           "declaration": {
-            "name": "route",
-            "module": "./route-decorator.ts"
+            "name": "link",
+            "module": "./link.ts"
           }
         },
         {
           "kind": "js",
-          "name": "RoutableElement",
+          "name": "requestRouter",
           "declaration": {
-            "name": "RoutableElement",
+            "name": "requestRouter",
+            "module": "./router-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "route",
+          "declaration": {
+            "name": "route",
             "module": "./route-decorator.ts"
           }
         },
@@ -1851,24 +1851,6 @@
         },
         {
           "kind": "function",
-          "name": "requestRouter",
-          "return": {
-            "type": {
-              "text": "Router | undefined"
-            }
-          },
-          "parameters": [
-            {
-              "name": "target",
-              "type": {
-                "text": "EventTarget"
-              }
-            }
-          ],
-          "description": "Dispatches a context-request event to resolve a `Router` from an ancestor provider."
-        },
-        {
-          "kind": "function",
           "name": "attachRouterProvider",
           "return": {
             "type": {
@@ -1890,6 +1872,24 @@
             }
           ],
           "description": "Attaches a `Router` provider to a DOM element. Returns a cleanup function."
+        },
+        {
+          "kind": "function",
+          "name": "requestRouter",
+          "return": {
+            "type": {
+              "text": "Router | undefined"
+            }
+          },
+          "parameters": [
+            {
+              "name": "target",
+              "type": {
+                "text": "EventTarget"
+              }
+            }
+          ],
+          "description": "Dispatches a context-request event to resolve a `Router` from an ancestor provider."
         }
       ],
       "exports": [
@@ -1903,17 +1903,17 @@
         },
         {
           "kind": "js",
-          "name": "requestRouter",
+          "name": "attachRouterProvider",
           "declaration": {
-            "name": "requestRouter",
+            "name": "attachRouterProvider",
             "module": "src/router-lit/router-context.ts"
           }
         },
         {
           "kind": "js",
-          "name": "attachRouterProvider",
+          "name": "requestRouter",
           "declaration": {
-            "name": "attachRouterProvider",
+            "name": "requestRouter",
             "module": "src/router-lit/router-context.ts"
           }
         }

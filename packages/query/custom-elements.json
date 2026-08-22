@@ -27,21 +27,28 @@
         },
         {
           "kind": "function",
-          "name": "queryOptions",
+          "name": "mutation",
           "return": {
             "type": {
-              "text": "QueryObserverOptions<TQueryFnData, TError, TData, TQueryData, TQueryKey>"
+              "text": "ControllerFactory<MutationController<TData, TError, TVariables, TOnMutateResult>>"
             }
           },
           "parameters": [
             {
-              "name": "options",
+              "name": "optionsInput",
               "type": {
-                "text": "QueryObserverOptions<TQueryFnData, TError, TData, TQueryData, TQueryKey>"
+                "text": "| MutationObserverOptions<TData, TError, TVariables, TOnMutateResult>\r\n    | (() => MutationObserverOptions<TData, TError, TVariables, TOnMutateResult>)"
+              }
+            },
+            {
+              "name": "config",
+              "optional": true,
+              "type": {
+                "text": "MutationControllerConfig"
               }
             }
           ],
-          "description": "Identity function for type inference on query options."
+          "description": "Controller factory — creates a `MutationController` bound to the host."
         },
         {
           "kind": "function",
@@ -88,28 +95,21 @@
         },
         {
           "kind": "function",
-          "name": "mutation",
+          "name": "queryOptions",
           "return": {
             "type": {
-              "text": "ControllerFactory<MutationController<TData, TError, TVariables, TOnMutateResult>>"
+              "text": "QueryObserverOptions<TQueryFnData, TError, TData, TQueryData, TQueryKey>"
             }
           },
           "parameters": [
             {
-              "name": "optionsInput",
+              "name": "options",
               "type": {
-                "text": "| MutationObserverOptions<TData, TError, TVariables, TOnMutateResult>\r\n    | (() => MutationObserverOptions<TData, TError, TVariables, TOnMutateResult>)"
-              }
-            },
-            {
-              "name": "config",
-              "optional": true,
-              "type": {
-                "text": "MutationControllerConfig"
+                "text": "QueryObserverOptions<TQueryFnData, TError, TData, TQueryData, TQueryKey>"
               }
             }
           ],
-          "description": "Controller factory — creates a `MutationController` bound to the host."
+          "description": "Identity function for type inference on query options."
         }
       ],
       "exports": [
@@ -119,6 +119,22 @@
           "declaration": {
             "name": "*",
             "package": "@tanstack/query-core"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "LIT_QUERY_CLIENT_REQUEST",
+          "declaration": {
+            "name": "LIT_QUERY_CLIENT_REQUEST",
+            "module": "./query-client-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "LitQueryClientProvider",
+          "declaration": {
+            "name": "LitQueryClientProvider",
+            "module": "./query-client-provider.ts"
           }
         },
         {
@@ -155,34 +171,10 @@
         },
         {
           "kind": "js",
-          "name": "LIT_QUERY_CLIENT_REQUEST",
-          "declaration": {
-            "name": "LIT_QUERY_CLIENT_REQUEST",
-            "module": "./query-client-context.ts"
-          }
-        },
-        {
-          "kind": "js",
           "name": "attachQueryClientProvider",
           "declaration": {
             "name": "attachQueryClientProvider",
             "module": "./query-client-context.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "requestQueryClient",
-          "declaration": {
-            "name": "requestQueryClient",
-            "module": "./query-client-context.ts"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "LitQueryClientProvider",
-          "declaration": {
-            "name": "LitQueryClientProvider",
-            "module": "./query-client-provider.ts"
           }
         },
         {
@@ -195,9 +187,9 @@
         },
         {
           "kind": "js",
-          "name": "queryOptions",
+          "name": "mutation",
           "declaration": {
-            "name": "queryOptions",
+            "name": "mutation",
             "module": "src/index.ts"
           }
         },
@@ -219,10 +211,18 @@
         },
         {
           "kind": "js",
-          "name": "mutation",
+          "name": "queryOptions",
           "declaration": {
-            "name": "mutation",
+            "name": "queryOptions",
             "module": "src/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "requestQueryClient",
+          "declaration": {
+            "name": "requestQueryClient",
+            "module": "./query-client-context.ts"
           }
         }
       ]
@@ -469,24 +469,6 @@
         },
         {
           "kind": "function",
-          "name": "requestQueryClient",
-          "return": {
-            "type": {
-              "text": "QueryClient | undefined"
-            }
-          },
-          "parameters": [
-            {
-              "name": "target",
-              "type": {
-                "text": "EventTarget"
-              }
-            }
-          ],
-          "description": "Dispatches a context-request event to resolve a `QueryClient` from an ancestor provider."
-        },
-        {
-          "kind": "function",
           "name": "attachQueryClientProvider",
           "return": {
             "type": {
@@ -508,6 +490,24 @@
             }
           ],
           "description": "Attaches a `QueryClient` provider to a DOM element. Returns a cleanup function."
+        },
+        {
+          "kind": "function",
+          "name": "requestQueryClient",
+          "return": {
+            "type": {
+              "text": "QueryClient | undefined"
+            }
+          },
+          "parameters": [
+            {
+              "name": "target",
+              "type": {
+                "text": "EventTarget"
+              }
+            }
+          ],
+          "description": "Dispatches a context-request event to resolve a `QueryClient` from an ancestor provider."
         }
       ],
       "exports": [
@@ -521,17 +521,17 @@
         },
         {
           "kind": "js",
-          "name": "requestQueryClient",
+          "name": "attachQueryClientProvider",
           "declaration": {
-            "name": "requestQueryClient",
+            "name": "attachQueryClientProvider",
             "module": "src/query-client-context.ts"
           }
         },
         {
           "kind": "js",
-          "name": "attachQueryClientProvider",
+          "name": "requestQueryClient",
           "declaration": {
-            "name": "attachQueryClientProvider",
+            "name": "requestQueryClient",
             "module": "src/query-client-context.ts"
           }
         }
