@@ -2,45 +2,45 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Developer Experience
-current_phase: 08
-current_phase_name: Hosted TypeDoc API Reference Site
-status: executing
-stopped_at: Completed 08-03-PLAN.md
-last_updated: "2026-08-21T19:40:00.000Z"
-last_activity: 2026-08-21
-last_activity_desc: Completed 08-03 (isolated docs.yml Pages workflow, DOCS-06)
-state_head: 57082105e892a4d9d2a9bccec1eb0f663d9f05d2
+current_phase: 9
+current_phase_name: Custom Elements Manifest
+status: planning
+stopped_at: Phase 08 complete, ready to plan Phase 9
+last_updated: "2026-08-22T05:29:29.318Z"
+last_activity: 2026-08-22
+last_activity_desc: Phase 08 complete, transitioned to Phase 9
+state_head: b2fd01df555315c0f7daadef89a48d6d6f01cef1
 progress:
   total_phases: 7
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 11
   completed_plans: 11
-  percent: 32
+  percent: 43
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-08-19)
+See: .planning/PROJECT.md (updated 2026-08-22)
 
 **Core value:** A consumer building a Lit app against litkit gets first-class docs, editor autocomplete, dev-time guardrails, and debugging — with zero change to the v1.0 runtime contract (externalization, tree-shaking, single-instance dedup, acyclic graph).
-**Current focus:** Phase 08 — Hosted TypeDoc API Reference Site
+**Current focus:** Phase 9 — Custom Elements Manifest
 
 ## Current Position
 
-Phase: 08 (Hosted TypeDoc API Reference Site) — EXECUTING
-Plan: 3 of 3 (complete)
-Status: All 3 plans executed — phase ready for verification
-Last activity: 2026-08-21 — Completed 08-03 (isolated docs.yml Pages workflow, DOCS-06)
+Phase: 9 — Custom Elements Manifest
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-08-22 — Phase 08 complete, transitioned to Phase 9
 
-Progress: [███░░░░░░░] 32% (v1.1)
+Progress: [████░░░░░░] 43% (v1.1)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 24 (v1.0, archived)
+- Total plans completed: 27 (v1.0, archived)
 - Average duration: — min
 - Total execution time: — hours
 
@@ -50,6 +50,7 @@ Progress: [███░░░░░░░] 32% (v1.1)
 |-------|-------|-------|----------|
 | v1.0 (1-5) | 20 | - | - |
 | 07 | 4 | - | - |
+| 08 | 3 | - | - |
 
 **Recent Trend:**
 
@@ -91,6 +92,7 @@ Full v1.0 decision log archived in PROJECT.md (Key Decisions) and `.planning/mil
 - [Phase 08]: [Phase 08]: 08-01: TypeDoc packages-mode build converts all 5 packages from src across 8 entry points (forms .,/zod; router .,/core,/lit); treatWarningsAsErrors at root + validation.notExported/invalidLink=false filters by-design-unexported internals (protects Phase 06 type-SemVer snapshots)
 - [Phase 08]: [Phase 08]: 08-01: doc warnings fixed at source not by weakening the gate — link directive @param retagged to prose (Lit directive signature has no bindable params); root highlightLanguages extended with ini for README .npmrc block
 - [Phase 08]: 08-03: isolated docs.yml is the fourth workflow, scoped to exactly contents:read + pages:write + id-token:write (OIDC deploy, no PAT); ci.yml/release.yml proven byte-for-byte untouched by git diff --exit-code (DOCS-06). Pages source="GitHub Actions" is a repo account setting no workflow can flip — set via blocking-human checkpoint (approved). Post-deploy /litkit/ site load is a non-blocking backstop follow-up.
+- [Phase 08]: UAT (gap G-08-1): first docs deploy 404'd — configure-pages@v6 failed "Get Pages site ... Not Found" because Pages wasn't enabled when the run fired. Fixed in 2b9839e by setting enablement:true (self-enable, no new privilege beyond existing pages:write) + adding a workflow_dispatch trigger. Site now live: root 200, assets under /litkit/, source links 200. Security re-verified L1 (8/8 threats closed, 08-SECURITY.md).
 
 ### Pending Todos
 
@@ -99,7 +101,6 @@ None yet.
 ### Blockers/Concerns
 
 - **[Phase 11 — Devtools]** MEDIUM-confidence; needs a plan-phase research/spike: query-devtools standalone mount, Redux DevTools `JUMP_TO_STATE` wiring, and verify/add the `router-core` public `subscribe` hook (DTOOL-04).
-- **[Phase 8/9]** `repository.url` still reads `github.com/willram/litkit` (stale owner) — must be fixed in Phase 8 (DOCS-07) before/so docs source links and CEM repo association resolve.
 - [Carry-forward] npm `workspace:`-protocol behavior on npm 11 is MEDIUM confidence — only matters if an internal `@willramdev/kit` edge is ever added; verify locally before relying on it.
 
 ## Deferred Items
@@ -112,10 +113,10 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-21T19:40:00.000Z
-Stopped at: Completed 08-03-PLAN.md
+Last session: 2026-08-22
+Stopped at: Phase 08 complete + verified (UAT 2/2 pass, gap G-08-1 resolved, security 8/8 closed) — docs site live at willramdev.github.io/litkit; ready to plan Phase 9
 Resume file: None
 
 ## Operator Next Steps
 
-- Plan the first phase with `/gsd-plan-phase 6`
+- Plan the next phase with `/gsd-plan-phase 9` (or `/gsd-discuss-phase 9` first)

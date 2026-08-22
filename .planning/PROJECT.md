@@ -39,12 +39,12 @@ All five packages install cleanly from GitHub Packages and work as documented �
 - ✓ README + API documentation per package with runnable, compile-verified examples; root monorepo map + cross-package integration example; GitHub Packages consumer-auth doc; MIT LICENSE in every package — Validated in Phase 3: Docs
 - ✓ Release automation — two-workflow token-safe Changesets pipeline (read-only `ci.yml` vs auth-bearing `release.yml`), all five `@willramdev/*` published to GitHub Packages at `1.0.0` with a `v1.0.0` GitHub Release — Validated in Phase 4: Release Automation & Publish (`willram` org dropped; shipped under `@willramdev`)
 - ✓ Consumer install verification — clean-consumer install from GitHub Packages proves tree-shaking survival, TanStack single-instance dedup, and subpath/`.d.ts` resolution for all eight targets — Validated in Phase 5: Consumer Install Verification
+- ✓ Hosted TypeDoc API reference site across all five packages — live at https://willramdev.github.io/litkit/ (assets under the `/litkit/` project subpath, source links to pinned GitHub blobs), built + deployed by an isolated, least-privilege `docs.yml` GitHub Pages workflow — Validated in Phase 8: Hosted TypeDoc API Reference Site (DX-02)
 
 ### Active
 
 <!-- v1.1 "Developer Experience" — DX polish on the shipped v1.0 surface. Additive, non-breaking. Detailed REQ-IDs in .planning/REQUIREMENTS.md. -->
 
-- [ ] Hosted TypeDoc API reference site across all five packages (DX-02)
 - [ ] Standalone `examples/` integration app (router + query + forms + store), doubling as manual QA (DX-03)
 - [ ] Custom Elements Manifest (`custom-elements.json`) for element-exposing packages → IDE autocomplete (DX-01)
 - [ ] Dependabot + dependency-audit hygiene in CI (DX-04)
@@ -87,6 +87,7 @@ All five packages install cleanly from GitHub Packages and work as documented �
 | Coverage bar = critical paths + CI green (no %) | Pragmatic for a small internal library; avoids gaming a coverage number | ✓ Good — report-only v8 coverage in CI, no threshold gate (Phase 2) |
 | Adopt changesets-style release automation | Coordinated versioning across a five-package workspace | ✓ Good — two-workflow token-safe Changesets pipeline live (Phase 4) |
 | Split post-v1 work: v1.1 DX polish before v2.0 enterprise | DX (docs, examples, types, devtools, dep hygiene) is fast + low-risk and ships value sooner; heavy net-new capability (SSR, auth/RBAC, i18n/a11y, data-layer depth) isolated to v2.0 | — Pending |
+| Deploy docs via an isolated `docs.yml` Pages workflow (own least-privilege token scope, `enablement: true` self-enable) rather than folding into `ci.yml` | Keeps read-only CI and auth-bearing release tokens disjoint from the Pages scope; self-enable removes the first-run-before-Pages-enabled 404 race | ✓ Good — site live at willramdev.github.io/litkit (Phase 8) |
 
 ## Evolution
 
@@ -106,4 +107,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-19 after v1.1 "Developer Experience" milestone start — DX-polish scope defined (docs, examples, CEM, dep hygiene, sharper types, dev-time warnings, plain-JS ergonomics, devtools); enterprise capabilities (SSR, auth/RBAC, i18n/a11y, data-layer depth) deferred to v2.0.*
+*Last updated: 2026-08-22 after Phase 8 — hosted TypeDoc API reference site (DX-02) shipped live at willramdev.github.io/litkit via isolated docs.yml Pages workflow; validated by UAT + security review.*
