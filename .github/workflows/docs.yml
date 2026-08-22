@@ -9,6 +9,7 @@ name: docs
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 # Least privilege: read repo contents, write only to Pages + the OIDC id-token.
 # This is the sole write scope this workflow needs — it does NOT grant contents,
@@ -36,6 +37,8 @@ jobs:
       - run: npm ci
       - run: npx typedoc            # emits ./docs with relative links (no base flag)
       - uses: actions/configure-pages@v6
+        with:
+          enablement: true   # self-enable Pages so a first run before Pages is enabled cannot 404
       - uses: actions/upload-pages-artifact@v5
         with:
           path: docs
