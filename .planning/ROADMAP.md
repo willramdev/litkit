@@ -124,7 +124,7 @@ Full detail: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
   3. Router element classes carry JSDoc `@customElement <tag>` tags (they register via an idempotent `define()` wrapper, not the decorator), and CI asserts the generated tag-set equals the known tag-set — no hollow manifest.
   4. VS Code custom-data + JetBrains web-types are emitted/referenced from the manifest, giving editor autocomplete for the custom elements.
 
-**Plans**: 3 plans
+**Plans**: 0/3 plans executed
 
 **Wave 1**
 
@@ -194,7 +194,7 @@ Full detail: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
 | 6. Sharper Types & Plain-JS Ergonomics + Type-SemVer Gate | v1.1 | 4/4 | Complete   | 2026-08-20 |
 | 7. Dev-Gate & Prod-Stripped Dev Warnings | v1.1 | 4/4 | Complete    | 2026-08-20 |
 | 8. Hosted TypeDoc API Reference Site | v1.1 | 3/3 | Complete    | 2026-08-22 |
-| 9. Custom Elements Manifest | v1.1 | 0/3 | Planned | - |
+| 9. Custom Elements Manifest | v1.1 | 0/3 | Planned    |  |
 | 10. Examples Integration App | v1.1 | 0/TBD | Not started | - |
 | 11. Devtools & Debugging | v1.1 | 0/TBD | Not started | - |
 | 12. Dependency Hygiene | v1.1 | 0/TBD | Not started | - |

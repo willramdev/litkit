@@ -31,10 +31,10 @@ Requirements for the DX milestone. Each maps to exactly one roadmap phase (trace
 
 ### Custom Elements Manifest (CEM)
 
-- [ ] **CEM-01**: `custom-elements.json` is generated per element-exposing package (**forms, query, router only** — kit/store expose no elements) via `@custom-elements-manifest/analyzer` wired into `build`
-- [ ] **CEM-02**: Each element package declares the `customElements` package.json field and includes the manifest in its `files` allowlist so it ships in the tarball
-- [ ] **CEM-03**: Router element classes carry JSDoc `@customElement <tag>` tags (they register via an idempotent `define()` wrapper, not the `@customElement` decorator) so the manifest gets correct `tagName`s; CI asserts the generated tag-set equals the known tag-set
-- [ ] **CEM-04**: VS Code custom-data + JetBrains web-types are emitted/referenced from the manifest for editor autocomplete of the custom elements
+- [x] **CEM-01**: `custom-elements.json` is generated per element-exposing package (**forms, query, router only** — kit/store expose no elements) via `@custom-elements-manifest/analyzer` wired into `build`
+- [x] **CEM-02**: Each element package declares the `customElements` package.json field and includes the manifest in its `files` allowlist so it ships in the tarball
+- [x] **CEM-03**: Router element classes carry JSDoc `@customElement <tag>` tags (they register via an idempotent `define()` wrapper, not the `@customElement` decorator) so the manifest gets correct `tagName`s; CI asserts the generated tag-set equals the known tag-set
+- [x] **CEM-04**: VS Code custom-data + JetBrains web-types are emitted/referenced from the manifest for editor autocomplete of the custom elements
 
 ### Examples Integration App (EXPL)
 
@@ -105,10 +105,10 @@ Each v1.1 requirement maps to exactly one phase. Phase numbering continues from 
 | DOCS-05 | Phase 8 | Complete |
 | DOCS-06 | Phase 8 | Complete |
 | DOCS-07 | Phase 8 | Complete |
-| CEM-01 | Phase 9 | Pending |
-| CEM-02 | Phase 9 | Pending |
-| CEM-03 | Phase 9 | Pending |
-| CEM-04 | Phase 9 | Pending |
+| CEM-01 | Phase 9 | Complete |
+| CEM-02 | Phase 9 | Complete |
+| CEM-03 | Phase 9 | Complete |
+| CEM-04 | Phase 9 | Complete |
 | EXPL-01 | Phase 10 | Pending |
 | EXPL-02 | Phase 10 | Pending |
 | EXPL-03 | Phase 10 | Pending |
