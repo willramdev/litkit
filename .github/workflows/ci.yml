@@ -115,3 +115,16 @@ jobs:
       # v8 coverage: report-only (text + json-summary reporters), no threshold gate.
       - name: coverage (report-only)
         run: npx vitest run --coverage
+      # examples app build (EXPL-01): the private examples/ workspace app consumes
+      # the freshly built dist/ of all five packages through their exports maps.
+      # Ordering invariant: this MUST run after `npm run build` above so dist/
+      # exists. Local workspace resolution only — no registry token needed; do NOT
+      # widen the top-level `permissions: contents: read`.
+      - name: examples app build (EXPL-01)
+        run: npm run build -w examples
+      # single-instance check (EXPL-02): hard-fail if lit or any @tanstack/* peer
+      # resolves to more than one (or zero) versions in the workspace tree — the
+      # externalization dedup canary. Reads the resolved npm tree only; no token
+      # needed; do NOT widen the top-level `permissions: contents: read`.
+      - name: single-instance check (EXPL-02)
+        run: node scripts/check-single-instance.mjs
