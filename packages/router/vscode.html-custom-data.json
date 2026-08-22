@@ -1,0 +1,52 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vscode-html-languageservice/main/docs/customData.schema.json",
+  "version": 1.1,
+  "tags": [
+    {
+      "name": "router-link",
+      "description": "`<router-link>` renders an `<a>` element with client-side navigation.\r\n\r\nUsage:\r\n  html`<router-link .router=${router} to=\"/users\">Users</router-link>`\r\n  html`<router-link .router=${router} to=\"/users/42\" replace>User</router-link>`\r\n\r\nActive class behavior:\r\n  - `activeClass` is added when the resolved path is a prefix of the current route\r\n  - `exactActiveClass` is added when the resolved path exactly matches\r\n\r\nBrowser-native behavior is preserved:\r\n  - ctrl/cmd+click opens in new tab\r\n  - middle-click opens in new tab\n---\n\n\n### **Slots:**\n - _default_ - Default slot for the link's visible content",
+      "attributes": [
+        {
+          "name": "to",
+          "description": "Target path for navigation.",
+          "values": []
+        },
+        {
+          "name": "replace",
+          "description": "If true, use `router.replace()` instead of `router.navigate()`.",
+          "values": []
+        },
+        {
+          "name": "activeClass",
+          "description": "CSS class applied when the link's path is a prefix of the current route.",
+          "values": []
+        },
+        {
+          "name": "exactActiveClass",
+          "description": "CSS class applied when the link's path exactly matches the current route.",
+          "values": []
+        }
+      ],
+      "references": []
+    },
+    {
+      "name": "router-outlet",
+      "description": "`<router-outlet>` renders the component matched for its depth into light DOM.\r\n\r\nIt resolves its `Router` from an explicit `.router` property or, failing that,\r\nfrom an ancestor `<router-provider>` context. On navigation errors it dispatches\r\na bubbling, composed `router-error` CustomEvent.\r\n\r\nRegistered via the idempotent `define()` wrapper, so the analyzer cannot\r\nstatically resolve the tag name — `@tag` supplies it (D-11).\n---\n\n\n### **Events:**\n - **router-error** - CustomEvent{ detail: { type, error, route } } dispatched on a render/load error (bubbles, composed)",
+      "attributes": [
+        {
+          "name": "managefocus",
+          "description": "Move focus to the freshly-rendered route element after navigation (default true; Lit lowercases the attribute)",
+          "values": []
+        },
+        { "name": "manageFocus", "values": [] }
+      ],
+      "references": []
+    },
+    {
+      "name": "router-provider",
+      "description": "Provides a `Router` instance to all descendant components via DOM context.\r\n\r\nUsage:\r\n  html`\r\n    <router-provider .router=${router}>\r\n      <my-app></my-app>\r\n    </router-provider>\r\n  `\r\n\r\nDescendants can resolve the router using `requestRouter(this)` or\r\nit will be auto-resolved by `<router-outlet>`, `<router-link>`,\r\n`RouteController`, and `SearchParamsController`.\n---\n\n\n### **Slots:**\n - _default_ - Default slot for the routed app subtree",
+      "attributes": [],
+      "references": []
+    }
+  ]
+}

@@ -1,0 +1,2700 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "src/define.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "define",
+          "return": {
+            "type": {
+              "text": "void"
+            }
+          },
+          "parameters": [
+            {
+              "name": "tag",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "ctor",
+              "type": {
+                "text": "CustomElementConstructor"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "text": "ElementDefinitionOptions"
+              }
+            }
+          ],
+          "description": "Idempotent `customElements.define` — safe to call multiple times with the same tag."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "define",
+          "declaration": {
+            "name": "define",
+            "module": "src/define.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "tag",
+          "declaration": {
+            "name": "ctor",
+            "module": "src/define.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/index.ts",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "MatchResult",
+          "declaration": {
+            "name": "MatchResult",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouteMatcher",
+          "declaration": {
+            "name": "RouteMatcher",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouteDefinition",
+          "declaration": {
+            "name": "RouteDefinition",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "CompiledRoute",
+          "declaration": {
+            "name": "CompiledRoute",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "MatchedRoute",
+          "declaration": {
+            "name": "MatchedRoute",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouteMatch",
+          "declaration": {
+            "name": "RouteMatch",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "GuardReturn",
+          "declaration": {
+            "name": "GuardReturn",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "NavigationTarget",
+          "declaration": {
+            "name": "NavigationTarget",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "NavigationInput",
+          "declaration": {
+            "name": "NavigationInput",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouterMode",
+          "declaration": {
+            "name": "RouterMode",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "ScrollBehaviorOption",
+          "declaration": {
+            "name": "ScrollBehaviorOption",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouterOptions",
+          "declaration": {
+            "name": "RouterOptions",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "MatcherFactory",
+          "declaration": {
+            "name": "MatcherFactory",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouterNavigationError",
+          "declaration": {
+            "name": "RouterNavigationError",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouteChangeCallback",
+          "declaration": {
+            "name": "RouteChangeCallback",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "Router",
+          "declaration": {
+            "name": "Router",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "CompiledPathMatcher",
+          "declaration": {
+            "name": "CompiledPathMatcher",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "URLPatternMatcher",
+          "declaration": {
+            "name": "URLPatternMatcher",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "supportsURLPattern",
+          "declaration": {
+            "name": "supportsURLPattern",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "urlPatternMatcherFactory",
+          "declaration": {
+            "name": "urlPatternMatcherFactory",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "compiledMatcherFactory",
+          "declaration": {
+            "name": "compiledMatcherFactory",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "autoMatcherFactory",
+          "declaration": {
+            "name": "autoMatcherFactory",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "defineRoutes",
+          "declaration": {
+            "name": "defineRoutes",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "resolveRoute",
+          "declaration": {
+            "name": "resolveRoute",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "findRouteByName",
+          "declaration": {
+            "name": "findRouteByName",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createRouter",
+          "declaration": {
+            "name": "createRouter",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "buildPath",
+          "declaration": {
+            "name": "buildPath",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "joinPaths",
+          "declaration": {
+            "name": "joinPaths",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "stripBasePath",
+          "declaration": {
+            "name": "stripBasePath",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "parseQuery",
+          "declaration": {
+            "name": "parseQuery",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "buildQueryString",
+          "declaration": {
+            "name": "buildQueryString",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "isBrowser",
+          "declaration": {
+            "name": "isBrowser",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createMockRouter",
+          "declaration": {
+            "name": "createMockRouter",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "mockMatch",
+          "declaration": {
+            "name": "mockMatch",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "MockRouterOptions",
+          "declaration": {
+            "name": "MockRouterOptions",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "MockRouter",
+          "declaration": {
+            "name": "MockRouter",
+            "module": "./router-core/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouterOutlet",
+          "declaration": {
+            "name": "RouterOutlet",
+            "module": "./router-lit/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouterProvider",
+          "declaration": {
+            "name": "RouterProvider",
+            "module": "./router-lit/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouterLink",
+          "declaration": {
+            "name": "RouterLink",
+            "module": "./router-lit/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "link",
+          "declaration": {
+            "name": "link",
+            "module": "./router-lit/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "LinkOptions",
+          "declaration": {
+            "name": "LinkOptions",
+            "module": "./router-lit/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouteController",
+          "declaration": {
+            "name": "RouteController",
+            "module": "./router-lit/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "SearchParamsController",
+          "declaration": {
+            "name": "SearchParamsController",
+            "module": "./router-lit/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "routeState",
+          "declaration": {
+            "name": "routeState",
+            "module": "./router-lit/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "searchParams",
+          "declaration": {
+            "name": "searchParams",
+            "module": "./router-lit/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "LIT_ROUTER_REQUEST",
+          "declaration": {
+            "name": "LIT_ROUTER_REQUEST",
+            "module": "./router-lit/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "requestRouter",
+          "declaration": {
+            "name": "requestRouter",
+            "module": "./router-lit/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "attachRouterProvider",
+          "declaration": {
+            "name": "attachRouterProvider",
+            "module": "./router-lit/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "route",
+          "declaration": {
+            "name": "route",
+            "module": "./router-lit/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RoutableElement",
+          "declaration": {
+            "name": "RoutableElement",
+            "module": "./router-lit/index.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/internal/dev.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "devWarn",
+          "return": {
+            "type": {
+              "text": "void"
+            }
+          },
+          "parameters": [
+            {
+              "name": "message",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Dev-only warn, gated so the consumer's bundler strips the whole call in prod."
+        },
+        {
+          "kind": "function",
+          "name": "devWarnOnce",
+          "return": {
+            "type": {
+              "text": "void"
+            }
+          },
+          "parameters": [
+            {
+              "name": "key",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "message",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "when",
+              "default": "true"
+            }
+          ],
+          "description": "Dev-only warn that fires at most once per stable key.\n`when` lets a caller add a runtime predicate (e.g. tag-collision only)\nwithout moving the DEV gate — DEV stays the outermost condition for DCE."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "DEV",
+          "declaration": {
+            "name": "DEV",
+            "module": "src/internal/dev.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "devWarn",
+          "declaration": {
+            "name": "devWarn",
+            "module": "src/internal/dev.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "devWarnOnce",
+          "declaration": {
+            "name": "devWarnOnce",
+            "module": "src/internal/dev.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/router-core/compiled-matcher.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "A compiled fallback route matcher that uses regex.\nWorks in all browsers without URLPattern support.",
+          "name": "CompiledPathMatcher",
+          "members": [
+            {
+              "kind": "field",
+              "name": "pattern",
+              "type": {
+                "text": "string"
+              },
+              "readonly": true,
+              "default": "pattern"
+            },
+            {
+              "kind": "field",
+              "name": "regex",
+              "type": {
+                "text": "RegExp"
+              },
+              "privacy": "private",
+              "readonly": true,
+              "default": "regex"
+            },
+            {
+              "kind": "field",
+              "name": "paramNames",
+              "type": {
+                "text": "string[]"
+              },
+              "privacy": "private",
+              "readonly": true,
+              "default": "[]"
+            },
+            {
+              "kind": "field",
+              "name": "isCatchAll",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "test",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "pathname",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "exec",
+              "return": {
+                "type": {
+                  "text": "MatchResult | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "pathname",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "CompiledPathMatcher",
+          "declaration": {
+            "name": "CompiledPathMatcher",
+            "module": "src/router-core/compiled-matcher.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/router-core/env.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "isBrowser",
+          "type": {
+            "text": "boolean"
+          },
+          "description": "True when running in a browser-like environment with window, history, and document."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "isBrowser",
+          "declaration": {
+            "name": "isBrowser",
+            "module": "src/router-core/env.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/router-core/index.ts",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "MatchResult",
+          "declaration": {
+            "name": "MatchResult",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouteMatcher",
+          "declaration": {
+            "name": "RouteMatcher",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouteDefinition",
+          "declaration": {
+            "name": "RouteDefinition",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "CompiledRoute",
+          "declaration": {
+            "name": "CompiledRoute",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "MatchedRoute",
+          "declaration": {
+            "name": "MatchedRoute",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouteMatch",
+          "declaration": {
+            "name": "RouteMatch",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "GuardReturn",
+          "declaration": {
+            "name": "GuardReturn",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "NavigationTarget",
+          "declaration": {
+            "name": "NavigationTarget",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "NavigationInput",
+          "declaration": {
+            "name": "NavigationInput",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouterMode",
+          "declaration": {
+            "name": "RouterMode",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "ScrollBehaviorOption",
+          "declaration": {
+            "name": "ScrollBehaviorOption",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouterOptions",
+          "declaration": {
+            "name": "RouterOptions",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "MatcherFactory",
+          "declaration": {
+            "name": "MatcherFactory",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouterNavigationError",
+          "declaration": {
+            "name": "RouterNavigationError",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouteChangeCallback",
+          "declaration": {
+            "name": "RouteChangeCallback",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "Router",
+          "declaration": {
+            "name": "Router",
+            "module": "./types.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "CompiledPathMatcher",
+          "declaration": {
+            "name": "CompiledPathMatcher",
+            "module": "./compiled-matcher.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "URLPatternMatcher",
+          "declaration": {
+            "name": "URLPatternMatcher",
+            "module": "./url-pattern-matcher.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "supportsURLPattern",
+          "declaration": {
+            "name": "supportsURLPattern",
+            "module": "./matcher.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "urlPatternMatcherFactory",
+          "declaration": {
+            "name": "urlPatternMatcherFactory",
+            "module": "./matcher.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "compiledMatcherFactory",
+          "declaration": {
+            "name": "compiledMatcherFactory",
+            "module": "./matcher.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "autoMatcherFactory",
+          "declaration": {
+            "name": "autoMatcherFactory",
+            "module": "./matcher.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "defineRoutes",
+          "declaration": {
+            "name": "defineRoutes",
+            "module": "./routes.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "resolveRoute",
+          "declaration": {
+            "name": "resolveRoute",
+            "module": "./routes.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "findRouteByName",
+          "declaration": {
+            "name": "findRouteByName",
+            "module": "./routes.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createRouter",
+          "declaration": {
+            "name": "createRouter",
+            "module": "./router.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "buildPath",
+          "declaration": {
+            "name": "buildPath",
+            "module": "./path.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "joinPaths",
+          "declaration": {
+            "name": "joinPaths",
+            "module": "./path.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "stripBasePath",
+          "declaration": {
+            "name": "stripBasePath",
+            "module": "./path.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "parseQuery",
+          "declaration": {
+            "name": "parseQuery",
+            "module": "./query.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "buildQueryString",
+          "declaration": {
+            "name": "buildQueryString",
+            "module": "./query.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "isBrowser",
+          "declaration": {
+            "name": "isBrowser",
+            "module": "./env.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "createMockRouter",
+          "declaration": {
+            "name": "createMockRouter",
+            "module": "./testing.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "mockMatch",
+          "declaration": {
+            "name": "mockMatch",
+            "module": "./testing.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "MockRouterOptions",
+          "declaration": {
+            "name": "MockRouterOptions",
+            "module": "./testing.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "MockRouter",
+          "declaration": {
+            "name": "MockRouter",
+            "module": "./testing.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/router-core/matcher.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "supportsURLPattern",
+          "type": {
+            "text": "boolean"
+          },
+          "description": "Runtime check for native URLPattern support."
+        },
+        {
+          "kind": "function",
+          "name": "urlPatternMatcherFactory",
+          "return": {
+            "type": {
+              "text": "RouteMatcher"
+            }
+          },
+          "parameters": [
+            {
+              "name": "pattern",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Creates a matcher using the native URLPattern API.\nThrows if URLPattern is not available."
+        },
+        {
+          "kind": "function",
+          "name": "compiledMatcherFactory",
+          "return": {
+            "type": {
+              "text": "RouteMatcher"
+            }
+          },
+          "parameters": [
+            {
+              "name": "pattern",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Creates a matcher using the compiled regex fallback.\nWorks in all browsers."
+        },
+        {
+          "kind": "function",
+          "name": "autoMatcherFactory",
+          "return": {
+            "type": {
+              "text": "MatcherFactory"
+            }
+          },
+          "description": "Auto-detect the best matcher factory for the current environment.\nUses URLPattern when available, falls back to compiled regex."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "supportsURLPattern",
+          "declaration": {
+            "name": "supportsURLPattern",
+            "module": "src/router-core/matcher.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "urlPatternMatcherFactory",
+          "declaration": {
+            "name": "urlPatternMatcherFactory",
+            "module": "src/router-core/matcher.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "compiledMatcherFactory",
+          "declaration": {
+            "name": "compiledMatcherFactory",
+            "module": "src/router-core/matcher.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "autoMatcherFactory",
+          "declaration": {
+            "name": "autoMatcherFactory",
+            "module": "src/router-core/matcher.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/router-core/path.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "buildPath",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          },
+          "parameters": [
+            {
+              "name": "pattern",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "params",
+              "optional": true,
+              "type": {
+                "text": "Record<string, string>"
+              }
+            }
+          ],
+          "description": "Build a concrete path from a pattern and params.\n\nExamples:\n  buildPath(\"/users/:id\", { id: \"42\" })         -> \"/users/42\"\n  buildPath(\"/orgs/:orgId/repos/:repoId\", { orgId: \"a\", repoId: \"b\" }) -> \"/orgs/a/repos/b\"\n  buildPath(\"/docs/*\", { \"*\": \"foo/bar\" })       -> \"/docs/foo/bar\""
+        },
+        {
+          "kind": "function",
+          "name": "joinPaths",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          },
+          "parameters": [
+            {
+              "name": "base",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "path",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Join a base path and a relative path, normalizing slashes."
+        },
+        {
+          "kind": "function",
+          "name": "stripBasePath",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          },
+          "parameters": [
+            {
+              "name": "pathname",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "basePath",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Strip a base path prefix from a pathname."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "buildPath",
+          "declaration": {
+            "name": "buildPath",
+            "module": "src/router-core/path.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "joinPaths",
+          "declaration": {
+            "name": "joinPaths",
+            "module": "src/router-core/path.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "stripBasePath",
+          "declaration": {
+            "name": "stripBasePath",
+            "module": "src/router-core/path.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/router-core/query.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "parseQuery",
+          "return": {
+            "type": {
+              "text": "Record<string, string | string[]>"
+            }
+          },
+          "parameters": [
+            {
+              "name": "searchParams",
+              "type": {
+                "text": "URLSearchParams"
+              }
+            }
+          ],
+          "description": "Parse a URLSearchParams into a plain object.\r\nSingle-value keys become strings; repeated keys become string arrays."
+        },
+        {
+          "kind": "function",
+          "name": "buildQueryString",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          },
+          "parameters": [
+            {
+              "name": "query",
+              "type": {
+                "text": "Record<string, string | string[]> | undefined"
+              }
+            }
+          ],
+          "description": "Serialize a query object into a query string (without leading `?`).\r\n\r\nArray values become repeated keys (`tag=a&tag=b`), the inverse of\r\nparseQuery. `undefined` array entries are skipped."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "parseQuery",
+          "declaration": {
+            "name": "parseQuery",
+            "module": "src/router-core/query.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "buildQueryString",
+          "declaration": {
+            "name": "buildQueryString",
+            "module": "src/router-core/query.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/router-core/router.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "createRouter",
+          "return": {
+            "type": {
+              "text": "Router"
+            }
+          },
+          "parameters": [
+            {
+              "name": "options",
+              "type": {
+                "text": "RouterOptions"
+              }
+            }
+          ],
+          "description": "Create a router instance from compiled routes."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "createRouter",
+          "declaration": {
+            "name": "createRouter",
+            "module": "src/router-core/router.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/router-core/routes.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "defineRoutes",
+          "return": {
+            "type": {
+              "text": "CompiledRoute[]"
+            }
+          },
+          "parameters": [
+            {
+              "name": "definitions",
+              "type": {
+                "text": "RouteDefinition[]"
+              }
+            },
+            {
+              "name": "createMatcher",
+              "optional": true,
+              "type": {
+                "text": "MatcherFactory"
+              }
+            }
+          ],
+          "description": "Compile route definitions into an array of CompiledRoute objects.\nOptionally accepts a custom matcher factory."
+        },
+        {
+          "kind": "variable",
+          "name": "fullPath"
+        },
+        {
+          "kind": "variable",
+          "name": "matcher"
+        },
+        {
+          "kind": "function",
+          "name": "resolveRoute",
+          "return": {
+            "type": {
+              "text": "RouteMatch | null"
+            }
+          },
+          "parameters": [
+            {
+              "name": "routes",
+              "type": {
+                "text": "CompiledRoute[]"
+              }
+            },
+            {
+              "name": "pathname",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "search",
+              "default": "\"\"",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "hash",
+              "default": "\"\"",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Resolve a URL against compiled routes.\nReturns the first matching RouteMatch, or null."
+        },
+        {
+          "kind": "function",
+          "name": "findRouteByName",
+          "return": {
+            "type": {
+              "text": "CompiledRoute | undefined"
+            }
+          },
+          "parameters": [
+            {
+              "name": "routes",
+              "type": {
+                "text": "CompiledRoute[]"
+              }
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Find a compiled route by name."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "defineRoutes",
+          "declaration": {
+            "name": "defineRoutes",
+            "module": "src/router-core/routes.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "resolveRoute",
+          "declaration": {
+            "name": "resolveRoute",
+            "module": "src/router-core/routes.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "findRouteByName",
+          "declaration": {
+            "name": "findRouteByName",
+            "module": "src/router-core/routes.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/router-core/testing.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "createMockRouter",
+          "return": {
+            "type": {
+              "text": "MockRouter"
+            }
+          },
+          "parameters": [
+            {
+              "name": "options",
+              "default": "{}",
+              "type": {
+                "text": "MockRouterOptions"
+              }
+            }
+          ],
+          "description": "A mock `Router` for unit-testing components that consume route state\nvia `RouteController`, `link()`, or direct subscription.\n\nDoes NOT touch `window`, `history`, or the DOM — safe in any JS environment.\n\nUsage:\n  const router = createMockRouter({\n    current: mockMatch({ name: \"user-detail\", params: { id: \"42\" } }),\n  });\n  // Pass to RouteController, link(), or <router-outlet>"
+        },
+        {
+          "kind": "function",
+          "name": "mockMatch",
+          "return": {
+            "type": {
+              "text": "RouteMatch"
+            }
+          },
+          "parameters": [
+            {
+              "name": "overrides",
+              "default": "{}",
+              "type": {
+                "text": "Partial<RouteMatch> & { params?: Record<string, string> }"
+              }
+            }
+          ],
+          "description": "Build a minimal RouteMatch object for testing.\nAll fields have sensible defaults; override what you need."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "createMockRouter",
+          "declaration": {
+            "name": "createMockRouter",
+            "module": "src/router-core/testing.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "mockMatch",
+          "declaration": {
+            "name": "mockMatch",
+            "module": "src/router-core/testing.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/router-core/types.ts",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/router-core/url-pattern-matcher.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Route matcher backed by the native URLPattern API.\nOnly used when `globalThis.URLPattern` is available.",
+          "name": "URLPatternMatcher",
+          "members": [
+            {
+              "kind": "field",
+              "name": "pattern",
+              "type": {
+                "text": "string"
+              },
+              "readonly": true,
+              "default": "pattern"
+            },
+            {
+              "kind": "field",
+              "name": "urlPattern",
+              "type": {
+                "text": "InstanceType<typeof URLPattern>"
+              },
+              "privacy": "private",
+              "readonly": true,
+              "default": "new URLPattern({ pathname: urlPatternPath })"
+            },
+            {
+              "kind": "field",
+              "name": "isCatchAll",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "test",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "pathname",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "exec",
+              "return": {
+                "type": {
+                  "text": "MatchResult | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "pathname",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "URLPatternMatcher",
+          "declaration": {
+            "name": "URLPatternMatcher",
+            "module": "src/router-core/url-pattern-matcher.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/router-lit/index.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "routeState",
+          "parameters": [
+            {
+              "name": "router",
+              "optional": true,
+              "type": {
+                "text": "Router"
+              }
+            }
+          ],
+          "description": "Controller factory — creates a `RouteController` bound to the host."
+        },
+        {
+          "kind": "function",
+          "name": "searchParams",
+          "parameters": [
+            {
+              "name": "router",
+              "optional": true,
+              "type": {
+                "text": "Router"
+              }
+            }
+          ],
+          "description": "Controller factory — creates a `SearchParamsController` bound to the host."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RouterOutlet",
+          "declaration": {
+            "name": "RouterOutlet",
+            "module": "./router-outlet.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouterProvider",
+          "declaration": {
+            "name": "RouterProvider",
+            "module": "./router-provider.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouterLink",
+          "declaration": {
+            "name": "RouterLink",
+            "module": "./router-link.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "link",
+          "declaration": {
+            "name": "link",
+            "module": "./link.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "LinkOptions",
+          "declaration": {
+            "name": "LinkOptions",
+            "module": "./link.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RouteController",
+          "declaration": {
+            "name": "RouteController",
+            "module": "./route-controller.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "SearchParamsController",
+          "declaration": {
+            "name": "SearchParamsController",
+            "module": "./search-params-controller.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "LIT_ROUTER_REQUEST",
+          "declaration": {
+            "name": "LIT_ROUTER_REQUEST",
+            "module": "./router-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "requestRouter",
+          "declaration": {
+            "name": "requestRouter",
+            "module": "./router-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "attachRouterProvider",
+          "declaration": {
+            "name": "attachRouterProvider",
+            "module": "./router-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "route",
+          "declaration": {
+            "name": "route",
+            "module": "./route-decorator.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "RoutableElement",
+          "declaration": {
+            "name": "RoutableElement",
+            "module": "./route-decorator.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "routeState",
+          "declaration": {
+            "name": "routeState",
+            "module": "src/router-lit/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "searchParams",
+          "declaration": {
+            "name": "searchParams",
+            "module": "src/router-lit/index.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/router-lit/link.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "link",
+          "description": "Directive for client-side navigation links with automatic active class management.\r\n\r\nInvoke with the navigation target (a string path or `NavigationTarget` object),\r\nthe `Router` instance, and an optional `LinkOptions` configuration for the active\r\nclass names. See LinkDirective.render for the argument signature."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "link",
+          "declaration": {
+            "name": "link",
+            "module": "src/router-lit/link.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/router-lit/route-controller.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "A reactive controller that subscribes to router changes and triggers\nhost updates when the route changes.\n\nIf no router is provided, it will be resolved from context (via `<router-provider>`).\n\nUsage:\n  class MyPage extends LitElement {\n    private routeCtrl = new RouteController(this, router);\n    // or, with context:\n    private routeCtrl = new RouteController(this);\n\n    render() {\n      const match = this.routeCtrl.match;\n      const params = this.routeCtrl.params;\n      return html`<p>User: ${params.id}</p>`;\n    }\n  }",
+          "name": "RouteController",
+          "members": [
+            {
+              "kind": "field",
+              "name": "_match",
+              "type": {
+                "text": "RouteMatch | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_unsubscribe",
+              "type": {
+                "text": "() => void | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "host",
+              "type": {
+                "text": "ReactiveControllerHost & EventTarget"
+              },
+              "privacy": "private",
+              "readonly": true,
+              "default": "host"
+            },
+            {
+              "kind": "field",
+              "name": "_router",
+              "type": {
+                "text": "Router | undefined"
+              },
+              "privacy": "private",
+              "default": "router"
+            },
+            {
+              "kind": "field",
+              "name": "match",
+              "type": {
+                "text": "RouteMatch | null"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "params",
+              "type": {
+                "text": "Record<string, string>"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "query",
+              "type": {
+                "text": "Record<string, string | string[]>"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "meta",
+              "type": {
+                "text": "Record<string, unknown>"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "hostConnected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "hostDisconnected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RouteController",
+          "declaration": {
+            "name": "RouteController",
+            "module": "src/router-lit/route-controller.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/router-lit/route-decorator.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "route",
+          "parameters": [
+            {
+              "name": "property",
+              "optional": true,
+              "type": {
+                "text": "RouteProperty"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "route",
+          "declaration": {
+            "name": "route",
+            "module": "src/router-lit/route-decorator.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/router-lit/router-context.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "LIT_ROUTER_REQUEST",
+          "type": {
+            "text": "string"
+          },
+          "default": "\"lit-router:request\"",
+          "description": "Custom event name used to request a `Router` from the DOM context."
+        },
+        {
+          "kind": "function",
+          "name": "requestRouter",
+          "return": {
+            "type": {
+              "text": "Router | undefined"
+            }
+          },
+          "parameters": [
+            {
+              "name": "target",
+              "type": {
+                "text": "EventTarget"
+              }
+            }
+          ],
+          "description": "Dispatches a context-request event to resolve a `Router` from an ancestor provider."
+        },
+        {
+          "kind": "function",
+          "name": "attachRouterProvider",
+          "return": {
+            "type": {
+              "text": "() => void"
+            }
+          },
+          "parameters": [
+            {
+              "name": "target",
+              "type": {
+                "text": "EventTarget"
+              }
+            },
+            {
+              "name": "getRouter",
+              "type": {
+                "text": "() => Router"
+              }
+            }
+          ],
+          "description": "Attaches a `Router` provider to a DOM element. Returns a cleanup function."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "LIT_ROUTER_REQUEST",
+          "declaration": {
+            "name": "LIT_ROUTER_REQUEST",
+            "module": "src/router-lit/router-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "requestRouter",
+          "declaration": {
+            "name": "requestRouter",
+            "module": "src/router-lit/router-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "attachRouterProvider",
+          "declaration": {
+            "name": "attachRouterProvider",
+            "module": "src/router-lit/router-context.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/router-lit/router-link.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<router-link>` renders an `<a>` element with client-side navigation.\r\n\r\nUsage:\r\n  html`<router-link .router=${router} to=\"/users\">Users</router-link>`\r\n  html`<router-link .router=${router} to=\"/users/42\" replace>User</router-link>`\r\n\r\nActive class behavior:\r\n  - `activeClass` is added when the resolved path is a prefix of the current route\r\n  - `exactActiveClass` is added when the resolved path exactly matches\r\n\r\nBrowser-native behavior is preserved:\r\n  - ctrl/cmd+click opens in new tab\r\n  - middle-click opens in new tab",
+          "name": "RouterLink",
+          "slots": [
+            {
+              "description": "Default slot for the link's visible content",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "router",
+              "type": {
+                "text": "Router | undefined"
+              },
+              "description": "Router instance (required)."
+            },
+            {
+              "kind": "field",
+              "name": "to",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "description": "Target path for navigation.",
+              "attribute": "to"
+            },
+            {
+              "kind": "field",
+              "name": "replace",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "If true, use `router.replace()` instead of `router.navigate()`.",
+              "attribute": "replace"
+            },
+            {
+              "kind": "field",
+              "name": "activeClass",
+              "default": "\"active\"",
+              "description": "CSS class applied when the link's path is a prefix of the current route.",
+              "attribute": "activeClass",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "exactActiveClass",
+              "default": "\"exact-active\"",
+              "description": "CSS class applied when the link's path exactly matches the current route.",
+              "attribute": "exactActiveClass",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_unsubscribe",
+              "type": {
+                "text": "() => void | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_previousRouter",
+              "type": {
+                "text": "Router | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_resolvedRouter",
+              "type": {
+                "text": "Router | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "effectiveRouter",
+              "type": {
+                "text": "Router | undefined"
+              },
+              "privacy": "private",
+              "description": "The effective router: explicit property or resolved from context.",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "subscribeToRouter",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_href",
+              "type": {
+                "text": "string"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "_input",
+              "type": {
+                "text": "NavigationInput"
+              },
+              "privacy": "private",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "handleClick",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "e",
+                  "type": {
+                    "text": "MouseEvent"
+                  }
+                }
+              ]
+            }
+          ],
+          "attributes": [
+            {
+              "name": "to",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "description": "Target path for navigation.",
+              "fieldName": "to"
+            },
+            {
+              "name": "replace",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "If true, use `router.replace()` instead of `router.navigate()`.",
+              "fieldName": "replace"
+            },
+            {
+              "name": "activeClass",
+              "default": "DEFAULT_ACTIVE_CLASS",
+              "description": "CSS class applied when the link's path is a prefix of the current route.",
+              "fieldName": "activeClass"
+            },
+            {
+              "name": "exactActiveClass",
+              "default": "DEFAULT_EXACT_ACTIVE_CLASS",
+              "description": "CSS class applied when the link's path exactly matches the current route.",
+              "fieldName": "exactActiveClass"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "router-link",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RouterLink",
+          "declaration": {
+            "name": "RouterLink",
+            "module": "src/router-lit/router-link.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/router-lit/router-outlet.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<router-outlet>` renders the component matched for its depth into light DOM.\r\n\r\nIt resolves its `Router` from an explicit `.router` property or, failing that,\r\nfrom an ancestor `<router-provider>` context. On navigation errors it dispatches\r\na bubbling, composed `router-error` CustomEvent.\r\n\r\nRegistered via the idempotent `define()` wrapper, so the analyzer cannot\r\nstatically resolve the tag name — `@tag` supplies it (D-11).",
+          "name": "RouterOutlet",
+          "members": [
+            {
+              "kind": "field",
+              "name": "router",
+              "type": {
+                "text": "Router"
+              },
+              "description": "Explicit router (else resolved from `<router-provider>` context)"
+            },
+            {
+              "kind": "field",
+              "name": "_match",
+              "type": {
+                "text": "RouteMatch | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_error",
+              "type": {
+                "text": "unknown"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_unsubscribe",
+              "type": {
+                "text": "() => void | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_previousRouter",
+              "type": {
+                "text": "Router | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_depth",
+              "type": {
+                "text": "number"
+              },
+              "privacy": "private",
+              "default": "0"
+            },
+            {
+              "kind": "field",
+              "name": "_renderedElement",
+              "type": {
+                "text": "HTMLElement | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_renderedTagName",
+              "type": {
+                "text": "string | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "depth",
+              "type": {
+                "text": "number"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "effectiveRouter",
+              "type": {
+                "text": "Router | undefined"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "manageFocus",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "true",
+              "attribute": "manageFocus"
+            },
+            {
+              "kind": "method",
+              "name": "subscribeToRouter",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_pendingFocus",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "moveFocus",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "computeDepth",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "number"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "findParentOutlet",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "RouterOutlet | null"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "renderComponent",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "entry",
+                  "type": {
+                    "text": "MatchedRoute"
+                  }
+                },
+                {
+                  "name": "match",
+                  "type": {
+                    "text": "RouteMatch"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "ensureRouteLoaded",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "route",
+                  "type": {
+                    "text": "RouteDefinition"
+                  }
+                },
+                {
+                  "name": "entry",
+                  "type": {
+                    "text": "MatchedRoute"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getOrCreateElement",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "HTMLElement"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "tagName",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "match",
+                  "type": {
+                    "text": "RouteMatch"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "injectRouteProps",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "el",
+                  "type": {
+                    "text": "HTMLElement"
+                  }
+                },
+                {
+                  "name": "match",
+                  "type": {
+                    "text": "RouteMatch"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "handleRenderError",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "err",
+                  "type": {
+                    "text": "unknown"
+                  }
+                },
+                {
+                  "name": "entry",
+                  "type": {
+                    "text": "MatchedRoute"
+                  }
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "router-error",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "CustomEvent{ detail: { type, error, route } } dispatched on a render/load error (bubbles, composed)"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Move focus to the freshly-rendered route element after navigation (default true; Lit lowercases the attribute)",
+              "name": "managefocus"
+            },
+            {
+              "name": "manageFocus",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "true",
+              "fieldName": "manageFocus"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "router-outlet",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RouterOutlet",
+          "declaration": {
+            "name": "RouterOutlet",
+            "module": "src/router-lit/router-outlet.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/router-lit/router-provider.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Provides a `Router` instance to all descendant components via DOM context.\r\n\r\nUsage:\r\n  html`\r\n    <router-provider .router=${router}>\r\n      <my-app></my-app>\r\n    </router-provider>\r\n  `\r\n\r\nDescendants can resolve the router using `requestRouter(this)` or\r\nit will be auto-resolved by `<router-outlet>`, `<router-link>`,\r\n`RouteController`, and `SearchParamsController`.",
+          "name": "RouterProvider",
+          "slots": [
+            {
+              "description": "Default slot for the routed app subtree",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "router",
+              "type": {
+                "text": "Router"
+              },
+              "description": "The Router provided to descendants (required)"
+            },
+            {
+              "kind": "field",
+              "name": "_detach",
+              "type": {
+                "text": "() => void | undefined"
+              },
+              "privacy": "private"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "router-provider",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "RouterProvider",
+          "declaration": {
+            "name": "RouterProvider",
+            "module": "src/router-lit/router-provider.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/router-lit/search-params-controller.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Reactive controller that provides two-way access to URL search params.\n\nReads are reactive — the controller subscribes to router changes and\ntriggers `requestUpdate()` when the query string changes.\n\nWrites navigate via the router (using `replace` by default).\n\nIf no router is provided, it will be resolved from context (via `<router-provider>`).",
+          "name": "SearchParamsController",
+          "members": [
+            {
+              "kind": "field",
+              "name": "host",
+              "type": {
+                "text": "ReactiveControllerHost & EventTarget"
+              },
+              "privacy": "private",
+              "readonly": true,
+              "default": "host"
+            },
+            {
+              "kind": "field",
+              "name": "_router",
+              "type": {
+                "text": "Router | undefined"
+              },
+              "privacy": "private",
+              "default": "router"
+            },
+            {
+              "kind": "field",
+              "name": "_match",
+              "type": {
+                "text": "RouteMatch | null"
+              },
+              "privacy": "private",
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_unsubscribe",
+              "type": {
+                "text": "() => void | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "params",
+              "type": {
+                "text": "URLSearchParams"
+              },
+              "description": "Current search params as a URLSearchParams instance.",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "get",
+              "return": {
+                "type": {
+                  "text": "string | null"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "key",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Get a single search param value, or `null` if not present."
+            },
+            {
+              "kind": "method",
+              "name": "getAll",
+              "return": {
+                "type": {
+                  "text": "string[]"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "key",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Get all values for a repeated search param key."
+            },
+            {
+              "kind": "method",
+              "name": "has",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "key",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Check if a search param key exists."
+            },
+            {
+              "kind": "method",
+              "name": "set",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "key",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "value",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Set a search param and navigate (replace)."
+            },
+            {
+              "kind": "method",
+              "name": "delete",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "key",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Delete a search param and navigate (replace)."
+            },
+            {
+              "kind": "method",
+              "name": "setAll",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "params",
+                  "type": {
+                    "text": "Record<string, string>"
+                  }
+                }
+              ],
+              "description": "Replace all search params and navigate (replace)."
+            },
+            {
+              "kind": "method",
+              "name": "hostConnected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "hostDisconnected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "applyParams",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "next",
+                  "type": {
+                    "text": "URLSearchParams"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "SearchParamsController",
+          "declaration": {
+            "name": "SearchParamsController",
+            "module": "src/router-lit/search-params-controller.ts"
+          }
+        }
+      ]
+    }
+  ]
+}

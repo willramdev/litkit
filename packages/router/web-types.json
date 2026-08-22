@@ -1,0 +1,148 @@
+{
+  "$schema": "https://raw.githubusercontent.com/JetBrains/web-types/master/schema/web-types.json",
+  "name": "@willramdev/router",
+  "version": "1.0.0",
+  "description-markup": "markdown",
+  "contributions": {
+    "html": {
+      "elements": [
+        {
+          "name": "router-link",
+          "description": "`<router-link>` renders an `<a>` element with client-side navigation.\r\n\r\nUsage:\r\n  html`<router-link .router=${router} to=\"/users\">Users</router-link>`\r\n  html`<router-link .router=${router} to=\"/users/42\" replace>User</router-link>`\r\n\r\nActive class behavior:\r\n  - `activeClass` is added when the resolved path is a prefix of the current route\r\n  - `exactActiveClass` is added when the resolved path exactly matches\r\n\r\nBrowser-native behavior is preserved:\r\n  - ctrl/cmd+click opens in new tab\r\n  - middle-click opens in new tab\n---\n\n\n### **Slots:**\n - _default_ - Default slot for the link's visible content",
+          "doc-url": "",
+          "attributes": [
+            {
+              "name": "to",
+              "description": "Target path for navigation.",
+              "value": { "type": "string", "default": "\"\"" }
+            },
+            {
+              "name": "replace",
+              "description": "If true, use `router.replace()` instead of `router.navigate()`.",
+              "value": { "type": "boolean", "default": "false" }
+            },
+            {
+              "name": "activeClass",
+              "description": "CSS class applied when the link's path is a prefix of the current route.",
+              "value": { "type": "string", "default": "DEFAULT_ACTIVE_CLASS" }
+            },
+            {
+              "name": "exactActiveClass",
+              "description": "CSS class applied when the link's path exactly matches the current route.",
+              "value": {
+                "type": "string",
+                "default": "DEFAULT_EXACT_ACTIVE_CLASS"
+              }
+            }
+          ],
+          "slots": [
+            {
+              "name": "",
+              "description": "Default slot for the link's visible content"
+            }
+          ],
+          "events": [],
+          "js": {
+            "properties": [
+              {
+                "name": "router",
+                "description": "Router instance (required).",
+                "type": "Router | undefined"
+              },
+              {
+                "name": "to",
+                "description": "Target path for navigation.",
+                "type": "string"
+              },
+              {
+                "name": "replace",
+                "description": "If true, use `router.replace()` instead of `router.navigate()`.",
+                "type": "boolean"
+              },
+              {
+                "name": "activeClass",
+                "description": "CSS class applied when the link's path is a prefix of the current route.",
+                "type": "string"
+              },
+              {
+                "name": "exactActiveClass",
+                "description": "CSS class applied when the link's path exactly matches the current route.",
+                "type": "string"
+              }
+            ],
+            "events": []
+          }
+        },
+        {
+          "name": "router-outlet",
+          "description": "`<router-outlet>` renders the component matched for its depth into light DOM.\r\n\r\nIt resolves its `Router` from an explicit `.router` property or, failing that,\r\nfrom an ancestor `<router-provider>` context. On navigation errors it dispatches\r\na bubbling, composed `router-error` CustomEvent.\r\n\r\nRegistered via the idempotent `define()` wrapper, so the analyzer cannot\r\nstatically resolve the tag name — `@tag` supplies it (D-11).\n---\n\n\n### **Events:**\n - **router-error** - CustomEvent{ detail: { type, error, route } } dispatched on a render/load error (bubbles, composed)",
+          "doc-url": "",
+          "attributes": [
+            {
+              "name": "managefocus",
+              "description": "Move focus to the freshly-rendered route element after navigation (default true; Lit lowercases the attribute)",
+              "value": { "type": "boolean" }
+            },
+            {
+              "name": "manageFocus",
+              "value": { "type": "boolean", "default": "true" }
+            }
+          ],
+          "events": [
+            {
+              "name": "router-error",
+              "type": "CustomEvent",
+              "description": "CustomEvent{ detail: { type, error, route } } dispatched on a render/load error (bubbles, composed)"
+            }
+          ],
+          "js": {
+            "properties": [
+              {
+                "name": "router",
+                "description": "Explicit router (else resolved from `<router-provider>` context)",
+                "type": "Router"
+              },
+              { "name": "depth", "type": "number" },
+              { "name": "effectiveRouter", "type": "Router | undefined" },
+              { "name": "manageFocus", "type": "boolean" }
+            ],
+            "events": [
+              {
+                "name": "router-error",
+                "type": "CustomEvent",
+                "description": "CustomEvent{ detail: { type, error, route } } dispatched on a render/load error (bubbles, composed)"
+              }
+            ]
+          }
+        },
+        {
+          "name": "router-provider",
+          "description": "Provides a `Router` instance to all descendant components via DOM context.\r\n\r\nUsage:\r\n  html`\r\n    <router-provider .router=${router}>\r\n      <my-app></my-app>\r\n    </router-provider>\r\n  `\r\n\r\nDescendants can resolve the router using `requestRouter(this)` or\r\nit will be auto-resolved by `<router-outlet>`, `<router-link>`,\r\n`RouteController`, and `SearchParamsController`.\n---\n\n\n### **Slots:**\n - _default_ - Default slot for the routed app subtree",
+          "doc-url": "",
+          "attributes": [],
+          "slots": [
+            {
+              "name": "",
+              "description": "Default slot for the routed app subtree"
+            }
+          ],
+          "events": [],
+          "js": {
+            "properties": [
+              {
+                "name": "router",
+                "description": "The Router provided to descendants (required)",
+                "type": "Router"
+              }
+            ],
+            "events": []
+          }
+        }
+      ]
+    },
+    "css": {
+      "properties": [],
+      "pseudo-elements": []
+    }
+  }
+}
