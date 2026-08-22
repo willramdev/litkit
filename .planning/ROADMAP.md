@@ -29,7 +29,7 @@ Full detail: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
 - [x] **Phase 6: Sharper Types & Plain-JS Ergonomics + Type-SemVer Gate** - Defaulted generics, no required generics, and a `.d.ts` diff gate so type improvements can't ship as a stealth breaking change (completed 2026-08-20)
 - [x] **Phase 7: Dev-Gate & Prod-Stripped Dev Warnings** - One shared dev-gate mechanism plus actionable dev-only warnings, provably stripped from consumer production builds (completed 2026-08-20)
 - [x] **Phase 8: Hosted TypeDoc API Reference Site** - Merged `packages`-mode TypeDoc site for all five packages, deployed via an isolated `docs.yml` Pages workflow (completed 2026-08-22)
-- [ ] **Phase 9: Custom Elements Manifest** - `custom-elements.json` + editor autocomplete data for the three element-exposing packages (forms, query, router)
+- [x] **Phase 9: Custom Elements Manifest** - `custom-elements.json` + editor autocomplete data for the three element-exposing packages (forms, query, router) (completed 2026-08-22)
 - [ ] **Phase 10: Examples Integration App** - Private, never-published `examples/` app covering the four cross-package seams and acting as the externalization canary
 - [ ] **Phase 11: Devtools & Debugging** - Opt-in `@willramdev/devtools` leaf package for store time-travel, query-cache inspection, and router match logging
 - [ ] **Phase 12: Dependency Hygiene** - Grouped Dependabot (npm + github-actions), an advisory audit in CI, and `@v5` action-runtime bumps
@@ -194,7 +194,7 @@ Full detail: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
 | 6. Sharper Types & Plain-JS Ergonomics + Type-SemVer Gate | v1.1 | 4/4 | Complete   | 2026-08-20 |
 | 7. Dev-Gate & Prod-Stripped Dev Warnings | v1.1 | 4/4 | Complete    | 2026-08-20 |
 | 8. Hosted TypeDoc API Reference Site | v1.1 | 3/3 | Complete    | 2026-08-22 |
-| 9. Custom Elements Manifest | v1.1 | 3/3 | In Progress|  |
+| 9. Custom Elements Manifest | v1.1 | 3/3 | Complete    | 2026-08-22 |
 | 10. Examples Integration App | v1.1 | 0/TBD | Not started | - |
 | 11. Devtools & Debugging | v1.1 | 0/TBD | Not started | - |
 | 12. Dependency Hygiene | v1.1 | 0/TBD | Not started | - |

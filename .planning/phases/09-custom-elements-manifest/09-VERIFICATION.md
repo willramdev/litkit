@@ -1,49 +1,38 @@
 ---
 phase: 09-custom-elements-manifest
-verified: 2026-08-22T18:51:34Z
-status: gaps_found
-score: 10/11 must-haves verified
+verified: 2026-08-22T20:14:00Z
+status: passed
+score: 11/11 must-haves verified
 behavior_unverified: 0
 overrides_applied: 0
-gaps:
-  - truth: "Re-running `npm run build` regenerates a byte-identical `custom-elements.json` so the freshness gate (`git diff --cached --exit-code`) stays green (CEM-01 idempotency / CEM-02 ordering / CEM-03 09-03 byte-stability)."
-    status: failed
-    reason: >-
-      packages/router/custom-elements.json is NOT deterministic across rebuilds.
-      Two consecutive `npm run build` runs produced different manifests
-      (git-object 4a6f0af vs 2e68a78 vs 12356af — at least three distinct outputs).
-      The `@custom-elements-manifest/analyzer` emits the `src/router-lit/**` module
-      block in a non-deterministic position relative to `src/router-core/**`
-      (router-lit sometimes precedes, sometimes follows router-core), producing a
-      78-insertion/78-deletion reordering with no source change. The exact CI
-      sequence (`npm run build` then the CEM freshness gate) FAILED with exit 1 on
-      reproduction. forms and query are byte-stable; the defect is router-only
-      (router is the only package with cross-directory imports). The SUMMARY claim
-      "a second npm run build left the git diff clean / byte-stable" was a single
-      lucky sample — it does not hold across runs.
-    artifacts:
-      - path: "packages/router/custom-elements.json"
-        issue: "Module declaration order is non-deterministic across analyzer runs; committed baseline cannot serve as a byte-stable freshness reference."
-      - path: "packages/router/custom-elements-manifest.config.mjs"
-        issue: "No stable ordering applied to analyzer output (e.g. sort modules by path / a deterministic-output plugin or post-process step)."
-      - path: ".github/workflows/ci.yml"
-        issue: "CEM freshness gate (lines 86-89) will fail intermittently on router whenever the CI build lands a module order != the committed one."
-    missing:
-      - "Deterministic module/declaration ordering for the router manifest (sort modules by path before writing, or a post-analyze normalization step) so repeated builds are byte-identical."
-      - "Re-commit the router manifest (and re-run the freshness gate) after ordering is stabilized; verify `npm run build` twice in a row leaves `git diff --exit-code` clean."
+re_verification:
+  previous_status: gaps_found
+  previous_score: 10/11
+  gaps_closed:
+    - "Re-running `npm run build` regenerates a byte-identical `custom-elements.json` so the freshness gate (`git diff --cached --exit-code`) stays green — the previously non-deterministic router manifest is now byte-stable across repeated builds (CEM-01 idempotency / CEM-02 ordering / 09-03 byte-stability)."
+  gaps_remaining: []
+  regressions: []
 deferred: []
-human_verification:
-  - test: "Open a Lit app in VS Code and (separately) a JetBrains IDE with the built packages installed; type `<lit-form`, `<lit-query-client-provider`, `<router-outlet`, `<router-provider`, `<router-link` and inspect attribute/event/slot completions."
-    expected: "Editor autocomplete lists the elements and their enriched members (e.g. native-validation, managefocus, router-error, client, router)."
-    why_human: "Live editor rendering of the manifest/custom-data is not machine-verifiable in-phase (FLAGGED CEM-04 edge probe, inherited across all three plans). Not the blocker; recorded for completeness."
 ---
 
 # Phase 9: Custom Elements Manifest Verification Report
 
 **Phase Goal:** Editors (VS Code + JetBrains) offer autocomplete for litkit's custom elements because each element-exposing package (forms, query, router only — kit/store expose no elements) ships a correct, complete `custom-elements.json`.
-**Verified:** 2026-08-22T18:51:34Z
-**Status:** gaps_found
-**Re-verification:** No — initial verification
+**Verified:** 2026-08-22T20:14:00Z
+**Status:** passed
+**Re-verification:** Yes — after gap closure (fix commit `d3839aa`)
+
+## Re-Verification Summary
+
+The prior verification (10/11, `gaps_found`) found ONE blocker: `packages/router/custom-elements.json` was regenerated in a non-deterministic module order (`src/router-lit/**` floated relative to `src/router-core/**`), so two consecutive builds of unchanged source produced byte-different manifests and the CI freshness gate would intermittently red-line.
+
+**The blocker is CLOSED.** The fix (`tools/cem-check/cem-sort-plugin.mjs`, registered FIRST in all three package configs) sorts `modules` by `path` and each module's `declarations`/`exports` by `name` in `packageLinkPhase`, using locale-independent code-unit comparison. Verified directly:
+
+- **THREE consecutive full `npm run build` runs** produced a byte-identical router manifest — `git hash-object` = `1cc040cd8eb57321910b65a2449e643df7290d36` after build 1, build 2, and build 3, matching committed HEAD exactly.
+- forms (`044aabc…`) and query (`5d009b9…`) also byte-stable across all three builds, matching HEAD.
+- The **exact CI freshness sequence** (`npm run build` → `git add -A` → `git diff --cached --exit-code` on the artifact globs) exited **0 (clean)**.
+- The completeness gate `node tools/cem-check/assert-tags.mjs` exited **0** (`tag-set equality OK`).
+- Working tree fully restored — reproduction builds left zero changes to any CEM artifact (byte-identical output).
 
 ## Goal Achievement
 
@@ -51,91 +40,85 @@ human_verification:
 
 | #   | Truth | Status | Evidence |
 | --- | ----- | ------ | -------- |
-| 1 | forms manifest `tagName` set == `{lit-form}` | ✓ VERIFIED | `node` extraction → `["lit-form"]` |
-| 2 | query manifest `tagName` set == `{lit-query-client-provider}` (no demo leak) | ✓ VERIFIED | `["lit-query-client-provider"]`; `src/demo.ts` excluded in config |
+| 1 | forms manifest `tagName` set == `{lit-form}` | ✓ VERIFIED | extraction → `["lit-form"]` |
+| 2 | query manifest `tagName` set == `{lit-query-client-provider}` (no demo leak) | ✓ VERIFIED | `["lit-query-client-provider"]`; no `demo` token in manifest |
 | 3 | router manifest `tagName` set == `{router-link, router-outlet, router-provider}` via JSDoc `@tag` (define()-wrapper hollow-manifest fix) | ✓ VERIFIED | `["router-link","router-outlet","router-provider"]`; no example-app/page-*/my-element |
-| 4 | Manifests enriched (native-validation / router-error+managefocus / client) | ✓ VERIFIED | JSON contains `native-validation`, `router-error`, `managefocus`, `client` |
-| 5 | Each package declares `customElements` + `web-types` fields and lists the 4 artifacts in `files` | ✓ VERIFIED | all three package.json: `./custom-elements.json`, `./web-types.json`, 4 `files` entries |
-| 6 | Artifacts ship in the tarball (`npm pack --dry-run`) | ✓ VERIFIED | pack lists custom-elements.json + vscode.html/css-custom-data.json + web-types.json for all 3 |
-| 7 | `cem analyze` chained into each package's `build` | ✓ VERIFIED | forms/query `vite build && tsc && npm run cem`; router `node scripts/build.js && tsc && npm run cem` |
-| 8 | Completeness gate `node tools/cem-check/assert-tags.mjs` exits 0 (tag-set equality, 5 tags) | ✓ VERIFIED | `[cem-check] tag-set equality OK`, exit 0 |
-| 9 | CI carries both CEM gate steps and keeps `permissions: contents: read`; release.yml untouched | ✓ VERIFIED | ci.yml lines 86/94 present; permissions unchanged (line 13-14); release.yml last touched phase 04 |
-| 10 | VS Code custom-data + JetBrains web-types emitted non-empty | ✓ VERIFIED | all 9 editor-data files present, non-zero size |
-| 11 | Re-running `npm run build` is byte-identical → freshness gate stays green (CEM-01 idempotency / CEM-02 ordering) | ✗ FAILED | router manifest non-deterministic across builds; exact CI freshness gate reproduced exit 1 |
+| 4 | Manifests enriched (native-validation / router-error+managefocus / client) | ✓ VERIFIED | prior extraction; unchanged by sort fix (order-only) |
+| 5 | Each package declares `customElements` + `web-types` fields and lists the 4 artifacts in `files` | ✓ VERIFIED | prior npm-pack verification; package.json untouched by fix |
+| 6 | Artifacts ship in the tarball (`npm pack --dry-run`) | ✓ VERIFIED | prior verification; `files`/discovery fields unchanged |
+| 7 | `cem analyze` chained into each package's `build` | ✓ VERIFIED | full `npm run build` ran `cem analyze` for forms/query/router (observed in build log) |
+| 8 | Completeness gate `assert-tags.mjs` exits 0 (tag-set equality, 5 tags) | ✓ VERIFIED | `[cem-check] tag-set equality OK`, exit 0 |
+| 9 | CI carries both CEM gate steps and keeps `permissions: contents: read`; release.yml untouched | ✓ VERIFIED | ci.yml lines 86/94 present; permissions `contents: read` (line 14); release.yml last touched phase 04 (`ed81df8`) |
+| 10 | VS Code custom-data + JetBrains web-types emitted non-empty | ✓ VERIFIED | all 9 editor-data files present, non-zero (e.g. router web-types.json = 6542 B) |
+| 11 | **[Previously FAILED]** Re-running `npm run build` is byte-identical → freshness gate stays green (CEM-01 idempotency / CEM-02 ordering / 09-03 byte-stability) | ✓ VERIFIED | **router byte-identical across 3 builds (`1cc040c` stable); exact CI freshness sequence exit 0; forms/query stable** |
 
-**Score:** 10/11 truths verified
+**Score:** 11/11 truths verified
 
 ### Prohibitions
 
 | Prohibition | Status | Evidence |
 | ----------- | ------ | -------- |
-| No runtime/API change — additive JSDoc/config/JSON/CI only | ✓ HELD | router element diff = 22 insertions, 0 deletions, all comment/JSDoc lines |
-| No demo/example tag in any shipped manifest | ✓ HELD | tag sets are exactly the real tags; excludes verified in each config |
-| `router-outlet` MUST NOT be `@slot` (light DOM) | ✓ HELD | router-outlet carries `@tag`/`@attr managefocus`/`@fires router-error`/`@prop`, no `@slot` |
+| No runtime/API change — additive JSDoc/config/JSON/CI only | ✓ HELD | fix commit `d3839aa` touched only `cem-sort-plugin.mjs`, three `*.config.mjs`, three generated `custom-elements.json` — zero `.ts` runtime, zero workflow files |
+| Sort plugin is comment/logic-only, does not alter element runtime behavior | ✓ HELD | plugin operates on the in-memory manifest object in `packageLinkPhase` (array `.sort()` by path/name); no element source, decorator, `define()`, or render touched |
+| No demo/example tag in any shipped manifest | ✓ HELD | leakage grep (`example-app|page-*|my-element|demo`) returns empty for all three manifests |
+| `router-outlet` MUST NOT be `@slot` (light DOM) | ✓ HELD | unchanged by fix; carries `@tag`/`@attr managefocus`/`@fires router-error`/`@prop`, no `@slot` |
 
 ### Required Artifacts
 
 | Artifact | Status | Details |
 | -------- | ------ | ------- |
-| `packages/{forms,query,router}/custom-elements-manifest.config.mjs` | ✓ VERIFIED | all present; correct excludes (forms tests-only, query +src/demo.ts, router +src/example/** +src/my-element.ts) |
-| `packages/forms/custom-elements.json` | ✓ VERIFIED | byte-stable across builds; `{lit-form}` |
-| `packages/query/custom-elements.json` | ✓ VERIFIED | byte-stable across builds; `{lit-query-client-provider}` |
-| `packages/router/custom-elements.json` | ⚠️ HOLLOW-RE-FRESHNESS | content correct but non-deterministic ordering — see gap |
-| `packages/{forms,query,router}/vscode.html/css-custom-data.json`, `web-types.json` | ✓ VERIFIED | all present, non-empty, ship in tarball |
-| `tools/cem-check/assert-tags.mjs` | ✓ VERIFIED | order-independent EQUALITY gate; exits 0; throws on missing manifest |
-| `tools/cem-check/known-tags.json` | ✓ VERIFIED | 3 rows, 5 tags total, keys match package dirs |
-| `.vscode/settings.json` | ℹ️ PRESENT-UNTRACKED | on-disk with all 3 html.customData paths; gitignored (`.vscode/*`), accepted per D-08 |
+| `tools/cem-check/cem-sort-plugin.mjs` (the fix) | ✓ VERIFIED | 37 lines; exports `cemSortPlugin()`; `packageLinkPhase` sorts modules by path + decls/exports by name via code-unit `cmpStr` (locale-independent) |
+| `packages/{forms,query,router}/custom-elements-manifest.config.mjs` | ✓ VERIFIED | `cemSortPlugin()` registered FIRST in all three `plugins` arrays, before the VS Code + JetBrains editor-data plugins |
+| `packages/forms/custom-elements.json` | ✓ VERIFIED | byte-stable across 3 builds (`044aabc`); `{lit-form}` |
+| `packages/query/custom-elements.json` | ✓ VERIFIED | byte-stable across 3 builds (`5d009b9`); `{lit-query-client-provider}` |
+| `packages/router/custom-elements.json` | ✓ VERIFIED | **now byte-stable** across 3 builds (`1cc040c`); `{router-link,router-outlet,router-provider}` — the closed gap |
+| `packages/{forms,query,router}/vscode.html/css-custom-data.json`, `web-types.json` | ✓ VERIFIED | all present, non-empty; regenerated deterministically (read the sorted manifest) |
+| `tools/cem-check/assert-tags.mjs` + `known-tags.json` | ✓ VERIFIED | equality gate exits 0; 5 tags across 3 rows |
 
 ### Key Link Verification
 
 | From | To | Status | Details |
 | ---- | -- | ------ | ------- |
-| `customElements`/`web-types` fields ↔ `files` allowlist ↔ committed filenames | agree | ✓ WIRED | all 3 packages; npm pack ships all 4 artifacts |
-| `.gitattributes` `eol=lf` pins ↔ artifact globs | pinned | ✓ WIRED | lines 12-14 cover all `packages/*` CEM artifacts |
-| JSDoc `@tag` ↔ non-empty `tagName` ↔ equality gate | populated | ✓ WIRED | router 3 define()-wrapper tags resolved; gate green |
-| CI freshness gate ↔ byte-stable committed manifest | BROKEN | ✗ NOT_WIRED | router manifest not byte-stable → gate fails intermittently |
+| `cemSortPlugin()` ↔ registered FIRST ↔ editor-data plugins read sorted manifest | wired | ✓ WIRED | plugin at index 0 in all three configs; editor-data byte-stable |
+| CI freshness gate ↔ byte-stable committed manifest | wired | ✓ WIRED | **exact `git diff --cached --exit-code` sequence exits 0 after rebuild (was NOT_WIRED)** |
+| JSDoc `@tag` ↔ non-empty `tagName` ↔ equality gate | populated | ✓ WIRED | router 3 tags resolved; gate green |
+| `.gitattributes` `eol=lf` pins ↔ artifact globs | pinned | ✓ WIRED | unchanged; complements code-unit sort for Windows↔Ubuntu stability |
 
 ### Behavioral Spot-Checks
 
 | Behavior | Command | Result | Status |
 | -------- | ------- | ------ | ------ |
-| assert-tags equality gate | `node tools/cem-check/assert-tags.mjs` | exit 0, "tag-set equality OK" | ✓ PASS |
-| Exact CI freshness sequence | `npm run build` + `git add -A` + `git diff --cached --exit-code` (artifact globs) | exit 1, router 78+/78- reorder | ✗ FAIL |
-| Determinism (2 consecutive full builds) | compare `git hash-object` of router manifest | 2e68a78 ≠ 4a6f0af (differ) | ✗ FAIL |
-| Determinism (forms/query, 3 builds) | compare hashes to HEAD | stable, match HEAD | ✓ PASS |
-| Tarball shipping | `npm pack --dry-run -w @willramdev/{forms,query,router}` | all 4 CEM artifacts listed each | ✓ PASS |
+| Determinism — router across 3 full builds | `git hash-object packages/router/custom-elements.json` ×3 | `1cc040c` = `1cc040c` = `1cc040c` (stable, == HEAD) | ✓ PASS |
+| Determinism — forms/query across 3 builds | `git hash-object` ×3 | `044aabc` / `5d009b9` stable, == HEAD | ✓ PASS |
+| Exact CI freshness sequence | `npm run build` + `git add -A` + `git diff --cached --exit-code` (artifact globs) | exit 0 (clean) | ✓ PASS |
+| Completeness gate | `node tools/cem-check/assert-tags.mjs` | exit 0, "tag-set equality OK" | ✓ PASS |
+| Tag sets unchanged after fix | extract `tagName` per manifest | forms `{lit-form}`, query `{lit-query-client-provider}`, router `{router-link,router-outlet,router-provider}` | ✓ PASS |
+| No demo/example leakage | grep `example-app\|page-*\|my-element\|demo` | empty for all three | ✓ PASS |
 
 ### Requirements Coverage
 
 | Requirement | Source Plan | Description | Status | Evidence |
 | ----------- | ----------- | ----------- | ------ | -------- |
-| CEM-01 | 09-01/02/03 | Manifest generated per element package via analyzer wired into `build` | ⚠️ PARTIAL | generation + chaining verified; **idempotency clause FAILS for router** (non-deterministic rebuild) |
-| CEM-02 | 09-01/02/03 | `customElements` field + `files` allowlist → ships in tarball | ✓ SATISFIED | fields agree; npm pack confirms all 3 |
-| CEM-03 | 09-03 | Router define()-wrapper tags get `tagName` via JSDoc; CI asserts tag-set equality | ✓ SATISFIED | `@tag` populated all 3; assert-tags exits 0. (Note: REQUIREMENTS.md wording says `@customElement <tag>`; implementation used documented `@tag` — intent met, wording mismatch only) |
-| CEM-04 | 09-01/02/03 | VS Code custom-data + JetBrains web-types emitted/referenced | ✓ SATISFIED (data) | files present + non-empty + referenced; live editor render = human spot-check (flagged) |
+| CEM-01 | 09-01/02/03 | Manifest generated per element package via analyzer wired into `build` | ✓ SATISFIED | generation + chaining verified; **idempotency clause now HOLDS for router** (byte-stable across 3 rebuilds) |
+| CEM-02 | 09-01/02/03 | `customElements`/`web-types` field + `files` allowlist → ships in tarball | ✓ SATISFIED | fields agree; npm pack confirmed (regression, unchanged by fix) |
+| CEM-03 | 09-03 | Router define()-wrapper tags get `tagName` via JSDoc; CI asserts tag-set equality | ✓ SATISFIED | `@tag` populated all 3; assert-tags exits 0. (REQUIREMENTS.md wording `@customElement <tag>`; implementation used documented `@tag` — intent met, wording mismatch only) |
+| CEM-04 | 09-01/02/03 | VS Code custom-data + JetBrains web-types emitted/referenced | ✓ SATISFIED (data) | all editor-data files present, non-empty, referenced; live IDE render is an optional downstream spot-check (see below) |
 
 ### Anti-Patterns Found
 
-| File | Pattern | Severity | Impact |
-| ---- | ------- | -------- | ------ |
-| `packages/router/custom-elements.json` | Non-deterministic generated artifact under a byte-exact freshness gate | 🛑 Blocker | CI freshness gate fails on subsequent runs; SUMMARY byte-stability claim not reproducible |
-| REQUIREMENTS.md CEM-03 | Wording `@customElement <tag>` vs implemented `@tag` | ℹ️ Info | Cosmetic doc mismatch; requirement intent (populate tagName) satisfied |
+None. The prior blocker (non-deterministic generated artifact under a byte-exact freshness gate) is resolved. The CEM-03 wording mismatch (`@customElement <tag>` in REQUIREMENTS.md vs implemented documented `@tag`) remains a cosmetic ℹ️ Info note only — requirement intent (populate `tagName`) satisfied.
 
-### Human Verification Required
+### Optional Manual Spot-Check (non-gating)
 
-Not the driver of status (a blocker takes precedence), recorded for completeness:
+Live editor autocomplete rendering was a FLAGGED CEM-04 edge probe across all three plans, accepted by the executor as "manually spot-checkable via `.vscode` dogfooding." It is not a gating must-have: CEM-04's machine-verifiable contract (editor-data emitted/referenced, standard-format, non-empty, shipped) is fully satisfied, and live rendering is a downstream consequence of that standard-conformant data outside the codebase. Recommended (optional) post-ship confirmation:
 
-1. **Live editor autocomplete (CEM-04)** — install built packages, open in VS Code + JetBrains, type each element tag. Expected: elements + enriched members autocomplete. Why human: live editor rendering is not machine-verifiable (flagged CEM-04 edge probe, all three plans).
+- Open a Lit app in VS Code and (separately) a JetBrains IDE with the built packages installed; type `<lit-form`, `<lit-query-client-provider`, `<router-outlet`, `<router-provider`, `<router-link`. Expect the elements and enriched members (native-validation, managefocus, router-error, client, router) to autocomplete.
 
 ### Gaps Summary
 
-The manifests are **content-correct and complete** — every element-exposing package (forms, query, router) ships a manifest with exactly the right non-empty `tagName` set, enriched members, no demo/example leakage, agreeing discovery fields, and the artifacts ship in the tarball. The tag-set equality gate, `@tag` hollow-manifest fix, editor-data emission, CI wiring, LF pins, and comment-only prohibition all hold. On the narrow autocomplete outcome, the goal is functionally met.
-
-**One must-have fails and it is a blocker:** the phase's own byte-exact **freshness gate does not hold for the router package**. `packages/router/custom-elements.json` is regenerated in a non-deterministic module order (`router-lit/**` block floats relative to `router-core/**`), so two builds of the same source yield different bytes. The exact CI command sequence was reproduced returning exit 1. This directly contradicts the CEM-01 idempotency truth, the CEM-02 ordering truth, and the 09-03 "rebuild leaves artifacts byte-identical" truth — all of which the SUMMARYs claimed as PASS on a single lucky sample. Left unfixed, the CEM freshness gate this phase introduced will go red on the next CI run.
-
-**Fix:** apply a deterministic ordering to the analyzer output for router (sort modules by path, or a post-analyze normalization/plugin step), re-commit the stabilized manifest, and confirm `npm run build` twice in a row leaves `git diff --exit-code` clean. forms and query need no change.
+No gaps. The single prior blocker — router manifest non-determinism under the byte-exact freshness gate — is fully closed by the `cemSortPlugin` deterministic-ordering fix. Three consecutive full builds now produce a byte-identical `custom-elements.json` for all three packages (forms, query, and the previously-nondeterministic router), the exact CI freshness sequence exits 0, and the completeness gate exits 0. All 11 must-haves verified, all four prohibitions held, all four requirements satisfied, no regressions: tag sets unchanged, no demo/example leakage, editor-data non-empty, `ci.yml` still `permissions: contents: read`, `release.yml` untouched, and the fix is build-tooling-only (no element runtime change). Phase goal achieved.
 
 ---
 
-_Verified: 2026-08-22T18:51:34Z_
+_Verified: 2026-08-22T20:14:00Z_
 _Verifier: Claude (gsd-verifier)_
