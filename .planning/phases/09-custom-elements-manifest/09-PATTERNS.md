@@ -1,0 +1,308 @@
+# Phase 9: Custom Elements Manifest - Pattern Map
+
+**Mapped:** 2026-08-22
+**Files analyzed:** 15 (new + modified)
+**Analogs found:** 15 / 15 (every file maps to an in-repo precedent)
+
+> This phase adds **no runtime code**. Every deliverable is either (a) build tooling / static JSON derived by `cem analyze`, (b) additive JSDoc on existing element classes, or (c) a CI gate that mirrors the Phase 6 `.d.ts` snapshot gate. The dominant pattern source is the **type-snapshot committed-artifact + `git diff --cached --exit-code` gate** (`tools/type-snapshots.config.mjs` + `ci.yml:65-76` + `.gitattributes`). Copy its shape wholesale.
+
+## File Classification
+
+| New/Modified File | Role | Data Flow | Closest Analog | Match Quality |
+|-------------------|------|-----------|----------------|---------------|
+| `packages/{forms,query,router}/custom-elements-manifest.config.mjs` | config | transform (source→JSON) | `tools/type-snapshots.config.mjs` (ESM node config) | role-match |
+| `packages/{forms,query,router}/custom-elements.json` (+ vscode.*/web-types.json) | generated artifact | file-I/O (committed) | `tools/type-snapshots/*.d.ts` committed snapshots | exact |
+| `packages/{forms,query,router}/package.json` (MODIFY) | config | — | sibling `package.json` `files`/`scripts`/`devDependencies` blocks | exact |
+| `packages/router/src/router-lit/{router-outlet,router-provider,router-link}.ts` (MODIFY) | component (Lit element) | additive JSDoc | `router-link.ts` (already has `@property` JSDoc); `router-provider.ts` doc block | exact |
+| `packages/forms/src/lit-form.ts`, `packages/query/src/query-client-provider.ts` (MODIFY) | component (Lit element) | additive JSDoc | `router-link.ts` JSDoc style | exact |
+| `tools/cem-check/assert-tags.mjs` | utility (CI check) | transform + assert | `tools/type-snapshots.config.mjs` node-script convention | role-match |
+| `tools/cem-check/known-tags.json` | config (committed contract) | file-I/O | `tools/type-snapshots/*.d.ts` committed baseline | role-match |
+| `.github/workflows/ci.yml` (MODIFY) | config (CI) | event-driven | `ci.yml:65-76` type-snapshot gate steps | exact |
+| `.gitattributes` (MODIFY) | config | — | `.gitattributes:5` `tools/type-snapshots/** text eol=lf` | exact |
+| `.vscode/settings.json` (NEW) | config (editor) | — | no in-repo analog (documented externally) | no-analog |
+| root `package.json` scripts (optional MODIFY) | config | — | `package.json:14` `type-snapshot` / `:18` `doc-check` scripts | exact |
+
+## Pattern Assignments
+
+### `packages/{forms,query,router}/custom-elements-manifest.config.mjs` (config, transform)
+
+**Analog:** `tools/type-snapshots.config.mjs` (ESM `.mjs` tooling-config convention: `export default`, node builtins, LF-only output, doc header explaining the gate).
+
+The analyzer config is a plain `export default {}` object (not the executable runner shape of the snapshot config — `cem` consumes the object directly). Match the analog's **header-comment discipline** (explain what/why + the LF pin) and the repo's `.mjs` tooling convention. Concrete shape is settled in RESEARCH §Pattern 1:
+
+```js
+// packages/router/custom-elements-manifest.config.mjs
+import { customElementVsCodePlugin } from 'custom-element-vs-code-integration';
+import { customElementJetBrainsPlugin } from 'custom-element-jet-brains-integration';
+
+export default {
+  globs: ['src/**/*.ts'],
+  exclude: ['src/**/*.test.ts', 'src/example/**', 'src/my-element.ts'], // D-10
+  outdir: '.',              // package root (D-05)
+  litelement: true,         // reads @customElement/@property + static properties
+  packagejson: false,       // do NOT let the analyzer rewrite package.json (Open Q4)
+  plugins: [
+    customElementVsCodePlugin({ outdir: '.' }),
+    customElementJetBrainsPlugin({ outdir: '.', packageJson: false }),
+  ],
+};
+```
+
+**Per-package `exclude` (VERIFIED in RESEARCH §Pattern 1):**
+- `forms`: `['src/**/*.test.ts']` — `demo/demo-form.ts` is outside `src/`, never matched.
+- `query`: `['src/**/*.test.ts', 'src/demo.ts']` — `demo.ts` registers `lit-query-demo-*`.
+- `router`: `['src/**/*.test.ts', 'src/example/**', 'src/my-element.ts']` — fullest exclude set.
+
+> **Discretion flags carried from CONTEXT/RESEARCH:** verify installed plugin export names + default output filenames after `npm i` (Assumption A2); set `packagejson`/`packageJson: false` on both to keep the analyzer from mutating `package.json` mid-CI (Anti-Pattern, Open Q4).
+
+---
+
+### `packages/{forms,query,router}/custom-elements.json` + `vscode.*-custom-data.json` + `web-types.json` (generated artifact, file-I/O)
+
+**Analog:** `tools/type-snapshots/*.d.ts` — committed, regenerated-in-`build`, `git diff`-gated, `eol=lf`-pinned static artifacts. This is the **exact precedent** D-05/D-06 mirror.
+
+Key properties to copy from the snapshot artifacts:
+1. **Committed at a fixed location** (snapshot: `tools/type-snapshots/`; CEM: package root per D-05).
+2. **Regenerated by the build**, never hand-edited (snapshot: `type-snapshot` script; CEM: `cem` chained into `build`).
+3. **LF-normalized** so Windows-author == Ubuntu-CI byte-identical (see `.gitattributes` analog below; `type-snapshots.config.mjs:104-105` does `.replace(/\r\n/g,'\n')`).
+4. **The committed copy IS the baseline** — CI fails on any drift, no branch-vs-main fetch.
+
+---
+
+### `packages/{forms,query,router}/package.json` (config, MODIFY)
+
+**Analog:** the sibling `package.json` `files` / `scripts` / `devDependencies` blocks (read this session: `packages/router/package.json`, `packages/forms/package.json`, `packages/query/package.json`).
+
+**Current `files` block** (identical across all three — `packages/forms/package.json:36-41`):
+```jsonc
+"files": [
+  "dist",
+  "README.md",
+  "LICENSE",
+  "CHANGELOG.md"
+]
+```
+**Add** the four/five artifact entries + the two discovery fields (RESEARCH §Pattern 4):
+```jsonc
+"customElements": "./custom-elements.json",
+"web-types": "./web-types.json",
+"files": [
+  "dist", "README.md", "LICENSE", "CHANGELOG.md",
+  "custom-elements.json", "vscode.html-custom-data.json",
+  "vscode.css-custom-data.json", "web-types.json"
+]
+```
+
+**Current `build` scripts (VERIFIED — note the router difference):**
+- `packages/forms/package.json:44`: `"build": "vite build && tsc -p tsconfig.build.json"`
+- `packages/query/package.json:40`: `"build": "vite build && tsc -p tsconfig.build.json"` (identical to forms)
+- `packages/router/package.json:49`: `"build": "node scripts/build.js && tsc -p tsconfig.build.json"` (**`node scripts/build.js`, NOT `vite build`**)
+
+**Chain `cem` in** (RESEARCH §Pattern 2 — `cem` reads source, so order vs bundler is free):
+```jsonc
+// forms + query
+"cem": "cem analyze",
+"build": "vite build && tsc -p tsconfig.build.json && npm run cem"
+// router
+"cem": "cem analyze",
+"build": "node scripts/build.js && tsc -p tsconfig.build.json && npm run cem"
+```
+
+**devDependencies to add** (three element packages only — RESEARCH Installation block):
+`@custom-elements-manifest/analyzer@0.11.0`, `custom-element-vs-code-integration@1.5.0`, `custom-element-jet-brains-integration@1.7.0`.
+
+> Match the existing alphabetized `devDependencies` ordering in each file to avoid noisy diffs.
+
+---
+
+### `packages/router/src/router-lit/router-outlet.ts` (component, additive JSDoc)
+
+**Analog:** the class-level doc block on `router-provider.ts:7-20` and the per-`@property` JSDoc already on `router-link.ts:27-45`. Copy that JSDoc style; add CEM tags on top.
+
+`RouterOutlet` registers via `define("router-outlet", RouterOutlet)` (line 236) — the analyzer can't resolve the tag statically, so it needs an explicit JSDoc tag (D-11 / Pitfall 1). VERIFIED element facts to document:
+- `manageFocus` — `@property({ type: Boolean }) manageFocus = true` (lines 58-59); Lit lowercases the attribute to `managefocus`.
+- `router-error` `CustomEvent` — dispatched with `{ detail: { type, error, route }, bubbles: true, composed: true }` (lines 222-228).
+- **NO `<slot>`** — `createRenderRoot()` returns `this` (lines 231-233); renders into light DOM. **Do not add `@slot`** (Open Q3 / Anti-Pattern).
+
+```ts
+/**
+ * `<router-outlet>` renders the matched route's component into light DOM.
+ * @tag router-outlet
+ * @attr {boolean} managefocus - focus the freshly-rendered route element after navigation (default true)
+ * @fires router-error - CustomEvent; detail { type, error, route }; bubbles, composed
+ * @prop {Router} router - explicit router (else resolved from <router-provider> context)
+ */
+export class RouterOutlet extends LitElement { /* … define("router-outlet", RouterOutlet) */ }
+```
+
+> **Discretion flag:** use `@tag <name>` (documented — RESEARCH §Pattern 3 / Open Q2), NOT `@customElement` (named in D-11 but undocumented for `tagName`). After the first `cem analyze`, open `custom-elements.json` and confirm each router declaration has a non-empty `tagName`; fall back to `@tagname` only if `@tag` doesn't populate it. The Pattern-6 equality gate doubles as this verifier.
+
+---
+
+### `packages/router/src/router-lit/router-provider.ts` (component, additive JSDoc)
+
+**Analog:** its own existing doc block (`router-provider.ts:7-20`) — enrich it with CEM tags. VERIFIED facts:
+- `.router` prop — `@property({ attribute: false }) router?` (lines 22-23); required (throws if unset, line 31-33).
+- default slot — `render() => html\`<slot></slot>\`` (line 44); `:host { display: contents }` (lines 47-51).
+
+```ts
+/**
+ * … existing description …
+ * @tag router-provider
+ * @prop {Router} router - the Router provided to descendants (required)
+ * @slot - default slot for the routed app subtree
+ */
+```
+
+---
+
+### `packages/router/src/router-lit/router-link.ts` (component, additive JSDoc — light touch)
+
+**Analog:** itself — it already carries the best per-`@property` JSDoc in the repo (`router-link.ts:27-45`: `to`, `replace`, `activeClass`, `exactActiveClass`). Light touch per D-04: add the class-level `@tag` + `@slot` only.
+- default slot — `<a><slot></slot></a>` in render (RESEARCH VERIFIED :135-139).
+
+```ts
+/**
+ * `<router-link>` renders an <a> with client-side navigation. … existing text …
+ * @tag router-link
+ * @slot - default slot for the link's visible content
+ */
+```
+
+---
+
+### `packages/forms/src/lit-form.ts` (component, additive JSDoc)
+
+**Analog:** its own existing doc block (`lit-form.ts:6-13`). Uses the **real `@customElement('lit-form')` decorator** (line 14) — no `@tag` needed; `tagName` resolves automatically. Enrich members only. VERIFIED facts:
+- `static properties = { form, nativeValidation: { type: Boolean, attribute: 'native-validation' } }` (lines 16-19) + `declare` fields (lines 21-22). Confirm the litPlugin reads `static properties` (Pitfall 4) — verify `form` + `native-validation` appear in the manifest.
+- default slot — `render() => html\`<slot @slotchange=…></slot>\`` (line 94).
+
+```ts
+/**
+ * … existing description …
+ * @attr {boolean} native-validation - keep native form validation on (default false)
+ * @prop form - the FormInstance driving submit/reset
+ * @slot - default slot wrapping the user-authored <form>
+ */
+@customElement('lit-form')
+export class LitForm extends LitElement { … }
+```
+
+---
+
+### `packages/query/src/query-client-provider.ts` (component, additive JSDoc)
+
+**Analog:** its own one-line doc (`query-client-provider.ts:8`). Real `@customElement('lit-query-client-provider')` decorator (line 9) — no `@tag`. VERIFIED facts:
+- `client` prop — `@property({ attribute: false }) client: QueryClient = createQueryClient()` (lines 11-12).
+- default slot — `render() => html\`<slot></slot>\`` (line 28).
+
+```ts
+/**
+ * Custom element that provides a `QueryClient` to descendant components via DOM context.
+ * @prop {QueryClient} client - the QueryClient provided to descendants (defaults to createQueryClient())
+ * @slot - default slot for the subtree that consumes the QueryClient
+ */
+```
+
+---
+
+### `tools/cem-check/assert-tags.mjs` (utility, CI check)
+
+**Analog:** `tools/type-snapshots.config.mjs` (ESM node-script convention: node builtins, repo-root reads via `readFileSync`, `process.exit`, header comment). Also the `tools/doc-check/extract-snippets.mjs` node-check convention (per `package.json:18`).
+
+Copy the analog's conventions: `import { readFileSync } from 'node:fs'`, plain ESM, exit-code signaling. Script shape is settled in RESEARCH §Pattern 6 — reads each manifest's `tagName` set (filtering `d.customElement && d.tagName`), compares sorted equality against `known-tags.json`, `process.exit(failed ? 1 : 0)`.
+
+> **Discretion flag:** known-tag list location is discretionary — RESEARCH recommends a committed `tools/cem-check/known-tags.json` (mirrors the committed-baseline ethos of `tools/type-snapshots/`).
+
+---
+
+### `tools/cem-check/known-tags.json` (config, committed contract)
+
+**Analog:** `tools/type-snapshots/*.d.ts` committed baselines — a hand-reviewed, committed contract file that CI asserts against. VERIFIED real tag set:
+```json
+{ "forms": ["lit-form"],
+  "query": ["lit-query-client-provider"],
+  "router": ["router-link", "router-outlet", "router-provider"] }
+```
+Equality (not subset) so a leaked demo tag fails as loudly as a missing real tag (D-09).
+
+---
+
+### `.github/workflows/ci.yml` (config, CI — MODIFY)
+
+**Analog:** the Phase 6 type-snapshot gate steps in the **same file**, `ci.yml:65-76` — the exact `git add -A` + `git diff --cached --exit-code` pattern (staging first so a new *untracked* artifact also fails, not just a modified one). Add the CEM steps to the **`gate` job** (single-Node, read-only, after `npm run build` at `ci.yml:52`), NOT the matrix `build-test` job.
+
+**Existing gate pattern to copy (`ci.yml:75-76`):**
+```yaml
+- name: shape gate (fail on any tracked-or-untracked snapshot drift)
+  run: git add -A -- tools/type-snapshots/ && git diff --cached --exit-code -- tools/type-snapshots/
+```
+
+**New CEM steps (RESEARCH §Pattern 5), pathspec-scoped to the artifacts:**
+```yaml
+- name: CEM freshness gate (fail on any manifest/editor-data drift)
+  run: |
+    git add -A -- 'packages/*/custom-elements.json' 'packages/*/vscode.*-custom-data.json' 'packages/*/web-types.json'
+    git diff --cached --exit-code -- 'packages/*/custom-elements.json' 'packages/*/vscode.*-custom-data.json' 'packages/*/web-types.json'
+- name: CEM completeness gate (tag-set equality)
+  run: node tools/cem-check/assert-tags.mjs
+```
+
+> **Carry-forward invariants (from the `ci.yml` header + Phase 6/7):** keep `permissions: contents: read` (`ci.yml:13-14`) — never widen it (D-12). `release.yml` is untouched. Steps stay pathspec-scoped so unrelated build output never enters the gate.
+
+---
+
+### `.gitattributes` (config — MODIFY)
+
+**Analog:** the single existing line `.gitattributes:5`:
+```
+tools/type-snapshots/** text eol=lf
+```
+Same rationale (Windows author → Ubuntu CI; prevents CRLF false-positive gate failures — Pitfall 3). Add the three artifact globs:
+```
+packages/*/custom-elements.json      text eol=lf
+packages/*/vscode.*-custom-data.json text eol=lf
+packages/*/web-types.json            text eol=lf
+```
+
+---
+
+### root `package.json` scripts (optional, config — MODIFY)
+
+**Analog:** `package.json:14` `"type-snapshot": "node tools/type-snapshots.config.mjs"` and `:18` `doc-check`. If a root convenience script is wanted for the tag gate, mirror this shape: `"cem-check": "node tools/cem-check/assert-tags.mjs"`. Optional — the CI step can call `node …` directly.
+
+## Shared Patterns
+
+### Committed-artifact + `git diff --cached --exit-code` freshness gate
+**Source:** `tools/type-snapshots.config.mjs` + `.github/workflows/ci.yml:65-76` + `.gitattributes:5`
+**Apply to:** all generated JSON artifacts (`custom-elements.json`, `vscode.*-custom-data.json`, `web-types.json`)
+This is the phase's spine. The three legs — (1) build regenerates the artifact, (2) `.gitattributes` `eol=lf` pins it byte-stable across OSes, (3) `git add -A` + `git diff --cached --exit-code` in the read-only `gate` job — are all lifted directly from the Phase 6 snapshot gate. Reuse verbatim, swap the pathspec.
+
+### Additive JSDoc only (no runtime change)
+**Source:** existing element doc blocks — `router-link.ts:27-45` (per-property), `router-provider.ts:7-20` (class-level)
+**Apply to:** all five element classes
+`erasableSyntaxOnly: true` / ES2023 / strict is unaffected — every CEM tag (`@tag`, `@attr`, `@fires`, `@slot`, `@prop`) is a comment. No signature, no field, no decorator changes. Match the existing JSDoc voice.
+
+### Per-package independence / duplication ethos
+**Source:** per-package `internal/dev.ts` (Phase 7 D-03), per-package `vite.config.ts`, per-package `tsconfig.build.json`
+**Apply to:** the three `custom-elements-manifest.config.mjs` files + per-package `cem` script + per-package devDeps
+Each element package is self-describing and independently buildable — NOT one root config with per-package globs (D-02). Accept the config triplication.
+
+### `customElements` field + `files` allowlist = the discovery/tarball contract
+**Source:** existing `files` blocks (`packages/*/package.json`); Anti-Pattern 5
+**Apply to:** all three element `package.json`s
+A manifest not in `files` (or with a mismatched `customElements` path) ships an autocomplete-less "success." The field and the `files` entry must agree. Optional belt-and-suspenders: `npm pack --dry-run` (discretion, CEM-02).
+
+## No Analog Found
+
+| File | Role | Data Flow | Reason |
+|------|------|-----------|--------|
+| `.vscode/settings.json` (`html.customData`, D-08) | editor config | — | No existing `.vscode/settings.json` html.customData in repo. Author from the plugin docs: point `html.customData` at the three `packages/*/vscode.html-custom-data.json`. Non-committed-artifact, non-gated (repo-local dogfooding only). |
+
+## Metadata
+
+**Analog search scope:** `packages/{forms,query,router}/src` (elements), `packages/*/package.json` (build/files/deps), `tools/type-snapshots.config.mjs` + `tools/` conventions, `.github/workflows/ci.yml`, `.gitattributes`, root `package.json` scripts.
+**Files scanned:** 12 read in full/part; all element sources + gate infra confirmed against RESEARCH's VERIFIED line refs.
+**Pattern extraction date:** 2026-08-22
+</content>
+</invoke>
