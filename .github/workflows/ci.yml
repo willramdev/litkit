@@ -128,3 +128,10 @@ jobs:
       # needed; do NOT widen the top-level `permissions: contents: read`.
       - name: single-instance check (EXPL-02)
         run: node scripts/check-single-instance.mjs
+      # devtools leaf-rule check (DTOOL-01, D-10): assert no CORE package manifest
+      # (kit/router/query/forms/store) depends on @willramdev/devtools in any
+      # dependency map — devtools is a leaf, nothing internal imports it. Reads the
+      # five committed package.json files only; no token needed; do NOT widen the
+      # top-level `permissions: contents: read`.
+      - name: devtools leaf-rule check (DTOOL-01)
+        run: node scripts/check-devtools-leaf.mjs
