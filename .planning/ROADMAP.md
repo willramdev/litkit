@@ -172,8 +172,20 @@ Full detail: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
   3. Query-cache inspection (TanStack Query Devtools mount / documented `QueryClient` exposure) and a dev-only router match log work.
   4. `router-core` exposes a public `subscribe` / match-observer hook (framework-neutral core addition) that feeds devtools without reaching into internals.
 
-**Plans**: TBD
-**Research**: MEDIUM-confidence per research — this phase likely needs a plan-phase research/spike before planning: query-devtools standalone-mount ergonomics, Redux DevTools `JUMP_TO_STATE` time-travel wiring, and verifying/adding the `router-core` public `subscribe` hook (DTOOL-04, small framework-neutral core MODIFY).
+**Plans**: 3 plans
+**Research**: HIGH-confidence (11-RESEARCH.md) — all three spike areas resolved against source: standalone `TanstackQueryDevtools` mount API from `@tanstack/query-devtools@5.91.0`, Redux DevTools `connect()` `JUMP_TO_STATE`/`JUMP_TO_ACTION` time-travel wiring, and `router-core`'s public `subscribe` hook (DTOOL-04 = verify-only, no core change per D-07).
+
+**Wave 1** *(tracer)*
+
+- [ ] 11-01-PLAN.md — TRACER: scaffold the `@willramdev/devtools` leaf package (optional peers, `sideEffects:false`, externalized build, local `esm-env` dev-gate) + `attachRouterLog` over the public `router.subscribe` + Changesets `fixed`-group edit + read-only `ci.yml` leaf-rule gate [DTOOL-01, DTOOL-03, DTOOL-04]
+
+**Wave 2** *(blocked on 11-01)*
+
+- [ ] 11-02-PLAN.md — `attachStoreDevtools`: full bidirectional store ↔ Redux DevTools time-travel with `isTimeTravel` feedback-loop guard, bounded history (`maxAge`), and silent no-op guards [DTOOL-02]
+
+**Wave 3** *(blocked on 11-02)*
+
+- [ ] 11-03-PLAN.md — `attachQueryDevtools`: lazy-mount the standalone TanStack Query Devtools panel bound to the app `QueryClient` + finalize the three-fn barrel + whole-package tree-shake/publint/attw verification [DTOOL-03, DTOOL-01]
 
 ### Phase 12: Dependency Hygiene
 
@@ -204,7 +216,7 @@ Full detail: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
 | 8. Hosted TypeDoc API Reference Site | v1.1 | 3/3 | Complete    | 2026-08-22 |
 | 9. Custom Elements Manifest | v1.1 | 3/3 | Complete    | 2026-08-22 |
 | 10. Examples Integration App | v1.1 | 2/2 | Complete    | 2026-08-23 |
-| 11. Devtools & Debugging | v1.1 | 0/TBD | Not started | - |
+| 11. Devtools & Debugging | v1.1 | 0/3 | Not started | - |
 | 12. Dependency Hygiene | v1.1 | 0/TBD | Not started | - |
 
 ---
