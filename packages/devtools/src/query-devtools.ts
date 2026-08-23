@@ -17,7 +17,7 @@ import type { QueryClient } from '@tanstack/query-core';
 
 /** Mount the standalone TanStack Query Devtools panel bound to the app's QueryClient. */
 export function attachQueryDevtools(client: QueryClient): () => void {
-  if (!DEV || typeof document === 'undefined') return () => {};
+  if (!DEV || typeof document === 'undefined' || !document.body) return () => {};
 
   const host = document.createElement('div');
   document.body.appendChild(host);
