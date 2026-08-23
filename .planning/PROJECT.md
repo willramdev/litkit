@@ -41,6 +41,7 @@ All five packages install cleanly from GitHub Packages and work as documented �
 - ✓ Consumer install verification — clean-consumer install from GitHub Packages proves tree-shaking survival, TanStack single-instance dedup, and subpath/`.d.ts` resolution for all eight targets — Validated in Phase 5: Consumer Install Verification
 - ✓ Hosted TypeDoc API reference site across all five packages — live at https://willramdev.github.io/litkit/ (assets under the `/litkit/` project subpath, source links to pinned GitHub blobs), built + deployed by an isolated, least-privilege `docs.yml` GitHub Pages workflow — Validated in Phase 8: Hosted TypeDoc API Reference Site (DX-02)
 - ✓ Standalone `examples/` integration app — private, never-published `examples/` workspace exercising all four cross-package seams (router + query + forms + store) end-to-end against the real built `dist/`, doubling as the externalization canary (`resolve.dedupe` + `check-single-instance.mjs` prove single-instance `lit`/`@tanstack/*`) and manual QA surface; excluded from releases via `private:true` + Changesets `ignore` — Validated in Phase 10: Examples Integration App (DX-03; EXPL-01/02/03), UAT-verified (three seams live) + security-reviewed (6/6 threats closed)
+- ✓ Opt-in devtools — new `@willramdev/devtools` leaf package (optional store/query/router peers, `sideEffects:false`, DEV-gated via a local `esm-env` copy, fully tree-shakeable, never added to any `sideEffects` allowlist) with three per-module attach fns: `attachStoreDevtools` (bidirectional Redux DevTools store time-travel, `isTimeTravel` feedback-loop guard, bounded `maxAge`), `attachQueryDevtools` (lazy-mounted standalone TanStack Query Devtools panel bound to the app `QueryClient`), and `attachRouterLog` (dev-only match log over the public `router.subscribe`) — Validated in Phase 11: Devtools & Debugging (DTOOL-01/02/03/04), UAT-verified (store time-travel + query panel live) + security-reviewed (8/8 threats closed)
 
 ### Active
 
@@ -51,7 +52,6 @@ All five packages install cleanly from GitHub Packages and work as documented �
 - [ ] Sharper types & editor autocomplete on existing APIs (tighter generics, fewer casts)
 - [ ] Dev-time warnings & error messages (missing provider, bad route, API misuse) — stripped from prod builds
 - [ ] Plain-JS ergonomics — clean no-TypeScript experience, sensible defaults, no required generics
-- [ ] Devtools / debugging — inspect store state, query cache, router matches; logging hooks; store time-travel
 
 ### Out of Scope
 
@@ -89,6 +89,7 @@ All five packages install cleanly from GitHub Packages and work as documented �
 | Split post-v1 work: v1.1 DX polish before v2.0 enterprise | DX (docs, examples, types, devtools, dep hygiene) is fast + low-risk and ships value sooner; heavy net-new capability (SSR, auth/RBAC, i18n/a11y, data-layer depth) isolated to v2.0 | — Pending |
 | Deploy docs via an isolated `docs.yml` Pages workflow (own least-privilege token scope, `enablement: true` self-enable) rather than folding into `ci.yml` | Keeps read-only CI and auth-bearing release tokens disjoint from the Pages scope; self-enable removes the first-run-before-Pages-enabled 404 race | ✓ Good — site live at willramdev.github.io/litkit (Phase 8) |
 | Examples app uses plain `"*"` workspace deps (not `workspace:*`) + inverse app-mode Vite config (bundle + `resolve.dedupe`, no `build.lib`/`external`) | npm 11 throws `EUNSUPPORTEDPROTOCOL` on `workspace:*`; the app must bundle + dedupe to act as the single-instance externalization canary | ✓ Good — four-seam app live, `check-single-instance.mjs` green under full load (Phase 10) |
+| Ship devtools as a new opt-in `@willramdev/devtools` leaf, never a forced dependency (DEV-gated, `sideEffects:false`, excluded from every `sideEffects` allowlist, per-module split + lazy `await import` for the heavy query panel) reusing the Phase 7 dev-gate; DTOOL-04 satisfied verify-only over the existing public `router.subscribe` (no `router-core` change, per D-07) | Zero runtime cost to consumers who don't import it; preserves the acyclic graph + tree-shaking + externalization invariants | ✓ Good — 6th leaf package, three tree-shakeable attach fns, DTOOL-01 proven (build+typecheck+27 tests+publint+attw+leaf-rule); Phase 11 |
 
 ## Evolution
 
@@ -108,4 +109,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-23 after Phase 10 — private `examples/` four-seam integration app (DX-03; EXPL-01/02/03) shipped as the externalization canary; validated by UAT (three seams live) + security review (6/6 threats closed).*
+*Last updated: 2026-08-23 after Phase 11 — opt-in `@willramdev/devtools` leaf package (DTOOL-01/02/03/04) shipped with store time-travel, query-cache inspection, and router match logging; validated by UAT (store + query panel live) + security review (8/8 threats closed).*

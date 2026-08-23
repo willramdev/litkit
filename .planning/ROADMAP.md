@@ -31,7 +31,7 @@ Full detail: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
 - [x] **Phase 8: Hosted TypeDoc API Reference Site** - Merged `packages`-mode TypeDoc site for all five packages, deployed via an isolated `docs.yml` Pages workflow (completed 2026-08-22)
 - [x] **Phase 9: Custom Elements Manifest** - `custom-elements.json` + editor autocomplete data for the three element-exposing packages (forms, query, router) (completed 2026-08-22)
 - [x] **Phase 10: Examples Integration App** - Private, never-published `examples/` app covering the four cross-package seams and acting as the externalization canary (completed 2026-08-23)
-- [ ] **Phase 11: Devtools & Debugging** - Opt-in `@willramdev/devtools` leaf package for store time-travel, query-cache inspection, and router match logging
+- [x] **Phase 11: Devtools & Debugging** - Opt-in `@willramdev/devtools` leaf package for store time-travel, query-cache inspection, and router match logging (completed 2026-08-23)
 - [ ] **Phase 12: Dependency Hygiene** - Grouped Dependabot (npm + github-actions), an advisory audit in CI, and `@v5` action-runtime bumps
 
 ## Phase Details
@@ -216,7 +216,7 @@ Full detail: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
 | 8. Hosted TypeDoc API Reference Site | v1.1 | 3/3 | Complete    | 2026-08-22 |
 | 9. Custom Elements Manifest | v1.1 | 3/3 | Complete    | 2026-08-22 |
 | 10. Examples Integration App | v1.1 | 2/2 | Complete    | 2026-08-23 |
-| 11. Devtools & Debugging | v1.1 | 3/3 | In Progress|  |
+| 11. Devtools & Debugging | v1.1 | 3/3 | Complete    | 2026-08-23 |
 | 12. Dependency Hygiene | v1.1 | 0/TBD | Not started | - |
 
 ---

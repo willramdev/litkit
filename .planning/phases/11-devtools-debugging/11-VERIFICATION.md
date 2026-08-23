@@ -1,14 +1,16 @@
 ---
 phase: 11-devtools-debugging
 verified: 2026-08-23T13:15:00Z
-status: human_needed
+status: passed
 score: 4/4 must-haves verified
 behavior_unverified: 0
 overrides_applied: 0
 human_verification:
+
   - test: "In a real browser dev build, call attachStoreDevtools(store) with the Redux DevTools extension installed, mutate the store, then drag the extension's time-travel slider."
     expected: "Each store.set/update appears as a sequential action in the extension; dragging the slider restores the live store state with no feedback-loop double-recording; history is capped at maxAge (50)."
     why_human: "The unit tests exercise the full DISPATCH/JUMP/ROLLBACK/RESET/COMMIT protocol against a faithful fake extension, but the actual round-trip through the real Redux DevTools browser extension is an external-tool integration that cannot be verified programmatically."
+
   - test: "In a real browser dev build, call attachQueryDevtools(client) against the app's live QueryClient and interact with the mounted TanStack Query Devtools panel."
     expected: "The standalone panel mounts on document.body bound to the app QueryClient, shows live query cache entries, and the teardown removes the panel with no leftover DOM node."
     why_human: "Unit tests mock @tanstack/query-devtools; the actual panel render and live query-cache display require a real browser + the real @tanstack/query-devtools package installed (an optional peer)."

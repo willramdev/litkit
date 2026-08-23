@@ -2,20 +2,20 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Developer Experience
-current_phase: 11
-current_phase_name: Devtools & Debugging
-status: verifying
-stopped_at: Completed 11-03-PLAN.md
-last_updated: "2026-08-23T17:00:00.579Z"
+current_phase: 12
+current_phase_name: Dependency Hygiene
+status: planning
+stopped_at: Phase 11 complete, ready to plan Phase 12
+last_updated: "2026-08-23T22:41:31.837Z"
 last_activity: 2026-08-23
-last_activity_desc: Phase 11 execution started
-state_head: b596a0089a363af01ff57d320ac3732cd130bffa
+last_activity_desc: Phase 11 complete, transitioned to Phase 12
+state_head: ec1b9ecd2c1fbea55716059e7deacf549ef6da53
 progress:
   total_phases: 7
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 19
   completed_plans: 19
-  percent: 71
+  percent: 86
 ---
 
 # Project State
@@ -25,22 +25,22 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-23)
 
 **Core value:** A consumer building a Lit app against litkit gets first-class docs, editor autocomplete, dev-time guardrails, and debugging — with zero change to the v1.0 runtime contract (externalization, tree-shaking, single-instance dedup, acyclic graph).
-**Current focus:** Phase 11 — Devtools & Debugging
+**Current focus:** Phase 12 — Dependency Hygiene
 
 ## Current Position
 
-Phase: 11 (Devtools & Debugging) — EXECUTING
-Plan: 3 of 3
-Status: Phase complete — ready for verification
-Last activity: 2026-08-23 — Phase 11 execution started
+Phase: 12 — Dependency Hygiene
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-08-23 — Phase 11 complete, transitioned to Phase 12
 
-Progress: [███████░░░] 71% (v1.1)
+Progress: [█████████░] 86% (v1.1 — 6/7 phases)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 32 (v1.0, archived)
+- Total plans completed: 35 (v1.0, archived)
 - Average duration: — min
 - Total execution time: — hours
 
@@ -53,6 +53,7 @@ Progress: [███████░░░] 71% (v1.1)
 | 08 | 3 | - | - |
 | 09 | 3 | - | - |
 | 10 | 2 | - | - |
+| 11 | 3 | - | - |
 
 **Recent Trend:**
 
@@ -123,8 +124,9 @@ None yet.
 
 ### Blockers/Concerns
 
-- **[Phase 11 — Devtools]** MEDIUM-confidence; needs a plan-phase research/spike: query-devtools standalone mount, Redux DevTools `JUMP_TO_STATE` wiring, and verify/add the `router-core` public `subscribe` hook (DTOOL-04).
 - [Carry-forward] npm `workspace:`-protocol behavior on npm 11 is MEDIUM confidence — only matters if an internal `@willramdev/kit` edge is ever added; verify locally before relying on it.
+
+*(Resolved in Phase 11: the devtools research/spike unknowns — query-devtools standalone mount, Redux DevTools `JUMP_TO_STATE` wiring, `router-core` `subscribe` hook — were all resolved HIGH-confidence in 11-RESEARCH.md and shipped; DTOOL-04 was verify-only, no core change.)*
 
 ## Deferred Items
 
@@ -136,10 +138,10 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-23T16:59:47.212Z
-Stopped at: Completed 11-03-PLAN.md
+Last session: 2026-08-23T22:41:00.000Z
+Stopped at: Phase 11 complete (UAT 2/2 passed, security 8/8 closed), ready to plan Phase 12
 Resume file: None
 
 ## Operator Next Steps
 
-- Plan the next phase with `/gsd-plan-phase 11` (or `/gsd-discuss-phase 11` first)
+- Plan the next phase with `/gsd-plan-phase 12` (or `/gsd-discuss-phase 12` first)
