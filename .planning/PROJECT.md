@@ -40,12 +40,12 @@ All five packages install cleanly from GitHub Packages and work as documented �
 - ✓ Release automation — two-workflow token-safe Changesets pipeline (read-only `ci.yml` vs auth-bearing `release.yml`), all five `@willramdev/*` published to GitHub Packages at `1.0.0` with a `v1.0.0` GitHub Release — Validated in Phase 4: Release Automation & Publish (`willram` org dropped; shipped under `@willramdev`)
 - ✓ Consumer install verification — clean-consumer install from GitHub Packages proves tree-shaking survival, TanStack single-instance dedup, and subpath/`.d.ts` resolution for all eight targets — Validated in Phase 5: Consumer Install Verification
 - ✓ Hosted TypeDoc API reference site across all five packages — live at https://willramdev.github.io/litkit/ (assets under the `/litkit/` project subpath, source links to pinned GitHub blobs), built + deployed by an isolated, least-privilege `docs.yml` GitHub Pages workflow — Validated in Phase 8: Hosted TypeDoc API Reference Site (DX-02)
+- ✓ Standalone `examples/` integration app — private, never-published `examples/` workspace exercising all four cross-package seams (router + query + forms + store) end-to-end against the real built `dist/`, doubling as the externalization canary (`resolve.dedupe` + `check-single-instance.mjs` prove single-instance `lit`/`@tanstack/*`) and manual QA surface; excluded from releases via `private:true` + Changesets `ignore` — Validated in Phase 10: Examples Integration App (DX-03; EXPL-01/02/03), UAT-verified (three seams live) + security-reviewed (6/6 threats closed)
 
 ### Active
 
 <!-- v1.1 "Developer Experience" — DX polish on the shipped v1.0 surface. Additive, non-breaking. Detailed REQ-IDs in .planning/REQUIREMENTS.md. -->
 
-- [ ] Standalone `examples/` integration app (router + query + forms + store), doubling as manual QA (DX-03)
 - [ ] Custom Elements Manifest (`custom-elements.json`) for element-exposing packages → IDE autocomplete (DX-01)
 - [ ] Dependabot + dependency-audit hygiene in CI (DX-04)
 - [ ] Sharper types & editor autocomplete on existing APIs (tighter generics, fewer casts)
@@ -88,6 +88,7 @@ All five packages install cleanly from GitHub Packages and work as documented �
 | Adopt changesets-style release automation | Coordinated versioning across a five-package workspace | ✓ Good — two-workflow token-safe Changesets pipeline live (Phase 4) |
 | Split post-v1 work: v1.1 DX polish before v2.0 enterprise | DX (docs, examples, types, devtools, dep hygiene) is fast + low-risk and ships value sooner; heavy net-new capability (SSR, auth/RBAC, i18n/a11y, data-layer depth) isolated to v2.0 | — Pending |
 | Deploy docs via an isolated `docs.yml` Pages workflow (own least-privilege token scope, `enablement: true` self-enable) rather than folding into `ci.yml` | Keeps read-only CI and auth-bearing release tokens disjoint from the Pages scope; self-enable removes the first-run-before-Pages-enabled 404 race | ✓ Good — site live at willramdev.github.io/litkit (Phase 8) |
+| Examples app uses plain `"*"` workspace deps (not `workspace:*`) + inverse app-mode Vite config (bundle + `resolve.dedupe`, no `build.lib`/`external`) | npm 11 throws `EUNSUPPORTEDPROTOCOL` on `workspace:*`; the app must bundle + dedupe to act as the single-instance externalization canary | ✓ Good — four-seam app live, `check-single-instance.mjs` green under full load (Phase 10) |
 
 ## Evolution
 
@@ -107,4 +108,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-22 after Phase 8 — hosted TypeDoc API reference site (DX-02) shipped live at willramdev.github.io/litkit via isolated docs.yml Pages workflow; validated by UAT + security review.*
+*Last updated: 2026-08-23 after Phase 10 — private `examples/` four-seam integration app (DX-03; EXPL-01/02/03) shipped as the externalization canary; validated by UAT (three seams live) + security review (6/6 threats closed).*
