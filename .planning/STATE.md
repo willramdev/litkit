@@ -5,16 +5,16 @@ milestone_name: Developer Experience
 current_phase: 11
 current_phase_name: Devtools & Debugging
 status: executing
-stopped_at: Completed 11-01-PLAN.md
-last_updated: "2026-08-23T16:44:37.720Z"
+stopped_at: Completed 11-02-PLAN.md
+last_updated: "2026-08-23T16:53:05.038Z"
 last_activity: 2026-08-23
 last_activity_desc: Phase 11 execution started
-state_head: 83787aabfee44b4e0c442e43b6a1c7c070039ad4
+state_head: f6fe5dd6f275c3d31156a4d94511d6740655918a
 progress:
   total_phases: 7
   completed_phases: 5
   total_plans: 19
-  completed_plans: 17
+  completed_plans: 18
   percent: 71
 ---
 
@@ -30,7 +30,7 @@ See: .planning/PROJECT.md (updated 2026-08-23)
 ## Current Position
 
 Phase: 11 (Devtools & Debugging) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-08-23 — Phase 11 execution started
 
@@ -80,6 +80,7 @@ Progress: [███████░░░] 71% (v1.1)
 | Phase 10 P01 | 3min | 2 tasks | 12 files |
 | Phase 10 P02 | 2min | 2 tasks | 5 files |
 | Phase 11 P01 | 5min | 3 tasks | 15 files |
+| Phase 11 P02 | 4min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -110,6 +111,8 @@ Full v1.0 decision log archived in PROJECT.md (Key Decisions) and `.planning/mil
 - [Phase 10]: examples app-mode vite.config.ts is the inverse of package library configs: bundle + resolve.dedupe, no build.lib/external
 - [Phase 10]: examples data-view follows demo.ts exactly (raw LitElement consumer + direct QueryController); form-view uses createForm field with required/email/minLength — full four-seam coverage complete (EXPL-01)
 - [Phase 11]: [Phase 11]: 11-01: @willramdev/devtools 6th leaf package scaffolded (optional peers, local esm-env DEV gate, sideEffects:false); attachRouterLog over public router.subscribe (DTOOL-04 verify-only, no core change); Changesets fixed group now six; check-devtools-leaf.mjs read-only CI gate (DTOOL-01, D-10)
+- [Phase 11]: 11-02: attachStoreDevtools uses an isTimeTravel closure flag to suppress record during restore (no feedback loop); JSON.parse of msg.state guarded (ASVS V5)
+- [Phase 11]: 11-02: browser-only path tested via vi.stubGlobal('window',…) on the node test env — no jsdom environment forced; store core untouched (type-only Store import)
 
 ### Pending Todos
 
@@ -130,8 +133,8 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-23T16:44:37.206Z
-Stopped at: Completed 11-01-PLAN.md
+Last session: 2026-08-23T16:52:51.199Z
+Stopped at: Completed 11-02-PLAN.md
 Resume file: None
 
 ## Operator Next Steps

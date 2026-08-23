@@ -45,7 +45,7 @@ Requirements for the DX milestone. Each maps to exactly one roadmap phase (trace
 ### Devtools & Debugging (DTOOL)
 
 - [x] **DTOOL-01**: A new opt-in leaf package `@willramdev/devtools` with **optional** peer deps on store/query/router adds **zero forced runtime dependency** to core and is side-effect-free (never added to any `sideEffects` allowlist)
-- [ ] **DTOOL-02**: Store ↔ Redux DevTools extension time-travel — opt-in, dev-gated (reuses WARN-01), bounded history
+- [x] **DTOOL-02**: Store ↔ Redux DevTools extension time-travel — opt-in, dev-gated (reuses WARN-01), bounded history
 - [x] **DTOOL-03**: Query-cache inspection (TanStack Query Devtools mount / documented `QueryClient` exposure) plus a dev-only router match log
 - [x] **DTOOL-04**: `router-core` exposes a public `subscribe`/match-observer hook (framework-neutral core addition) if not already present, to feed devtools without reaching into internals
 
@@ -113,7 +113,7 @@ Each v1.1 requirement maps to exactly one phase. Phase numbering continues from 
 | EXPL-02 | Phase 10 | Complete |
 | EXPL-03 | Phase 10 | Complete |
 | DTOOL-01 | Phase 11 | Complete |
-| DTOOL-02 | Phase 11 | Pending |
+| DTOOL-02 | Phase 11 | Complete |
 | DTOOL-03 | Phase 11 | Complete |
 | DTOOL-04 | Phase 11 | Complete |
 | DEPS-01 | Phase 12 | Pending |
