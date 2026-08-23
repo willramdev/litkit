@@ -4,17 +4,17 @@ milestone: v1.1
 milestone_name: Developer Experience
 current_phase: 11
 current_phase_name: Devtools & Debugging
-status: executing
-stopped_at: Completed 11-02-PLAN.md
-last_updated: "2026-08-23T16:53:05.038Z"
+status: verifying
+stopped_at: Completed 11-03-PLAN.md
+last_updated: "2026-08-23T17:00:00.579Z"
 last_activity: 2026-08-23
 last_activity_desc: Phase 11 execution started
-state_head: f6fe5dd6f275c3d31156a4d94511d6740655918a
+state_head: b596a0089a363af01ff57d320ac3732cd130bffa
 progress:
   total_phases: 7
   completed_phases: 5
   total_plans: 19
-  completed_plans: 18
+  completed_plans: 19
   percent: 71
 ---
 
@@ -31,7 +31,7 @@ See: .planning/PROJECT.md (updated 2026-08-23)
 
 Phase: 11 (Devtools & Debugging) — EXECUTING
 Plan: 3 of 3
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-08-23 — Phase 11 execution started
 
 Progress: [███████░░░] 71% (v1.1)
@@ -81,6 +81,7 @@ Progress: [███████░░░] 71% (v1.1)
 | Phase 10 P02 | 2min | 2 tasks | 5 files |
 | Phase 11 P01 | 5min | 3 tasks | 15 files |
 | Phase 11 P02 | 4min | 2 tasks | 3 files |
+| Phase 11 P03 | 3min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -113,6 +114,8 @@ Full v1.0 decision log archived in PROJECT.md (Key Decisions) and `.planning/mil
 - [Phase 11]: [Phase 11]: 11-01: @willramdev/devtools 6th leaf package scaffolded (optional peers, local esm-env DEV gate, sideEffects:false); attachRouterLog over public router.subscribe (DTOOL-04 verify-only, no core change); Changesets fixed group now six; check-devtools-leaf.mjs read-only CI gate (DTOOL-01, D-10)
 - [Phase 11]: 11-02: attachStoreDevtools uses an isTimeTravel closure flag to suppress record during restore (no feedback loop); JSON.parse of msg.state guarded (ASVS V5)
 - [Phase 11]: 11-02: browser-only path tested via vi.stubGlobal('window',…) on the node test env — no jsdom environment forced; store core untouched (type-only Store import)
+- [Phase 11]: attachQueryDevtools lazy-imports @tanstack/query-devtools (await import, never top-level) so the heavy panel is a separate async chunk out of the consumer main bundle (Pattern 2, T-11-01c)
+- [Phase 11]: Phase 11 devtools public surface complete: three per-module tree-shakeable attach fns (attachRouterLog/attachStoreDevtools/attachQueryDevtools); DTOOL-01 proven via build+typecheck+27 tests+publint+attw+leaf-rule
 
 ### Pending Todos
 
@@ -133,8 +136,8 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-23T16:52:51.199Z
-Stopped at: Completed 11-02-PLAN.md
+Last session: 2026-08-23T16:59:47.212Z
+Stopped at: Completed 11-03-PLAN.md
 Resume file: None
 
 ## Operator Next Steps
