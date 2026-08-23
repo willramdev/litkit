@@ -27,20 +27,28 @@ export function attachQueryDevtools(client: QueryClient): () => void {
 
   // Lazy import → separate async chunk, never in the consumer's main bundle.
   void (async () => {
-    const [{ TanstackQueryDevtools }, { onlineManager }] = await Promise.all([
-      import('@tanstack/query-devtools'),
-      import('@tanstack/query-core'),
-    ]);
-    // If teardown ran before the import resolved, do not mount a late panel.
-    if (disposed) return;
-    const devtools = new TanstackQueryDevtools({
-      client,
-      queryFlavor: 'Lit Query', // free-form label shown in the panel
-      version: '5', // TanStack Query major
-      onlineManager,
-    });
-    devtools.mount(host);
-    unmount = () => devtools.unmount();
+    try {
+      const [{ TanstackQueryDevtools }, { onlineManager }] = await Promise.all([
+        import('@tanstack/query-devtools'),
+        import('@tanstack/query-core'),
+      ]);
+      // If teardown ran before the import resolved, do not mount a late panel.
+      if (disposed) return;
+      const devtools = new TanstackQueryDevtools({
+        client,
+        queryFlavor: 'Lit Query', // free-form label shown in the panel
+        version: '5', // TanStack Query major
+        onlineManager,
+      });
+      devtools.mount(host);
+      unmount = () => devtools.unmount();
+    } catch {
+      // Optional peer (`@tanstack/query-devtools`/`-core`) missing, or the panel
+      // failed to construct/mount. Honor the "silent no-op, never throws" contract
+      // (D-04): swallow the rejection and remove the already-appended host div so
+      // no empty node is orphaned in the DOM.
+      host.remove();
+    }
   })();
 
   return () => {
