@@ -8,7 +8,8 @@
 // call graph. The strip proof then greps the emitted, minified bundle for
 // `[litkit]` and asserts zero occurrences.
 //
-// This entry now covers ALL SEVEN Phase 7 warning call sites in one bundle:
+// This entry now covers ALL SEVEN Phase 7 warning call sites PLUS the Phase 11
+// devtools `[litkit] router → …` navigation-log string in one bundle:
 //   1. kit dup-registration          — via `define` (@willramdev/kit)
 //   2. router dup-registration       — via router's own define(), retained
 //                                       because RouterOutlet/RouterLink pull in
@@ -19,6 +20,11 @@
 //   5. SearchParamsController missing-router — via `SearchParamsController`
 //   6. RouterOutlet missing-router           — via `RouterOutlet`
 //   7. RouterLink missing-router             — via `RouterLink`
+//   8. devtools router navigation log        — via `attachRouterLog`
+//                                       (@willramdev/devtools). Its DEV-gated
+//                                       `[litkit] router → …` console.groupCollapsed
+//                                       body must strip in a consumer prod build
+//                                       exactly like the Phase 7 warnings (WR-03).
 //
 // All re-export-only: no calls, no DOM construction. Importing RouterOutlet /
 // RouterLink from @willramdev/router's main entry resolves to router's
@@ -33,3 +39,4 @@ export {
   SearchParamsController,
   defineRoutes,
 } from '@willramdev/router';
+export { attachRouterLog } from '@willramdev/devtools';

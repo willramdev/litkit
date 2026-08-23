@@ -5,8 +5,9 @@
 //   1. STRIP PROOF: a real minified `vite build` (production) of a mini consumer
 //      that re-exports ALL SEVEN Phase 7 warning call sites (kit's define +
 //      router's RouterOutlet/RouterLink/RouteController/SearchParamsController/
-//      defineRoutes) contains ZERO `[litkit]` strings — esm-env resolves `DEV`
-//      to `false`, so every `if (DEV && …)` is DCE'd.
+//      defineRoutes) PLUS Phase 11 devtools' attachRouterLog (`[litkit] router → …`)
+//      contains ZERO `[litkit]` strings — esm-env resolves `DEV`
+//      to `false`, so every `if (DEV && …)` is DCE'd (WR-03).
 //   2. NEGATIVE CONTROL (Pitfall 5): the SAME harness build, but with esm-env's
 //      `development` export condition forced on (resolve.conditions:['development']),
 //      MUST retain > 0 `[litkit]` strings. This proves the strip in (1) is a real
@@ -125,12 +126,13 @@ async function negativeControl() {
   log(`NEGATIVE-CONTROL PASS (${hits} "${LITKIT_PREFIX}" occurrence(s) retained with DEV=true)`);
 }
 
-// STEP 3 — no-`process` proof: importing kit's AND router's OWN raw dist with
-// process unset must not throw `process is not defined`. Targets the packages
-// directly (not the harness bundle): the harness's production build already
-// inlined esm-env's resolved condition, so the real no-process risk lives in each
-// package's unbundled dist, which keeps a bare esm-env import. Both packages are
-// imported sequentially in the SAME child process after process is nulled.
+// STEP 3 — no-`process` proof: importing kit's, router's AND devtools' OWN raw
+// dist with process unset must not throw `process is not defined`. Targets the
+// packages directly (not the harness bundle): the harness's production build
+// already inlined esm-env's resolved condition, so the real no-process risk lives
+// in each package's unbundled dist, which keeps a bare esm-env import. All three
+// packages are imported sequentially in the SAME child process after process is
+// nulled.
 function runProbe(probeSource) {
   return spawnSync(process.execPath, ['--input-type=module', '--eval', probeSource], {
     cwd: repoRoot, // so the workspace symlinks resolve @willramdev/kit + /router
@@ -143,6 +145,7 @@ function noProcessProof() {
   const imports = [
     "await import('@willramdev/kit');",
     "await import('@willramdev/router');",
+    "await import('@willramdev/devtools');",
   ];
 
   const plainProbe = ['globalThis.process = undefined;', ...imports, "console.log('NO_PROCESS_OK');"].join('\n');
@@ -155,7 +158,7 @@ function noProcessProof() {
 
   const firstErr = first.stderr || '';
   if (/process is not defined/.test(firstErr)) {
-    fail(`NO-PROCESS FAIL: importing @willramdev/kit or @willramdev/router threw "process is not defined".\n${firstErr}`);
+    fail(`NO-PROCESS FAIL: importing @willramdev/kit, @willramdev/router or @willramdev/devtools threw "process is not defined".\n${firstErr}`);
   }
 
   // The plain-Node import failed for a reason UNRELATED to process (e.g. a
@@ -184,7 +187,7 @@ function noProcessProof() {
 
   const secondErr = second.stderr || '';
   if (/process is not defined/.test(secondErr)) {
-    fail(`NO-PROCESS FAIL: importing @willramdev/kit or @willramdev/router threw "process is not defined" (jsdom path).\n${secondErr}`);
+    fail(`NO-PROCESS FAIL: importing @willramdev/kit, @willramdev/router or @willramdev/devtools threw "process is not defined" (jsdom path).\n${secondErr}`);
   }
   fail(
     `NO-PROCESS FAIL: import probe failed for a non-process reason.\n` +
