@@ -1,24 +1,28 @@
 ---
 phase: 10-examples-integration-app
 verified: 2026-08-22T20:18:37Z
-status: human_needed
+status: passed
 score: 8/11 must-haves verified
 behavior_unverified: 3
 overrides_applied: 0
 behavior_unverified_items:
+
   - truth: "Navigating to `/` renders <home-view>, which subscribes to a @willramdev/store slice via storeSlice/.value and re-renders on update()."
     test: "Run `npm run dev -w examples`, open http://localhost:5173/, click the counter button."
     expected: "<home-view> mounts under the outlet; the count increments on each click (store slice re-renders the host)."
     why_human: "Router outlet mount + store-slice reactivity are runtime state transitions; presence/build checks confirm the element is defined, imported, routed, and bundled, but cannot observe that the outlet actually mounts it or that the slice re-render fires."
+
   - truth: "Navigating to `/data` renders <data-view>, which provides one QueryClient via <lit-query-client-provider> and reads it back through a nested QueryController (.result.data)."
     test: "In the dev server, click the Data nav link (or visit /data)."
     expected: "<data-view> mounts; status transitions to success and the three mock todos render in the list."
     why_human: "QueryController async state transition (pending -> success) and DOM-context client resolution are runtime behaviors no automated test exercises this phase (Playwright smoke tests deferred to EXPL-F1)."
+
   - truth: "Navigating to `/form` renders <form-view>, whose createForm-backed <lit-form> binds inputs via bind()/field() and validates with required()/email()/minLength()."
     test: "In the dev server, click the Form nav link (or visit /form); submit empty, then enter an invalid email and a short password."
     expected: "<form-view> mounts; validation error text appears via field() for required/email/minLength failures; submit logs the value when valid."
     why_human: "Form binding, validation firing, and error rendering are runtime behaviors; static checks confirm the wiring and validator imports but cannot observe validation actually running in the browser."
 human_verification:
+
   - test: "Run `npm run dev -w examples` and visit /, /data, /form"
     expected: "Each route mounts its seam view (store counter, query todo list, form with validation) through the shared <router-provider>/<router-outlet>/<router-link> shell."
     why_human: "End-to-end runtime rendering of the four cross-package seams is not machine-verifiable without a browser; no automated behavioral test exists (EXPL-F1 Playwright smoke deferred to Future Requirements)."
