@@ -1,0 +1,74 @@
+{
+  "name": "@willramdev/devtools",
+  "version": "1.0.0",
+  "description": "Opt-in, dev-gated, tree-shakeable debugging helpers for litkit: store time-travel, query-cache inspection, router match log",
+  "keywords": [
+    "lit",
+    "devtools",
+    "debugging",
+    "redux-devtools",
+    "tanstack-query",
+    "web-components"
+  ],
+  "license": "MIT",
+  "author": "William Ramanand",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/willramdev/litkit.git",
+    "directory": "packages/devtools"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "main": "./dist/devtools.js",
+  "module": "./dist/devtools.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/devtools.js"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "prepublishOnly": "npm run typecheck && npm run build"
+  },
+  "dependencies": {
+    "esm-env": "^1.2.2"
+  },
+  "peerDependencies": {
+    "@willramdev/store": "^1.0.0",
+    "@willramdev/query": "^1.0.0",
+    "@willramdev/router": "^1.0.0",
+    "@tanstack/query-core": "^5.0.0",
+    "@tanstack/query-devtools": "^5.91.0"
+  },
+  "peerDependenciesMeta": {
+    "@willramdev/store": { "optional": true },
+    "@willramdev/query": { "optional": true },
+    "@willramdev/router": { "optional": true },
+    "@tanstack/query-core": { "optional": true },
+    "@tanstack/query-devtools": { "optional": true }
+  },
+  "devDependencies": {
+    "@willramdev/store": "*",
+    "@willramdev/query": "*",
+    "@willramdev/router": "*",
+    "@tanstack/query-core": "^5.91.0",
+    "@tanstack/query-devtools": "^5.91.0",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.1",
+    "vitest": "^4.1.9"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}
