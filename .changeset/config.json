@@ -3,7 +3,7 @@
   "changelog": "@changesets/cli/changelog",
   "commit": false,
   "fixed": [
-    ["@willramdev/kit", "@willramdev/router", "@willramdev/query", "@willramdev/forms", "@willramdev/store"]
+    ["@willramdev/kit", "@willramdev/router", "@willramdev/query", "@willramdev/forms", "@willramdev/store", "@willramdev/devtools"]
   ],
   "access": "restricted",
   "baseBranch": "main",
