@@ -53,7 +53,7 @@ Requirements for the DX milestone. Each maps to exactly one roadmap phase (trace
 
 - [x] **DEPS-01**: `.github/dependabot.yml` is configured for `npm` + `github-actions`, grouped, on a weekly cadence
 - [x] **DEPS-02**: Dependabot ignores `lit` / `@tanstack/*` peer-range bumps and surfaces `changesets/action` SHA bumps for manual review (never auto-merged)
-- [ ] **DEPS-03**: CI runs a dependency-advisory audit (OSV scanner or `npm audit --audit-level=high`) under the read-only token; `actions/checkout` + `setup-node` bumped to `@v5`
+- [x] **DEPS-03**: CI runs a dependency-advisory audit (OSV scanner or `npm audit --audit-level=high`) under the read-only token; `actions/checkout` + `setup-node` bumped to `@v5`
 
 ## Future Requirements
 
@@ -118,7 +118,7 @@ Each v1.1 requirement maps to exactly one phase. Phase numbering continues from 
 | DTOOL-04 | Phase 11 | Complete |
 | DEPS-01 | Phase 12 | Complete |
 | DEPS-02 | Phase 12 | Complete |
-| DEPS-03 | Phase 12 | Pending |
+| DEPS-03 | Phase 12 | Complete |
 
 **Coverage:**
 
