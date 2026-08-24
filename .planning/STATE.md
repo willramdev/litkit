@@ -5,16 +5,16 @@ milestone_name: Developer Experience
 current_phase: 12
 current_phase_name: Dependency Hygiene
 status: executing
-stopped_at: Phase 12 context gathered
-last_updated: "2026-08-24T01:10:02.315Z"
+stopped_at: Completed 12-01-PLAN.md
+last_updated: "2026-08-24T02:39:36.016Z"
 last_activity: 2026-08-23
-last_activity_desc: Phase 11 complete, transitioned to Phase 12
-state_head: 044b57a1820daeb0817f29c2ad5b6a768d11599e
+last_activity_desc: Phase 12 execution started
+state_head: 9570a53df54795b9cfc280418166c9345cb826da
 progress:
   total_phases: 7
   completed_phases: 6
   total_plans: 21
-  completed_plans: 19
+  completed_plans: 20
   percent: 86
 ---
 
@@ -29,10 +29,10 @@ See: .planning/PROJECT.md (updated 2026-08-23)
 
 ## Current Position
 
-Phase: 12 (Dependency Hygiene) — READY TO EXECUTE
-Plan: Not started
+Phase: 12 (Dependency Hygiene) — EXECUTING
+Plan: 2 of 2
 Status: Ready to execute
-Last activity: 2026-08-23 — Phase 11 complete, transitioned to Phase 12
+Last activity: 2026-08-23 — Phase 12 execution started
 
 Progress: [█████████░] 86% (v1.1 — 6/7 phases)
 
@@ -83,6 +83,7 @@ Progress: [█████████░] 86% (v1.1 — 6/7 phases)
 | Phase 11 P01 | 5min | 3 tasks | 15 files |
 | Phase 11 P02 | 4min | 2 tasks | 3 files |
 | Phase 11 P03 | 3min | 2 tasks | 3 files |
+| Phase 12 P01 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -117,6 +118,7 @@ Full v1.0 decision log archived in PROJECT.md (Key Decisions) and `.planning/mil
 - [Phase 11]: 11-02: browser-only path tested via vi.stubGlobal('window',…) on the node test env — no jsdom environment forced; store core untouched (type-only Store import)
 - [Phase 11]: attachQueryDevtools lazy-imports @tanstack/query-devtools (await import, never top-level) so the heavy panel is a separate async chunk out of the consumer main bundle (Pattern 2, T-11-01c)
 - [Phase 11]: Phase 11 devtools public surface complete: three per-module tree-shakeable attach fns (attachRouterLog/attachStoreDevtools/attachQueryDevtools); DTOOL-01 proven via build+typecheck+27 tests+publint+attw+leaf-rule
+- [Phase 12]: [Phase 12]: 12-01: .github/dependabot.yml — grouped weekly npm + github-actions; minor+patch grouped, majors split (D-05); npm ignore lit/@tanstack/* (all updates, D-07); zero PR-automation, changesets/action SHA bump surfaced for manual review (D-08/D-09)
 
 ### Pending Todos
 
@@ -138,9 +140,9 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-24T00:37:51.257Z
-Stopped at: Phase 12 context gathered
-Resume file: C:/repos/litkit/.planning/phases/12-dependency-hygiene/12-CONTEXT.md
+Last session: 2026-08-24T02:39:24.542Z
+Stopped at: Completed 12-01-PLAN.md
+Resume file: None
 
 ## Operator Next Steps
 
