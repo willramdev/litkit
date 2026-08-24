@@ -1,149 +1,88 @@
 # External Integrations
 
-**Analysis Date:** 2026-08-10
+**Analysis Date:** 2026-08-23
 
-## Overview
+## APIs & External Services
 
-Litkit is a library project providing Lit web component controllers and utilities. It does not implement external API integrations directly. Instead, it wraps popular data management libraries with Lit reactive controller patterns. Consuming applications using these packages will manage their own integrations.
+litkit is a client-side web-component library, not an application. It integrates with browser platform APIs and third-party engine libraries rather than remote services.
 
-## Wrapped Libraries & Integrations
+**Browser Platform APIs:**
+- `URLPattern` - Native route matching (`packages/router/src/router-core/`, `URLPatternMatcher`) with regex fallback (`CompiledPathMatcher`)
+- History / `popstate` navigation - Router navigation
+- DOM Context API - Cross-shadow-DOM dependency injection for providers
+- `customElements` registry - Web component registration
 
-### TanStack Query (Data Fetching)
-
-**Package:** `@willramdev/query` wraps `@tanstack/query-core`
-- **Location:** `packages/query/src`
-- **Purpose:** Provides reactive Lit controllers for TanStack Query (formerly React Query)
-- **What it integrates with:** Consuming applications provide fetch functions/HTTP clients
-  - Query: `packages/query/src/query-controller.ts`
-  - Mutation: `packages/query/src/mutation-controller.ts`
-- **Client:** Consumers create `QueryClient` via `createQueryClient()` factory (`packages/query/src/create-query-client.ts`)
-- **Configuration:** Query options via `queryOptions()` and mutation options via `mutationOptions()` helpers
-
-**Typical consumer integration:**
-```typescript
-// Application code would call:
-const queryClient = createQueryClient();
-const queryFn = () => fetch('/api/data').then(r => r.json());
-const query = new QueryController(host, { queryKey: ['data'], queryFn });
-```
-
-### TanStack Form (Form Management)
-
-**Package:** `@willramdev/forms` wraps `@tanstack/form-core`
-- **Location:** `packages/forms/src`
-- **Purpose:** Provides type-safe Lit controllers for TanStack Form validation and binding
-- **What it integrates with:** Form validation via optional Zod schema
-  - Form: `packages/forms/src/form-controller.ts`
-  - Field: `packages/forms/src/field-controller.ts`
-  - Zod validation: `packages/forms/src/zod.ts` (optional export)
-- **Validation:** Optional Zod integration via `@willramdev/forms/zod` export for schema-based validation
-  - Zod 4.3.6 (dev/peer dependency, optional)
-
-**Typical consumer integration:**
-```typescript
-// Application code would call:
-const form = new FormController(host, {
-  defaultValues: { email: '' },
-  onSubmit: (values) => submitForm(values)
-});
-
-// Optional Zod validation:
-import { zodValidator } from '@willramdev/forms/zod';
-const form = new FormController(host, {
-  validator: zodValidator(mySchema)
-});
-```
+**Third-Party Engine Libraries (peer dependencies, consumer-supplied):**
+- TanStack Query Core (`@tanstack/query-core` ^5.0.0) - Reactive data fetching / caching; wrapped by `@willramdev/query`
+- TanStack Form Core (`@tanstack/form-core` ^1.0.0) - Form state engine; wrapped by `@willramdev/forms`
+- TanStack Query Devtools (`@tanstack/query-devtools` ^5.91.0) - Optional query cache inspection; used by `@willramdev/devtools`
+- Zod (`zod` >=3.0.0) - Optional runtime schema validation via `@willramdev/forms/zod` subexport
+- Redux DevTools - Store time-travel debugging integration surfaced through `@willramdev/devtools` (browser extension protocol)
 
 ## Data Storage
 
 **Databases:**
-- None - Litkit provides data fetching/mutation controllers; consuming applications manage persistence
+- None - Library has no persistence layer
 
 **File Storage:**
-- None - Litkit does not handle file operations
+- Not applicable
 
 **Caching:**
-- Built-in via TanStack Query Core
-  - `QueryClient` manages cache internally
-  - Consumers control cache invalidation via query keys
-
-**State Management:**
-- `@willramdev/store` - Lightweight reactive store for shared state (`packages/store/src`)
-  - No external integration; provides in-memory observable store
-  - Location: `packages/store/src/store.ts`
+- In-memory only, delegated to TanStack Query Core cache (managed by consumer's QueryClient). No litkit-owned cache.
 
 ## Authentication & Identity
 
 **Auth Provider:**
-- Not implemented in litkit
-- Consuming applications responsible for handling auth
-- Query and form controllers work with any auth mechanism (bearer tokens, cookies, etc.)
+- None at library runtime. Router supports route guards (consumer-implemented auth logic), but litkit ships no auth provider.
+
+**Package registry auth (distribution, not runtime):**
+- GitHub Packages via GitHub PAT scoped `read:packages` (consumers) — supplied via `${GITHUB_TOKEN}` env expansion in `.npmrc`, never a committed literal (`.npmrc.example`)
 
 ## Monitoring & Observability
 
 **Error Tracking:**
-- Not implemented in litkit
-- Query errors accessible via `QueryController.isError`, `QueryController.error`
-- Form errors accessible via field error state
-- Consumers implement their own error reporting
+- None built in. `@willramdev/devtools` provides dev-gated debugging (store time-travel, query-cache inspection, router match log), tree-shaken out of production builds via `esm-env` DEV gating.
 
 **Logs:**
-- Not implemented in litkit
-- Router has internal navigation logging (opt-in, not yet implemented per TODO.md)
+- No logging infrastructure; consumers handle logging
 
 ## CI/CD & Deployment
 
-**Hosting:**
-- Not applicable - Litkit is a library, deployed via npm registry
+**Package Distribution:**
+- GitHub Packages registry (`https://npm.pkg.github.com`), scope `@willramdev`
 
-**CI Pipeline:**
-- Not configured in repo (no `.github/workflows/`)
-- Consumers build their own CI/CD for applications using litkit
+**Docs Hosting:**
+- GitHub Pages - TypeDoc API site deployed to `/litkit/` subpath (`.github/workflows/docs.yml`) via OIDC `id-token`, no PAT
 
-**Publishing:**
-- Target: npm registry (https://www.npmjs.com/)
-- Build output: ES modules + TypeScript definitions
-- Packages: `@willramdev/kit`, `@willramdev/router`, `@willramdev/query`, `@willramdev/forms`, `@willramdev/store`
+**CI Pipeline (`.github/workflows/`):**
+- `ci.yml` - Read-only gate (install / typecheck / build / test) on push + PR to main; Node 22 & 24 matrix; `permissions: contents: read` only
+- `release.yml` - Changesets-driven publish of the `@willramdev/*` tarballs to GitHub Packages on push to main; `permissions: contents/pull-requests/packages: write`; uses built-in `GITHUB_TOKEN` (no PAT)
+- `docs.yml` - Builds + deploys TypeDoc site to GitHub Pages
+- `verify-consumer.yml` - Opt-in (`workflow_dispatch`) reproducible consumer-install verification (`scripts/verify-consumer.mjs`); `permissions: contents: read, packages: read`
 
-## Webhooks & Callbacks
+**Actions used:**
+- `actions/checkout@v5`, `actions/setup-node@v5`, `changesets/action`, `actions/deploy-pages` (OIDC)
 
-**Incoming:**
-- Not applicable to litkit library
-
-**Outgoing:**
-- Form submission callbacks: `onSubmit`, `onInvalidSubmit` in `FormController` (`packages/forms/src/form-controller.ts`)
-- Mutation callbacks: `onSuccess`, `onError`, `onSettled` in `MutationController` (`packages/query/src/mutation-controller.ts`)
-- Route hooks: `beforeEach`, `afterEach` in `RouterOptions` (`packages/router/src/router-options.ts`)
+**Dependency automation:**
+- Dependabot v2 (`.github/dependabot.yml`) - Weekly grouped minor+patch PRs for npm (`/`) and github-actions; majors split to standalone PRs; `lit` and `@tanstack/*` ignored to avoid narrowing externalized peer ranges; no automatic merging (all manually reviewed)
 
 ## Environment Configuration
 
 **Required env vars:**
-- None for litkit library itself
-- Consuming applications may define their own for API endpoints, auth tokens, etc.
+- None for library operation
+- `GITHUB_TOKEN` - Only for installing/publishing packages against GitHub Packages (CI uses built-in Actions token; consumers use a `read:packages` PAT)
 
 **Secrets location:**
-- Not applicable to litkit library
-- Consuming applications handle secrets management
+- No secrets committed. `.npmrc.example` documents env-var expansion pattern; real `.npmrc` auth line never carries a literal token.
 
-## Peer Dependencies
+## Webhooks & Callbacks
 
-Packages require consumers to install:
-- `lit` >=3.0.0 (all packages) - Web components framework
-- `zod` >=3.0.0 (optional for forms) - For schema validation in `@willramdev/forms/zod`
+**Incoming:**
+- None
 
-## Integration Testing
-
-**Router integration:** `packages/router/src/router-lit/index.test.ts`
-- Tests `<router-outlet>` component rendering
-- Tests `link()` directive navigation
-- Tests `RouteController` integration with Lit
-
-**Query integration:** `packages/query/src/query-controller.test.ts`
-- Tests controller lifecycle with Lit host updates
-
-**Form integration:** `packages/forms/src/form-controller.test.ts`
-- Tests form state synchronization with Lit rendering
+**Outgoing:**
+- None
 
 ---
 
-*Integration audit: 2026-08-10*
+*Integration audit: 2026-08-23*

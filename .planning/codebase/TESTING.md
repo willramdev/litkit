@@ -1,59 +1,49 @@
 # Testing Patterns
 
-**Analysis Date:** 2026-08-10
+**Analysis Date:** 2026-08-23
 
 ## Test Framework
 
 **Runner:**
-- `vitest` (^4.1.9)
-- Configuration in `vite.config.ts` (within each package)
-- Root `package.json` lists vitest as dependency
-- Environment: `jsdom` for DOM testing in browser-like context
+- Vitest 4.1.9
+- Root config: `vitest.config.ts` (aggregates all packages via `projects: ['packages/*']`)
+- Per-package config lives inside each `vite.config.ts` under the `test` key (e.g. `packages/kit/vite.config.ts`, `packages/router/vite.config.ts`)
 
 **Assertion Library:**
-- `vitest` built-in assertions via `expect()`
-- Matchers include: `toEqual()`, `toBe()`, `toHaveBeenCalled()`, `toHaveBeenCalledOnce()`, `not.toBe()`, `toThrow()`, etc.
+- Vitest built-in `expect` (Jest-compatible API)
+
+**Environment:**
+- `jsdom` (29.0.1) — set via `test.environment: 'jsdom'` in each package's Vite config
+- Shared setup: `test-setup.ts` at repo root, referenced by each package as `setupFiles: ['../../test-setup.ts']`
 
 **Run Commands:**
 ```bash
-npm run test                 # Run all tests in all packages (from root)
-npm run test -w @willramdev/kit # Run tests in specific package
-vitest run                   # Run tests once (in package dir)
-vitest                       # Watch mode (in package dir)
+npm test                        # run all workspace test scripts (npm run test --workspaces --if-present)
+npm run test -w @willramdev/kit # single package (script: "vitest run")
+npm run coverage                # vitest run --coverage — one combined v8 report
+vitest run packages/kit/src/prop.test.ts   # single file (from a package dir or root)
 ```
 
 ## Test File Organization
 
 **Location:**
-- **Kit and Forms packages:** Co-located with source — `src/[name].test.ts` next to `src/[name].ts`
-  - Example: `packages/kit/src/prop.test.ts` alongside `packages/kit/src/prop.ts`
-- **Router package:** Grouped in subdirectory — `src/test/[name].test.ts`
-  - Example: `packages/router/src/test/router.test.ts`
+- Co-located with source: `packages/kit/src/prop.ts` ↔ `packages/kit/src/prop.test.ts`
+- Controllers keep tests beside them: `packages/kit/src/controllers/listen.test.ts`
+- Router groups most tests in a subdirectory: `packages/router/src/test/*.test.ts`
+- 53 test files across `kit`, `forms`, `query`, `router`, `store`, `devtools`
 
 **Naming:**
-- Test files follow pattern: `[functionality].test.ts` (e.g., `prop.test.ts`, `computed.test.ts`, `listen.test.ts`)
-- Matches source file name exactly except for `.test.ts` suffix
+- `[name].test.ts` — always mirrors the source file name
 
 **Structure:**
 ```
-packages/kit/src/
-├── prop.ts
-├── prop.test.ts
-├── computed.ts
-├── computed.test.ts
-├── controllers/
-│   ├── listen.ts
-│   └── listen.test.ts
-└── index.ts
-
+packages/<pkg>/src/
+  <feature>.ts
+  <feature>.test.ts        # co-located
+  controllers/<name>.test.ts
 packages/router/src/
-├── router-core/
-├── router-lit/
-└── test/
-    ├── router.test.ts
-    ├── link.test.ts
-    ├── path.test.ts
-    └── ... (11 total test files)
+  router-core/testing.ts   # shared mock/factory helpers (createMockRouter, mockMatch)
+  test/<name>.test.ts      # grouped tests
 ```
 
 ## Test Structure
@@ -61,79 +51,27 @@ packages/router/src/
 **Suite Organization:**
 ```typescript
 import { describe, it, expect, vi } from 'vitest';
-import { functionUnderTest } from './source.ts';
+import { listen } from './listen.ts';
 
-describe('functionUnderTest', () => {
-  it('does something specific', () => {
-    // Arrange
-    const input = 'value';
-    
-    // Act
-    const result = functionUnderTest(input);
-    
-    // Assert
-    expect(result).toBe('expected');
-  });
-
-  it('handles edge case', () => {
-    expect(functionUnderTest(null)).toBe(undefined);
+describe('listen', () => {
+  it('returns a controller factory', () => {
+    const factory = listen('window', 'resize', () => {});
+    expect(typeof factory).toBe('function');
   });
 });
 ```
 
 **Patterns:**
-- One `describe()` block per function/class
-- Multiple `it()` blocks for different scenarios
-- Descriptive test names that read as behavior: "computes value lazily on first access", "returns error for null", etc.
-- No additional nesting; describe → it only (no nested describe blocks observed)
-
-**Setup/Teardown:**
-```typescript
-import { beforeEach, afterEach, describe, it, expect, vi } from 'vitest';
-
-describe('Router', () => {
-  let router: Router;
-
-  beforeEach(() => {
-    setLocation('/');
-  });
-
-  afterEach(() => {
-    router?.dispose();
-  });
-
-  it('resolves current location on creation', () => {
-    router = createRouter({ routes });
-    expect(router.current).not.toBeNull();
-  });
-});
-```
-
-- `beforeEach()` runs before each test — ideal for resetting state or DOM
-- `afterEach()` runs after each test — cleanup, disposal, DOM removal
+- `describe` block per unit (function/class/controller); `it` per behavior, phrased as a full sentence describing the observable outcome.
+- Setup helpers are local factory functions at the top of the file (`createMockHost()`, `mountElement()`, `setup()`), not shared globals.
+- Manual teardown inside each `it` (`el.remove()`, `document.body.removeEventListener(...)`); router context tests use `afterEach` for shared `container` cleanup.
+- Controllers are tested by asserting construction + lifecycle: call `factory(host)`, then `ctrl.hostConnected()` / `ctrl.hostDisconnected()`, then assert side effects.
 
 ## Mocking
 
-**Framework:** `vi` from vitest
+**Framework:** Vitest `vi` (`vi.fn()`, `vi.spyOn`, `.mock.calls`)
 
 **Patterns:**
-
-Mock functions:
-```typescript
-const fn = vi.fn();
-const callbackWithDefault = vi.fn(() => 42);
-expect(fn).toHaveBeenCalled();
-expect(fn).toHaveBeenCalledOnce();
-expect(callbackWithDefault).toHaveBeenCalledWith(arg1, arg2);
-```
-
-Spying on existing methods:
-```typescript
-const mountSpy = vi.spyOn(client, 'mount');
-expect(mountSpy).toHaveBeenCalledTimes(1);
-```
-
-Mock host/element factory (reusable across tests):
 ```typescript
 function createMockHost() {
   return {
@@ -143,178 +81,97 @@ function createMockHost() {
     updateComplete: Promise.resolve(true),
   };
 }
+// usage: const ctrl = factory(host as any);
+// expect(host.addController).toHaveBeenCalledWith(ctrl);
 ```
+- A hand-rolled mock `ReactiveControllerHost` (`createMockHost`) is the standard way to unit-test controller factories in isolation, cast with `as any`.
+- Router provides reusable mock builders in `packages/router/src/router-core/testing.ts`: `createMockRouter(opts)` and `mockMatch(...)`.
+- Real custom elements are registered and mounted for integration-style tests instead of mocking the DOM.
+
+**Inert browser-global stubs (`test-setup.ts`):**
+- `ResizeObserver` and `IntersectionObserver` are replaced with **inert** mock classes that never fire callbacks.
+- `window.matchMedia` is stubbed only when `window` exists and no implementation is present (guards node-environment packages).
+- **Convention:** assert construction/lifecycle (observer created, `disconnect()` on `hostDisconnected`), NOT that a resize/intersection callback fires. To assert callback behavior, spy on the constructed observer instance.
 
 **What to Mock:**
-- Controller lifecycle methods: `addController()`, `removeController()`, `requestUpdate()`
-- External APIs: TanStack Query client methods
-- Event handlers and callbacks
-- Functions that have external side effects
+- The `ReactiveControllerHost` when unit-testing a controller in isolation.
+- Router state via `createMockRouter` when testing components that consume routes.
 
 **What NOT to Mock:**
-- Core language features (Array, Object, Set, etc.)
-- Constructor parameter handlers (call actual functions)
-- Event dispatching (use `dispatchEvent()` directly)
-- Type validation logic — test with real types
-- Math operations and string manipulations
+- Custom elements — register and mount real ones (`define(...)`, `document.createElement`, `document.body.appendChild`).
+- DOM events — dispatch real `Event` / `CustomEvent` and assert handlers ran.
 
 ## Fixtures and Factories
 
 **Test Data:**
-
-Fixtures use factory functions for reusable setup:
 ```typescript
-function createMockHost() {
-  const el = document.createElement('div');
+class TestKitElement extends KitElement {}
+define('test-kit-element', TestKitElement);
+
+function mountElement(): TestKitElement {
+  const el = document.createElement('test-kit-element') as TestKitElement;
   document.body.appendChild(el);
-  return Object.assign(el, {
-    addController: vi.fn(),
-    removeController: vi.fn(),
-    requestUpdate: vi.fn(),
-    updateComplete: Promise.resolve(true),
-  });
-}
-
-function cleanup(host: HTMLElement) {
-  host.remove();
+  return el;
 }
 ```
-
-Route definitions for router tests:
-```typescript
-const routes = defineRoutes(
-  [
-    { path: "/", name: "home", component: "home-page" },
-    { path: "/users/:id", name: "user-detail", component: "user-page" },
-    { path: "*", name: "not-found", component: "not-found-page" },
-  ],
-  compiledMatcherFactory,
-);
-```
-
-Validator test data uses inline values:
-```typescript
-it('passes for valid emails', () => {
-  expect(email()('user@example.com')).toBeUndefined();
-  expect(email()('a@b.co')).toBeUndefined();
-});
-```
-
-**Location:**
-- Factory functions defined at top of test file (within test file, not in separate fixtures)
-- Inline test data for simple cases
-- No shared fixtures directory; each test file self-contained
+- Local `class Test...` element subclasses defined per test file, guarded with `if (!customElements.get(tag))` to stay idempotent across re-runs.
+- Shared router fixtures live in `router-core/testing.ts`.
 
 ## Coverage
 
-**Requirements:** Not explicitly enforced in configuration
+**Provider:** v8 (`@vitest/coverage-v8`)
 
-**Coverage Approach:**
-- All public APIs have test coverage
-- Common patterns: one test per primary behavior, plus edge cases
-- Example from `prop.test.ts`: 31 test cases covering all prop types and state variants
-- Async operations tested with spy tracking
+**Requirements:** **None enforced.** Coverage is report-only / observability (per the note in `vitest.config.ts`: "Do not add coverage gates here").
+
+**Config (root `vitest.config.ts`):**
+- Reporters: `text`, `json-summary`
+- Include: `packages/*/src/**`
+- Exclude: `**/*.test.ts`, `**/dist/**`, `**/*.d.ts`, `**/demo.ts`
 
 **View Coverage:**
 ```bash
-vitest run --coverage  # If coverage plugin configured (not detected in current setup)
+npm run coverage        # writes combined report to coverage/
 ```
 
 ## Test Types
 
 **Unit Tests:**
-- Majority of tests
-- Test individual functions in isolation (e.g., `prop.string()`, `normalizeProp()`)
-- Mock dependencies and external state
-- Fast, deterministic, no I/O
-- Example: `prop.test.ts` (40 tests, <100ms total)
+- Pure functions (validators, path building, prop normalization) and individual controllers via mock host. The majority of tests.
 
 **Integration Tests:**
-- Controller lifecycle tests with mocked host elements
-- Event listener setup/teardown with actual DOM events
-- Router navigation and route matching
-- QueryClient mount/unmount with actual client
-- Example: `listen.test.ts` dispatches real events to verify handler registration
+- Real custom-element mounting in jsdom (KitElement lifecycle, router provider/outlet/link wiring in `packages/router/src/test/router-context.test.ts`).
+
+**Schema / typing tests:**
+- Zod integration (`packages/forms/src/zod.test.ts`), and TS-level typing assertions (`packages/forms/src/bind-field-form-typing.test.ts`).
+- Consumer-facing type safety is separately gated by `tools/typecheck-smoke/` and `tools/type-snapshots/` (not Vitest).
 
 **E2E Tests:**
-- Not detected in current setup
-- Library is low-level; end-to-end would be consumer responsibility
+- Not used.
 
 ## Common Patterns
 
-**Basic Assertion:**
-```typescript
-it('normalizes String constructor to { type: String }', () => {
-  expect(normalizeProp(String)).toEqual({ type: String });
-});
-```
-
-**Null/Undefined Handling:**
-```typescript
-it('returns empty object for unknown values', () => {
-  expect(normalizeProp(undefined)).toEqual({});
-  expect(normalizeProp(42)).toEqual({});
-  expect(normalizeProp(null)).toEqual({});
-});
-```
-
 **Async Testing:**
 ```typescript
-it("navigate returns a resolved promise", async () => {
-  router = createRouter({ routes });
-  const result = await router.navigate("/users");
-  expect(result).toBe(true);
-});
+// Lit render flush
+const el = mountElement();
+await el.updateComplete;
+// or wait a macrotask for async engine updates:
+await new Promise((r) => setTimeout(r, 10));
 ```
+- `updateComplete` is awaited to flush Lit renders (used in ~10 test files).
 
-**Error Testing:**
+**Event Testing:**
 ```typescript
-it('throws when no client is available', () => {
-  const host = createMockHost();
-  const ctrl = new QueryController(host, { queryKey: ['test'], queryFn: () => 'data' });
-  
-  expect(() => ctrl.result).toThrow(/No QueryClient/);
-  cleanup(host);
-});
+el.emit('kit-emit', { value: 42 });
+const event = handler.mock.calls[0][0] as CustomEvent;
+expect(event).toBeInstanceOf(CustomEvent);
+expect(event.detail).toEqual({ value: 42 });
+expect(event.bubbles).toBe(true);
 ```
 
-**Function Call Tracking:**
-```typescript
-it('caches the bound method on the instance', () => {
-  class Foo {
-    @bind()
-    doStuff() {}
-  }
-
-  const foo = new Foo();
-  const first = foo.doStuff;
-  const second = foo.doStuff;
-  expect(first).toBe(second);  // Same cached reference
-});
-```
-
-**Mocking with Return Values:**
-```typescript
-it('skips recomputation when deps are equal', () => {
-  const host = createMockHost();
-  const computeFn = vi.fn(([a, b]: readonly [number, number]) => a * b);
-  const c = computed(host as any, () => [3, 4] as const, computeFn);
-
-  expect(c.value).toBe(12);
-  expect(computeFn).toHaveBeenCalledOnce();
-  
-  c.hostUpdate();
-  expect(computeFn).toHaveBeenCalledOnce();  // Not called again
-});
-```
-
-**Cleanup and Disposal:**
-```typescript
-afterEach(() => {
-  router?.dispose();
-});
-```
+**Console noise suppression:**
+- Router config filters jsdom "Not implemented" logs via `onConsoleLog` in `packages/router/vite.config.ts`.
 
 ---
 
-*Testing analysis: 2026-08-10*
+*Testing analysis: 2026-08-23*

@@ -1,223 +1,197 @@
-<!-- refreshed: 2026-08-10 -->
+<!-- refreshed: 2026-08-23 -->
 # Architecture
 
-**Analysis Date:** 2026-08-10
+**Analysis Date:** 2026-08-23
 
 ## System Overview
 
 ```text
-┌─────────────────────────────────────────────────────────────────────────┐
-│                         User Applications                                │
-│                      (User Web Components)                               │
-└────────┬──────────────────┬──────────────────┬──────────────────┬─────────┘
-         │                  │                  │                  │
-         ▼                  ▼                  ▼                  ▼
-┌────────────────┐  ┌───────────────┐  ┌──────────────┐  ┌─────────────────┐
-│ Router Layer   │  │ Query Layer   │  │ Forms Layer  │  │ Store Layer     │
-│ @willramdev/router│  │ @willramdev/query│  │ @willramdev/    │  │ @willramdev/store  │
-│ `packages/     │  │ `packages/    │  │ forms        │  │ `packages/      │
-│  router`       │  │  query`       │  │ `packages/   │  │  store`         │
-└────────┬───────┘  └───────┬───────┘  │  forms`      │  └────────┬────────┘
-         │                  │          └──────┬───────┘           │
-         │                  │                 │                  │
-         │    ┌─────────────┴─────────────────┴──────────────────┤
-         │    │                                                   │
-         ▼    ▼                                                   ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                      Core Kit Layer (KitElement)                         │
-│                   `packages/kit/src/kit-element.ts`                      │
-│  - Controller factory system (use())                                     │
-│  - Property management (static props())                                  │
-│  - Event emission (emit())                                               │
-│  - Watcher support (@watch decorator)                                    │
-└────────────────────┬─────────────────────────────────────────────────────┘
-                     │
-                     ▼
-         ┌───────────────────────────────┐
-         │     Lit Element Base           │
-         │ (lit/LitElement v3.3+)         │
-         └───────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                  Consumer Lit Application                    │
+│              (imports @willramdev/* packages)                │
+│                    `examples/src/`                           │
+└──────┬──────────┬──────────┬──────────┬──────────┬──────────┘
+       │          │          │          │          │
+       ▼          ▼          ▼          ▼          ▼
+┌──────────┐┌──────────┐┌──────────┐┌──────────┐┌──────────┐
+│  router  ││  query   ││  forms   ││  store   ││ devtools │
+│ `pkgs/   ││ `pkgs/   ││ `pkgs/   ││ `pkgs/   ││ `pkgs/   │
+│  router` ││  query`  ││  forms`  ││  store`  ││ devtools`│
+└────┬─────┘└────┬─────┘└────┬─────┘└────┬─────┘└────┬─────┘
+     │           │           │           │  (dev-gated,│
+     │           │           │           │   optional  │
+     ▼           ▼           ▼           ▼   peers)     │
+┌─────────────────────────────────────────────────┐    │
+│                @willramdev/kit                    │◄───┘
+│   KitElement, controller factories, decorators    │
+│              `packages/kit/src/`                  │
+└──────────────────────┬────────────────────────────┘
+                       │ (peer dependency only)
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Lit 3.x (LitElement + ReactiveController) │
+│              externalized in every Vite build                │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ## Component Responsibilities
 
 | Component | Responsibility | File |
 |-----------|----------------|------|
-| **KitElement** | Base class extending LitElement with ergonomic controller and event APIs | `packages/kit/src/kit-element.ts` |
-| **Kit Controllers** | Browser helpers (listen, mediaQuery, resizeObserver, etc.) | `packages/kit/src/controllers/` |
-| **Router (Core)** | Framework-agnostic routing engine with path matching, guards, and navigation | `packages/router/src/router-core/` |
-| **Router (Lit)** | Lit custom elements and controllers (RouterOutlet, RouterProvider, RouteController) | `packages/router/src/router-lit/` |
-| **Query Controller** | Lit reactive controller wrapping TanStack Query's QueryObserver | `packages/query/src/query-controller.ts` |
-| **Query Client Provider** | DOM context provider for QueryClient to descendant components | `packages/query/src/query-client-provider.ts` |
-| **Form Controller** | Lit reactive controller managing form state, validation, and submission | `packages/forms/src/form-controller.ts` |
-| **LitForm Provider** | DOM context provider for FormInstance to descendant field controls | `packages/forms/src/lit-form.ts` |
-| **Store** | Lightweight reactive store with subscription-based state updates | `packages/store/src/store.ts` |
-| **StoreSliceController** | Reactive controller for subscribing to store slices | `packages/store/src/store-slice.ts` |
+| **KitElement** | Ergonomic LitElement base — `use()` controller registration, prop/event helpers | `packages/kit/src/kit-element.ts` |
+| **Kit controllers** | Browser helpers (listen, mediaQuery, resizeObserver, intersectionObserver, clickOutside) | `packages/kit/src/controllers/` |
+| **Kit decorators/state** | `watch`, `bind`, `debounce`, `throttle`, `computed`, `queryState`, `persistedState` | `packages/kit/src/*.ts` |
+| **Router core** | Framework-neutral routing engine: matchers, guards, navigation | `packages/router/src/router-core/` |
+| **Router Lit** | Lit elements/controllers: RouterOutlet, RouterProvider, RouterLink, RouteController | `packages/router/src/router-lit/` |
+| **Query controllers** | Lit controllers wrapping TanStack Query QueryObserver/MutationObserver | `packages/query/src/query-controller.ts`, `mutation-controller.ts` |
+| **Query provider** | DOM-context provider for QueryClient | `packages/query/src/query-client-provider.ts`, `query-client-context.ts` |
+| **Form controller** | Lit controller over TanStack Form engine (fields, arrays, groups, validation) | `packages/forms/src/form-controller.ts` |
+| **LitForm provider** | DOM-context provider for FormInstance to field controls | `packages/forms/src/lit-form.ts`, `form-context.ts` |
+| **Store** | Closure-based reactive store with subscription + scheduler batching | `packages/store/src/store.ts`, `scheduler.ts` |
+| **Store slice/derived** | Reactive controllers for slice subscription and derived values | `packages/store/src/store-slice.ts`, `derived.ts` |
+| **Devtools** | Opt-in, dev-gated attach functions for store/query/router debugging | `packages/devtools/src/*.ts` |
 
 ## Pattern Overview
 
-**Overall:** Monorepo of five specialized Lit.dev packages, each following the **Reactive Controller** pattern with framework-neutral core + Lit integration.
+**Overall:** Monorepo of six independent, composable packages, each built on a **framework-neutral core + Lit-integration** split, unified by the **Reactive Controller** pattern.
 
 **Key Characteristics:**
-- **Reactive Controllers**: All stateful packages expose Lit `ReactiveController` implementations for component lifecycle integration
-- **Controller Factories**: Functions returning `(host) => controller` for ergonomic registration via `this.use()`
-- **Context Providers**: Custom elements (RouterProvider, LitQueryClientProvider, LitForm) use DOM context APIs to inject dependencies into descendant components
-- **Peer Dependencies on Lit 3.0+**: Each package declares `lit@^3.0.0` as a peer dependency; builds externalize lit to prevent duplication
-- **TypeScript Strict + erasableSyntaxOnly**: All code uses `erasableSyntaxOnly: true` (no constructor parameter properties) with strict type checking
+- Every stateful package exposes Lit `ReactiveController` implementations for lifecycle integration
+- **Controller factories** — functions returning `(host) => controller` — enable ergonomic registration via `this.use()` or static fields
+- **DOM context providers** (RouterProvider, LitQueryClientProvider, LitForm) inject dependencies across shadow-DOM boundaries without prop drilling
+- **Unidirectional dependency graph**: `kit` depends only on Lit; sibling packages may reuse kit patterns; `kit` never imports siblings
+- Core logic (e.g., `router-core/`, forms `internal/engine.ts`) contains **no Lit code**, enabling SSR/non-Lit reuse
 
 ## Layers
 
-**Package/Integration Layer:**
-- Purpose: Integrate external frameworks (TanStack Query, TanStack Form) or provide domain-specific functionality (routing, state)
-- Location: `packages/{router,query,forms,store,kit}/src/`
-- Contains: Controllers, context providers, custom elements, bridge code
-- Depends on: Kit (for base patterns), Lit, TanStack libraries (where applicable)
-- Used by: User applications via npm import
+**Integration layer (feature packages):**
+- Purpose: Provide routing, data fetching, forms, state, and devtools as Lit bindings
+- Location: `packages/{router,query,forms,store,devtools}/src/`
+- Contains: Controllers, DOM-context providers, custom elements, bridge code to TanStack cores
+- Depends on: Lit (peer), TanStack cores (peer, where applicable), kit patterns
+- Used by: Consumer applications via npm import
 
-**Kit Core Layer:**
-- Purpose: Provide ergonomic Lit base class, controller factories, and lightweight utilities
+**Foundation layer (kit):**
+- Purpose: Ergonomic Lit base class, controller factories, decorators, lightweight utilities
 - Location: `packages/kit/src/`
-- Contains: KitElement, prop helpers, decorators (watch, bind, debounce), controllers (listen, mediaQuery, etc.)
-- Depends on: Lit only
-- Used by: All other packages (pattern foundation), user applications directly
+- Depends on: Lit only (+ `esm-env` for dev gating)
+- Used by: All other packages as pattern foundation; consumer apps directly
 
-**Lit Element Base:**
-- Purpose: Web component lifecycle and reactivity
-- Framework: Lit 3.x LitElement
-- External dependency
+**Framework layer (Lit):**
+- Purpose: Web-component lifecycle and reactivity (LitElement, ReactiveController)
+- External peer dependency, externalized in all Vite builds
 
 ## Data Flow
 
 ### Primary Request Path: Route Navigation
 
-1. User interaction (link click, programmatic navigation) → Browser/window API
-2. Window popstate or history API change detected (`packages/router/src/router-core/router.ts:60-70`)
-3. Router resolves location to route match → applies guards
-4. Trigger `RouteController` via subscription → call `host.requestUpdate()` (`packages/router/src/router-lit/route-controller.ts`)
-5. Components using `routeState()` factory re-render with new match data
-6. RouterOutlet displays matched component, RouterLink highlights active route
+1. User clicks `RouterLink` / calls `router.navigate()` (`packages/router/src/router-lit/router-link.ts`)
+2. Router core resolves match via matcher + runs guards (`packages/router/src/router-core/router.ts`)
+3. Router notifies subscribers; `RouteController` calls `host.requestUpdate()` (`packages/router/src/router-lit/route-controller.ts`)
+4. `RouterOutlet` renders matched component (`packages/router/src/router-lit/router-outlet.ts`)
 
 ### Query Data Fetching Flow
 
-1. Component initializes `QueryController` via `query()` factory (`packages/query/src/index.ts:57-73`)
-2. Controller wraps TanStack's `QueryObserver`, subscribes to query state
-3. Query executes async `queryFn`, result cached by TanStack Query
-4. Observer emits change → Controller calls `host.requestUpdate()`
-5. Component accesses `controller.result` (data/error/status) during render
+1. `query(options)` factory creates `QueryController` bound to host (`packages/query/src/index.ts`)
+2. Controller obtains QueryClient via DOM context (`query-client-context.ts`)
+3. QueryObserver subscription pushes state changes → `host.requestUpdate()` (`packages/query/src/query-controller.ts`)
 
 ### Form State Management Flow
 
-1. Component instantiates `FormController` via `form()` factory (`packages/forms/src/index.ts:17-22`)
-2. Controller wraps TanStack Form Core engine, creates sub-controllers for fields/arrays
-3. Field input events → call field validators → form state updates
-4. Field change → Controller calls `host.requestUpdate()`
-5. Form submission → run form validators → call `onSubmit` callback
+1. `form(config)` factory creates `FormController` over TanStack Form engine (`packages/forms/src/form-controller.ts`, `internal/engine.ts`)
+2. `LitForm` provides FormInstance via DOM context; `bind()` directive wires field controls (`packages/forms/src/bind.ts`)
+3. Field/array/group controllers subscribe and trigger host updates
 
 **State Management:**
-- **Router**: Single current `RouteMatch` per Router instance; immutable updates via subscription
-- **Query**: Managed by TanStack Query Core (cached, gc'd by stale-time, deduped)
-- **Forms**: Managed by TanStack Form Core engine (nested field/array tree structure)
-- **Store**: Managed locally in `Store<T>` closure; notifies subscribers on explicit `set()` or `update()`
+- **Router:** single current `RouteMatch` per instance; immutable updates via subscription
+- **Query:** managed by TanStack Query Core (cached, deduped, gc'd)
+- **Forms:** managed by TanStack Form Core engine (nested field/array tree)
+- **Store:** local `Store<T>` closure; subscriber notification batched via `scheduler.ts` / `batch()`
 
 ## Key Abstractions
 
 **Controller Factory:**
-- Purpose: Encapsulate controller creation with configuration, return a function `(host) => controller`
-- Examples: `query(options)`, `mutation(options)`, `form(config)`, `mediaQuery(query)`
-- Pattern: Factory returns function that receives `host` (ReactiveControllerHost) and constructs actual controller
-- Enables: Composable controller setup in static class fields or component constructors
+- Purpose: Encapsulate controller creation with config, return `(host) => controller`
+- Examples: `query()`, `mutation()`, `form()`, `routeState()`, `searchParams()`, `storeSlice()`, `mediaQuery()`
+- Enables: composable setup in static class fields or `this.use()`
 
 **Reactive Controller:**
-- Purpose: Lifecycle-aware, reusable logic for Lit components
-- Interface: Implements `ReactiveController` (hostConnected, hostDisconnected, hostUpdated methods)
-- Integration: Registered via `addController()` or KitElement's ergonomic `use()` method
-- Lifecycle: Attached before first render, can subscribe/unsubscribe during component lifecycle
+- Purpose: Lifecycle-aware, reusable logic (hostConnected/hostDisconnected/hostUpdated)
+- Integration: registered via `addController()` or KitElement's `use()`
 
-**DOM Context Pattern:**
-- Purpose: Inject dependencies (Router, QueryClient, FormInstance) into descendant components without prop drilling
-- Files: `packages/router/src/router-lit/router-context.ts`, `packages/query/src/query-client-context.ts`, etc.
-- Mechanism: Custom elements attach provider via `attachRouterProvider()` etc., descendants request via `requestRouter()` etc.
-- Scope: Works across shadow DOM boundaries (modern DOM context APIs)
+**DOM Context Provider:**
+- Purpose: inject Router/QueryClient/FormInstance into descendants across shadow DOM
+- Files: `router-lit/router-context.ts`, `query/src/query-client-context.ts`, `forms/src/form-context.ts`
+- Mechanism: `attach*Provider()` on host; descendants call `request*()`
 
-**Matcher/Router Core:**
-- Purpose: Framework-neutral routing with multiple matching strategies
-- Examples: `URLPatternMatcher` (native URLPattern API), `CompiledPathMatcher` (regex-based fallback)
-- Entry: `packages/router/src/router-core/router.ts` - `createRouter()` returns Router instance
-- Usage: Separated from Lit integration to allow SSR or non-web use
+**Route Matcher:**
+- Purpose: framework-neutral path matching with pluggable strategies
+- Examples: `URLPatternMatcher` (native URLPattern), `CompiledPathMatcher` (regex fallback), `autoMatcherFactory`
+- Entry: `packages/router/src/router-core/router.ts` (`createRouter()`)
 
 ## Entry Points
 
-**Kit (Core):**
-- Location: `packages/kit/src/index.ts`
-- Triggers: Import `@willramdev/kit`, use `KitElement`, controller factories, decorators
-- Responsibilities: Establish component base, factory patterns, utility functions
-
-**Router (Main):**
-- Location: `packages/router/src/index.ts`
-- Triggers: `import '@willramdev/router'` - re-exports both core and Lit modules
-- Responsibilities: Set up routing with `createRouter()`, render with RouterOutlet/RouterProvider
-
-**Router Core (Subexport):**
-- Location: `packages/router/src/router-core/index.ts`
-- Triggers: `import { createRouter } from '@willramdev/router/core'` (ESM/CJS conditional export)
-- Responsibilities: Framework-neutral routing (useful for non-Lit or SSR)
-
-**Query:**
-- Location: `packages/query/src/index.ts`
-- Triggers: `import { query, mutation } from '@willramdev/query'` or `import '@willramdev/query'` for provider element
-- Responsibilities: Set up queries/mutations via controller factories or provider element
-
-**Forms:**
-- Location: `packages/forms/src/index.ts`
-- Triggers: `import { form } from '@willramdev/forms'` or use `LitForm` element
-- Responsibilities: Create forms via controller factory, optionally use zod subexport for validation
-
-**Store:**
-- Location: `packages/store/src/index.ts`
-- Triggers: `import { createStore, storeSlice } from '@willramdev/store'`
-- Responsibilities: Create stores, subscribe to slices, integrate with Lit components
+Each package is a single `src/index.ts` barrel:
+- **kit:** `packages/kit/src/index.ts` — KitElement, factories, decorators
+- **router:** `packages/router/src/index.ts` — re-exports `./core` (`router-core/index.ts`) and `./lit` (`router-lit/index.ts`); package exports `.`, `./core`, `./lit`
+- **query:** `packages/query/src/index.ts` — `query()`, `mutation()`, provider element; re-exports `@tanstack/query-core`
+- **forms:** `packages/forms/src/index.ts` — `form()`, validators, `LitForm`; `./zod` subexport
+- **store:** `packages/store/src/index.ts` — `createStore`, `storeSlice`, `derived`, `batch`
+- **devtools:** `packages/devtools/src/index.ts` — `attachStoreDevtools`, `attachQueryDevtools`, `attachRouterLog`
 
 ## Architectural Constraints
 
-- **Threading:** Single-threaded event loop (browser JavaScript); router navigation updates queued via `requestUpdate()`, store changes batched via scheduler
-- **Global state:** No global singletons enforced at architecture level; Router and QueryClient are instance-based, passed via DI (context or constructor)
-- **Circular imports:** All packages maintain clear unidirectional dependency: kit ← query/router/forms/store (kit has no dependencies on other packages)
-- **Separation of concerns:** router-core is framework-agnostic; router-lit provides Lit bindings only. Same pattern (implicit) for other packages—no Lit code in core implementations
-- **ReactiveController lifecycle:** Controllers must gracefully handle reconnect/disconnect (cleanup subscriptions, re-attach in hostConnected)
-- **DOM Context Scope:** Context providers (RouterProvider, LitQueryClientProvider) use modern DOM context APIs; work across shadow DOM but require explicit attachment
+- **Threading:** single-threaded browser event loop; updates queued via `requestUpdate()`; store changes batched via `scheduler.ts`
+- **Global state:** no enforced singletons; Router/QueryClient/FormInstance are instance-based, injected via DOM context
+- **Circular imports:** unidirectional graph — `kit` never imports siblings; devtools depends on store/query/router as **optional** peers only. Enforced by `scripts/check-single-instance.mjs` and `scripts/check-devtools-leaf.mjs`
+- **Core/Lit separation:** `router-core` is framework-agnostic; `router-lit` holds all Lit bindings. Forms isolate the engine in `internal/engine.ts`. No Lit code in core
+- **Externalization:** every Vite build externalizes `lit`, `lit/*`, and `@tanstack/*` to prevent consumer bundle duplication (see `packages/*/vite.config.ts`)
+- **ReactiveController lifecycle:** controllers must clean up subscriptions on disconnect and re-attach on reconnect
+- **Dev gating:** dev-only warnings live behind `esm-env` / `internal/dev.ts` and are stripped in production builds (`tools/dev-warning-strip`)
 
 ## Anti-Patterns
 
 ### Circular Package Dependencies
 
-**What happens:** A package (e.g., @willramdev/forms) imports from another package (e.g., @willramdev/kit) which re-exports from forms
-**Why it's wrong:** Creates circular dependency in npm workspace, breaks tree-shaking, complicates CI/CD and type checking
-**Do this instead:** Keep dependency graph acyclic: kit has no dependencies on other packages. All other packages can depend on kit, but not each other. `packages/kit/src/index.ts` never imports from `packages/{router,query,forms,store}/src/`
+**What happens:** A sibling package imports from another sibling, or `kit` imports a feature package.
+**Why it's wrong:** breaks the unidirectional workspace graph, risks duplicate instances, circular resolution.
+**Do this instead:** depend only on `kit` patterns downward; devtools uses optional peers. Guarded by `scripts/check-single-instance.mjs`.
 
-### Using Decorators for Initialization in Non-KitElement
+### Lit Code in Core
 
-**What happens:** Applying `@watch`, `@bind`, `@debounce` outside of KitElement subclasses (e.g., directly on LitElement)
-**Why it's wrong:** KitElement's `updated()` hook processes watchers via symbol lookup; bare LitElement doesn't call `_processWatchers()`, so decorators silently fail
-**Do this instead:** Extend KitElement if using kit decorators, or apply decorators only in KitElement subclasses. For bare LitElement, use Lit's standard `@state` + manual lifecycle methods
+**What happens:** importing `lit` inside `router-core/` or forms `internal/engine.ts`.
+**Why it's wrong:** defeats framework-neutral reuse (SSR/non-Lit) and clean typing.
+**Do this instead:** keep Lit bindings in `router-lit/` / `*-controller.ts`; core stays pure.
 
 ### Accessing Controller State Without Subscription
 
-**What happens:** Component accesses query/store state synchronously in render without ensuring subscription subscription in controller's hostConnected
-**Why it's wrong:** If controller hasn't subscribed yet (hostConnected deferred), data may be stale; component may not re-render on data change
-**Do this instead:** Always store controller as class field and access via `this.controller.value` or `this.controller.result`. Controller handles subscription lifecycle automatically
-
-### Manual Context Provider Pattern
-
-**What happens:** Creating a custom element that attaches a provider but doesn't follow the `attach*Provider()` and `request*()` pattern
-**Why it's wrong:** Breaks interoperability; descendant components won't find context via standard request APIs
-**Do this instead:** Use existing providers (RouterProvider, LitQueryClientProvider, LitForm) or follow their pattern: `attachRouterProvider(this, () => instance)` + `requestRouter(this)`
+**What happens:** reading `controller.state` without the controller registered on a host.
+**Why it's wrong:** no `requestUpdate()` wiring, so the view never re-renders.
+**Do this instead:** register via `this.use(factory)` / `addController()` so lifecycle hooks fire.
 
 ### Externalization Bypass in Vite Config
 
-**What happens:** A package's vite.config.ts fails to externalize `lit` or `@tanstack/*` dependencies
-**Why it's wrong:** Creates bundle duplication when multiple packages are installed; browser loads redundant code
-**Do this instead:** Every vite.config.ts must include `rollupOptions: { external: ['lit', /^lit\//, '@tanstack/query-core', ...] }` to let consumer bundle manager dedupe
+**What happens:** omitting `lit`/`@tanstack/*` from `rollupOptions.external`.
+**Why it's wrong:** bundles a second copy into consumer apps, breaking context identity.
+**Do this instead:** externalize `['lit', /^lit\//, '@tanstack/*']` in every `vite.config.ts`.
+
+## Error Handling
+
+**Strategy:** type safety + early returns; minimal try-catch.
+
+**Patterns:**
+- Validators return `undefined` (ok) or error `string`
+- Guard clauses and type guards at function entry
+- Descriptive thrown errors for missing dependencies (e.g., "No QueryClient available")
+- Idempotent element definition: `if (!customElements.get(tag)) { ... }`
+
+## Cross-Cutting Concerns
+
+**Logging:** none in library; devtools package provides opt-in, dev-gated inspection helpers
+**Validation:** forms validators + optional Zod via `@willramdev/forms/zod`
+**Authentication:** not applicable (library, no auth)
+**Dev warnings:** centralized in per-package `src/internal/dev.ts`, stripped for production
 
 ---
 
-*Architecture analysis: 2026-08-10*
+*Architecture analysis: 2026-08-23*

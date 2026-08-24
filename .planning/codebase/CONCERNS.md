@@ -1,275 +1,146 @@
 # Codebase Concerns
 
-**Analysis Date:** 2026-08-10
+**Analysis Date:** 2026-08-23
+
+> litkit is a pre-v1.1 Lit web-component monorepo being hardened for internal-team
+> release. Concerns below focus on the CI gate machinery, publish/auth wiring,
+> externalization invariants, and known-deferred gaps — not general code quality
+> (the library source is well-tested and typed).
 
 ## Tech Debt
 
-**Type Safety with Heavy `any` Usage:**
-- Issue: Due to `erasableSyntaxOnly` constraint in `tsconfig.base.json`, long generic type parameter chains use `any` values extensively
-- Files: `packages/forms/src/internal/engine.ts` (lines 46-47, 174), `packages/query/src/query-controller.ts` (lines 36-41)
-- Impact: Reduced type safety for internal TanStack API integrations. While types are strict externally, internal adapters lack precise type checking
-- Fix approach: Once TypeScript stabilizes or alternative erasable-syntax patterns emerge, refactor to use utility types that don't require parameter expansion
+**Committed type-SemVer snapshots classified "by eye":**
+- Issue: The shape gate regenerates flattened public `.d.ts` snapshots and fails on any drift, but breaking-vs-additive classification (D-03) is a human reading the PR diff — there is no automated SemVer differ. A reviewer can approve a breaking `.d.ts` change as if additive.
+- Files: `tools/type-snapshots.config.mjs`, `tools/type-snapshots/*.d.ts`, `.github/workflows/ci.yml` (shape gate step, ~line 87)
+- Impact: A breaking public-type change can ship in a minor/patch release if the reviewer misreads the diff.
+- Fix approach: Accept as a documented manual control (current design), or add `api-extractor`/`@arethetypeswrong` SemVer-report tooling later.
 
-**Engine Subscribe Single-Caller Pattern:**
-- Issue: `FormEngine.subscribe()` only supports one listener at a time (line 92 overwrites previous callback)
-- Files: `packages/forms/src/internal/engine.ts` (lines 51, 92)
-- Impact: Internal constraint only (FormController is the sole caller), but code is fragile if subscription pattern changes
-- Fix approach: Document as intentional internal constraint; if multi-subscriber support needed, refactor to callback array pattern
+**`typescript` bump can spuriously red-line the shape gate:**
+- Issue: A TS version bump can reorder unions / normalize modifiers in `.d.ts` emit with no source change (Pitfall 5, documented in `tools/type-snapshots.config.mjs`), forcing a snapshot regeneration inside the bump PR.
+- Files: `tools/type-snapshots.config.mjs`, `tools/type-snapshots/*.d.ts`
+- Impact: Dependabot TS bumps require manual snapshot regeneration or CI red-lines.
+- Fix approach: Treat as intended regeneration (regenerate + review + commit in the bump PR). `noBanner: true` already decouples the snapshot from the generator version string.
 
-**Form State Deep Clone via JSON Serialization:**
-- Issue: `getValues()` uses `JSON.parse(JSON.stringify())` to filter destroyed fields
-- Files: `packages/forms/src/internal/engine.ts` (line 110)
-- Impact: Breaks on circular references, functions, Dates, Maps, Sets, and other non-JSON types. For complex form values, state may be corrupted
-- Fix approach: Implement recursive property deletion instead of deep clone; adds ~50 LOC but supports all types
+**Stray vendored tarball in `qdt-inspect/`:**
+- Issue: `qdt-inspect/tanstack-query-devtools-5.91.0.tgz` (~491 KB) plus an unpacked `package/` dir sits untracked at repo root — an inspection leftover from the devtools phase.
+- Files: `qdt-inspect/` (gitignored, not committed)
+- Impact: None to shipped artifacts; clutter only. Confirmed `git check-ignore` covers it.
+- Fix approach: Delete the scratch directory.
 
----
+**Coverage is report-only, no threshold gate:**
+- Issue: `vitest run --coverage` runs in CI but no minimum is enforced (TEST-06, intentional). Coverage can silently regress.
+- Files: `vitest.config.ts`, `.github/workflows/ci.yml` (coverage step, ~line 127)
+- Impact: Test coverage can drop without failing CI.
+- Fix approach: Deliberate design decision ("Do not add coverage gates here"). Revisit only if regressions appear.
 
 ## Known Bugs
 
-**Link Directive Event Listener Leak:**
-- Symptoms: If a `link()` directive is applied to different elements (rare but possible in dynamic templates), old element click listeners are never removed
-- Files: `packages/router/src/router-lit/link.ts` (lines 62-66)
-- Trigger: Move same directive instance between different anchor elements
-- Workaround: Avoid reusing same directive across different elements; use separate directive calls per element
-- Fix: Track previous element and remove listener before attaching to new element:
-  ```typescript
-  if (this._element && this._element !== element) {
-    this._element.removeEventListener("click", this._clickHandler);
-  }
-  ```
-
-**Link Directive Duplicate Listeners on Reconnect:**
-- Symptoms: If an element with `link()` directive is disconnected then reconnected, duplicate click listeners accumulate
-- Files: `packages/router/src/router-lit/link.ts` (lines 116-118)
-- Trigger: Remove and re-insert element with link directive in DOM
-- Workaround: Recreate element instead of moving in DOM
-- Fix: Check if listener already attached before adding in `reconnected()`:
-  ```typescript
-  override reconnected(): void {
-    if (this._router && !this._unsubscribe) {
-      this._unsubscribe = this._router.subscribe(() => {
-        this.updateActiveClasses();
-      });
-    }
-    // Note: click handler shouldn't be re-added if already attached
-  }
-  ```
-
----
-
-## Test Coverage Gaps
-
-**Untested Public APIs in Forms Package:**
-- What's not tested: `array-controller.ts`, `create-form.ts`, `field-controller.ts`, `field.ts`, `form-context.ts`, `types.ts`, `zod.ts`
-- Files: `packages/forms/src/{array-controller,create-form,field-controller,field,form-context,zod}.ts`
-- Risk: Changes to field arrays, form creation, or Zod integration could break without detection
-- Priority: High - forms is a critical package
-
-**Untested Public APIs in Kit Package:**
-- What's not tested: Kit controllers (`intersection-observer.ts`, `media-query.ts`, `resize-observer.ts`), `kit-element.ts`, `types.ts`
-- Files: `packages/kit/src/{controllers/{intersection-observer,media-query,resize-observer},kit-element,types}.ts`
-- Risk: Controller integrations and KitElement behavior changes undetected
-- Priority: High - kit is foundational
-
-**Untested Public APIs in Query Package:**
-- What's not tested: `query-client-provider.ts`, `index.ts`
-- Files: `packages/query/src/{query-client-provider,index}.ts`
-- Risk: Query provider setup and context injection could break silently
-- Priority: Medium - primarily integration logic
-
-**Untested Routing Core:**
-- What's not tested: Route matching (`compiled-matcher.ts`, `matcher.ts`), URL handling (`path.ts`, `query.ts`), routing utilities
-- Files: `packages/router/src/router-core/{compiled-matcher,matcher,path,query}.ts`
-- Risk: Core route resolution could have edge cases in parameter extraction, query string parsing, or path matching
-- Priority: High - affects all routing operations
-
-**Untested Routing Lit Integration:**
-- What's not tested: `route-decorator.ts`, `route-controller.ts`, `router-link.ts`, `router-provider.ts`, `search-params-controller.ts`
-- Files: `packages/router/src/router-lit/{route-decorator,route-controller,router-link,router-provider,search-params-controller}.ts`
-- Risk: Route decorators, search params controller, and route provider behavior untested
-- Priority: Medium - integration layer but covered by outlet + context tests
-
----
-
-## Performance Bottlenecks
-
-**Reactive Scheduler Sort on Every Flush:**
-- Problem: Scheduler sorts all dirty nodes by depth on every flush cycle
-- Files: `packages/store/src/scheduler.ts` (line 59)
-- Cause: `[...dirtyNodes].sort((a, b) => a.depth - b.depth)` creates new array and sorts
-- Impact: Large reactive dependency graphs (100+ nodes) could see measurable overhead during updates
-- Improvement path: Maintain sorted order incrementally using insertion sort or priority queue; or cache sorted order during interconnect/disconnect events
-
-**Form State Serialization Overhead:**
-- Problem: Every `getValues()` call on forms with destroyed fields does full JSON roundtrip
-- Files: `packages/forms/src/internal/engine.ts` (lines 108-115)
-- Cause: JSON.parse(JSON.stringify()) is convenient but expensive for large forms
-- Impact: High-frequency `getValues()` calls on large forms could be slow
-- Improvement path: Lazy property deletion or Set-based tracking instead of full serialization
-
----
-
-## Fragile Areas
-
-**Router Redirect Cycle Detection:**
-- Files: `packages/router/src/router-core/router.ts` (lines 565-594)
-- Why fragile: MAX_REDIRECTS hardcoded to 10 (line 567); if intentional chain longer than 10, silently fails with error emission instead of navigation
-- Safe modification: Test redirect chains thoroughly; consider making limit configurable
-- Test coverage: Covered by `router.test.ts` but edge case of exactly-10-redirect chains not tested
-
-**Router History State Mutation:**
-- Files: `packages/router/src/router-core/router.ts` (line 543)
-- Why fragile: `window.history.replaceState()` is called to save scroll position, mutating history state object
-- Safe modification: Any code relying on history.state containing application data could conflict; document this pattern clearly
-- Test coverage: Not directly tested for scroll position restoration
-
-**Query Array Field Mutations:**
-- Files: `packages/forms/src/internal/engine.ts` (lines 314-331)
-- Why fragile: `pushFieldValue`, `insertFieldValue`, `removeFieldValue`, `swapFieldValues`, `moveFieldValue` delegate directly to TanStack Form Core with minimal error handling
-- Safe modification: Test with large arrays; ensure field path validation prevents array index out-of-bounds in form data
-- Test coverage: Not directly unit tested; rely on integration tests in `form-controller.test.ts`
-
-**Scroll Position Restoration Logic:**
-- Files: `packages/router/src/router-core/router.ts` (lines 547-555)
-- Why fragile: Type coercion on history.state properties (lines 550-551); if state is corrupted, silent fallback to top-of-page scroll
-- Safe modification: Validate state shape before accessing numeric properties
-- Test coverage: Covered by `router.test.ts` but edge cases around state corruption untested
-
----
-
-## Scaling Limits
-
-**Reactive Dependency Graph Depth:**
-- Current capacity: Tested up to moderate depth; no documented limits
-- Limit: Deeply nested reactive dependencies (100+ levels) could exceed call stack in topological sort or notification cycles
-- Scaling path: Implement iterative instead of recursive dependency traversal; consider cycle detection
-
-**Form Field Count:**
-- Current capacity: TanStack Form Core supports large field counts; litkit wrapper untested at scale
-- Limit: 1000+ fields could see performance degradation in `getAllFieldErrors()` aggregation (lines 295-310) and field lookup maps
-- Scaling path: Implement field path indexing for faster lookups; consider pagination/virtualization for large field collections
-
-**Router Route Count:**
-- Current capacity: Tested with 100+ routes; no documented upper limit
-- Limit: Route matching time is linear in route count; very large (10,000+) route definitions could be slow
-- Scaling path: Route matcher already uses compiled matchers; consider trie-based matching for routes with common prefixes
-
----
-
-## Architectural Concerns
-
-**No Export of Controller Classes as Public Types:**
-- Issue: Controller classes like `QueryController`, `ClickOutsideController`, etc. are not exported in index files for type imports
-- Files: `packages/query/src/index.ts`, `packages/kit/src/index.ts`
-- Impact: DX inconvenience - users cannot type-annotate controller variables (workaround: use `typeof new QueryController(...)`)
-- Fix approach: Export controller types alongside factory functions for external consumption
-
-**Missing DevTools/Debug Support:**
-- Issue: Router DevTools (console logging of transitions, guard results, matcher decisions) not implemented
-- Files: Referenced in `TODO.md` as nice-to-have but never started
-- Impact: Difficult to debug routing issues in production or complex route setups
-- Fix approach: Implement opt-in debug mode that logs routing events; strip in production via tree-shake markers
-
-**Query DevTools Not Integrated:**
-- Issue: TanStack Query provides DevTools package but not integrated into litkit's QueryClient
-- Files: `packages/query/src/`
-- Impact: Cannot visualize query state or timing without external tools
-- Fix approach: Add optional query-devtools provider component; document integration pattern
-
----
-
-## Dependency Version Concerns
-
-**TanStack Form Core:**
-- Package: `@tanstack/form-core` at `^1.28.5`
-- Risk: Major version 1; could have breaking changes in minor versions. Tight coupling to form core internals
-- Mitigation: Adapter pattern (`engine.ts`) isolates changes; if core updates, only adapter needs changes
-- Recommendation: Monitor release notes; lock to patch version in production if stability critical
-
-**TanStack Query Core:**
-- Package: `@tanstack/query-core` at `^5.91.0`
-- Risk: Version 5 is stable but advanced features may not be fully tested with Lit integration
-- Mitigation: Reactive observer pattern is standard QueryObserver usage
-- Recommendation: Test thoroughly with major version upgrades before deploying
-
-**Lit Peer Dependency:**
-- Package: `lit@^3.0.0` (currently 3.3.2)
-- Risk: Lit 4.0 could introduce breaking changes to decorator or reactive controller APIs
-- Mitigation: Packages are widely used on Lit 3; early migration to Lit 4 recommended when available
-- Recommendation: Plan Lit 4 migration once stable and tested
-
----
+No open functional bugs. TODO.md shows all must-have items across the five packages checked off. Remaining unchecked TODO items are nice-to-haves or documented limitations (see Missing Critical Features and Fragile Areas).
 
 ## Security Considerations
 
-**Query String Parameter Injection:**
-- Risk: Router builds query strings from user-provided objects; no escaping documented
-- Files: `packages/router/src/router-core/query.ts`
-- Current mitigation: Uses standard URL search parameter handling (should be safe)
-- Recommendation: Add tests for special characters in query values (`;`, `&`, `=`, `#`, `?`)
+**CI token-scope split (read-only vs auth-bearing) — correctly minimized, must stay that way:**
+- Risk: `release.yml` carries write scopes (`contents: write`, `pull-requests: write`, `packages: write`); `ci.yml` and `verify-consumer.yml` are read-only. Any PR that widens `ci.yml` `permissions:` beyond `contents: read` would grant untrusted PR code write/publish reach.
+- Files: `.github/workflows/ci.yml` (line 13-14), `.github/workflows/release.yml` (lines 15-18), `.github/workflows/verify-consumer.yml` (lines 17-19)
+- Current mitigation: Least-privilege scopes; extensive inline comments warn "do NOT widen `permissions: contents: read`" on nearly every gate step. Phase 12 validation encodes a grep assertion that `ci.yml` permissions stay unchanged. Widening was the explicit reason OSV scanner was rejected (needs `security-events: write`).
+- Recommendations: Keep the grep/permissions assertion as a standing PR check. Never add `security-events`, `packages`, or `contents: write` to `ci.yml`.
 
-**Form Server Error Injection:**
-- Risk: `setServerErrors()` and `setServerFieldErrors()` accept arbitrary strings as error messages
-- Files: `packages/forms/src/internal/engine.ts` (lines 239-257)
-- Current mitigation: Errors are rendered as strings; if form renders as HTML, must escape
-- Recommendation: Document that error strings must be pre-escaped; do not render as innerHTML
+**Publish auth relies solely on built-in `GITHUB_TOKEN` (no PAT):**
+- Risk: `release.yml` publishes to GitHub Packages using only the built-in `GITHUB_TOKEN` via `setup-node` runtime `.npmrc`; `NODE_AUTH_TOKEN` is passed to the changesets publish step. A misconfigured `registry-url`/`scope` or a `setup-node` major bump that changes `.npmrc` writing could cause silent `E401` on publish.
+- Files: `.github/workflows/release.yml` (lines 25-37), `.npmrc`, `.npmrc.example`
+- Current mitigation: `.npmrc` holds NO token (scope→registry routing only); auth is runtime-only. Scope `@willramdev` matches GitHub owner. Token never echoed; relies on Actions secret masking.
+- Recommendations: The `setup-node@v5` bump (Phase 12) changes the action that writes runtime auth — cannot be tested in PR CI (release fires only on push to `main`). Confirm no `E401` on the next real release run (recorded as a Phase 12 manual-only verification).
 
-**History State Exposure:**
-- Risk: Router stores scroll position in history.state, accessible via `window.history.state`
-- Files: `packages/router/src/router-core/router.ts` (line 543)
-- Current mitigation: Only numeric scroll coordinates stored; not application-sensitive data
-- Recommendation: Document that applications should not store sensitive data in route state
+**SHA-pinned third-party action:**
+- Risk: `changesets/action` runs in the auth-bearing workflow; an unpinned/mutable tag could allow a supply-chain swap of publish-time code.
+- Files: `.github/workflows/release.yml` (line 32: `changesets/action@198f833dd7d863100ea6e28967bc9a9fdefadb0a  # v2.1.0`)
+- Current mitigation: Pinned to a full commit SHA with a trailing version comment. Dependabot's `github-actions` updater bumps the SHA as an ordinary reviewable PR, never auto-merged (D-08).
+- Recommendations: Keep the SHA pin. Review any Dependabot bump of this action manually before merge.
 
----
+**`npm audit` gate is non-blocking:**
+- Risk: The dependency advisory audit (`npm audit --audit-level=high`) uses `continue-on-error: true` — a fresh high/critical advisory surfaces as an annotation but does not fail CI.
+- Files: `.github/workflows/ci.yml` (audit step, lines 61-63)
+- Current mitigation: Deliberately advisory (D-02) so an upstream advisory does not red-X unrelated PRs; whole-tree audit (no `--omit=dev`) for fuller signal.
+- Recommendations: Watch the Checks-UI annotation on each run; escalate manually when a real advisory lands.
+
+## Performance Bottlenecks
+
+Not applicable at the library level. The `gate` CI job is heavyweight — it runs a full build, type-snapshot regeneration, checkJs smoke, `publint`/`attw` per package (5×), coverage, and an examples-app build serially in one job. This is CI wall-clock cost, not a runtime library concern.
+- Files: `.github/workflows/ci.yml` (`gate` job, lines 39-149)
+- Improvement path: Acceptable for an internal-release cadence; parallelize gate sub-steps only if CI time becomes painful.
+
+## Fragile Areas
+
+**Snapshot/manifest shape gates depend on byte-identical LF output across OS:**
+- Files: `.gitattributes`, `tools/type-snapshots/**`, `packages/*/custom-elements.json`, `packages/*/vscode.*-custom-data.json`, `packages/*/web-types.json`, `.github/workflows/ci.yml` (shape + CEM freshness gates)
+- Why fragile: A Windows-authored artifact and an Ubuntu-CI regeneration must be byte-for-byte identical, or the `git diff --cached --exit-code` gates false-fail on pure CRLF/LF churn. Protected only by the `text eol=lf` pins in `.gitattributes`. Removing/mismatching a glob silently breaks the guarantee.
+- Safe modification: When adding a new package/entry, add BOTH the snapshot entry (in `tools/type-snapshots.config.mjs`) AND the matching `eol=lf` glob in `.gitattributes` in the same change.
+- Test coverage: The gates use `git add -A` + `git diff --cached --exit-code` specifically so untracked/new un-baselined artifacts also fail (WR-01) — this is the safety net.
+
+**Gate step ordering is load-bearing:**
+- Files: `.github/workflows/ci.yml`
+- Why fragile: Several gate steps MUST run after `npm run build` (checkJs smoke resolves `@willramdev/*` into `dist/`; type-snapshot; dev-warning strip; examples build; single-instance check). Reordering any before the build step breaks the gate silently or spuriously. Comments call this out (WR-02) but nothing enforces order.
+- Safe modification: Preserve build → type-snapshot → git-diff ordering; append new dist-consuming steps after `npm run build`.
+
+**Externalization / single-instance dedup canary:**
+- Files: `scripts/check-single-instance.mjs`, `.github/workflows/ci.yml` (EXPL-02 step, ~line 141), each package's `vite.config.ts`
+- Why fragile: Every Vite build must externalize `lit`, `lit/*`, and `@tanstack/*`. A bad `vite.config.ts` change that bundles a peer would duplicate it for consumers. Caught only by the single-instance check hard-failing if `lit` or any `@tanstack/*` resolves to more than one (or zero) versions in the workspace tree.
+- Safe modification: Never remove peer externals from a package `vite.config.ts`; keep the single-instance check in the gate.
+
+**Dev-warning strip proof:**
+- Files: `scripts/dev-warning-strip.mjs`, `.github/workflows/ci.yml` (WARN-03 step, ~line 113)
+- Why fragile: Asserts a real minified prod consumer build contains zero `[litkit]` strings AND importing kit's dist with `process` unset does not throw. Depends on `esm-env` resolving `DEV=false` under the production export condition and on all seven warning call sites staying gated behind `if (DEV && …)`. A new ungated warning, or an `esm-env`/Vite major that changes export-condition resolution, breaks the strip. Includes a negative-control build to prove the strip is not vacuous.
+- Safe modification: Gate every new dev warning behind the `DEV` flag; when adding a package with warnings, extend the harness's re-export set.
+
+**Devtools leaf-rule:**
+- Files: `scripts/check-devtools-leaf.mjs`, `.github/workflows/ci.yml` (DTOOL-01 step, ~line 148)
+- Why fragile: Enforces that no core package (kit/router/query/forms/store) depends on `@willramdev/devtools`. A stray import in a core package's `package.json` would break the leaf invariant; caught only by this check.
+
+## Scaling Limits
+
+Not applicable — this is a browser-consumed component library, not a service. The only "capacity" surface is the number of packages/entries the type-snapshot and CEM gates enumerate; each new package requires manual registration in `tools/type-snapshots.config.mjs`, `tools/cem-check/known-tags.json`, and `.gitattributes`.
+
+## Dependencies at Risk
+
+**Peer ranges deliberately frozen against Dependabot:**
+- Risk: `lit` and `@tanstack/*` are ignored in `.github/dependabot.yml` (D-07) so Dependabot never narrows the externalized peer ranges. This means peer security/feature updates are NOT auto-surfaced — they require manual attention.
+- Files: `.github/dependabot.yml` (ignore block), each package `package.json` peer ranges
+- Impact: A peer-side CVE (e.g. in a `@tanstack/*` core) would not open a Dependabot PR.
+- Migration plan: Periodically review peer upstreams manually; keep ranges as broad `^` peers to let consumers upgrade.
+
+**`changesets/action` major bumps:**
+- Risk: A v2→v3 major of the SHA-pinned action could rename inputs again (v2 already renamed `publish` → `publish-script` and moved `github-token` to an input). A blind bump could silently break publishing.
+- Files: `.github/workflows/release.yml` (line 32)
+- Migration plan: Read the changeset action release notes on any Dependabot major PR before merging; verify `publish-script`/`github-token` wiring still matches.
 
 ## Missing Critical Features
 
-**Form Serialization / Hydration:**
-- Problem: No built-in form state serialization for server roundtrips or storage
-- Blocks: SSR form rendering, form state persistence, progressive enhancement
-- Workaround: Manually serialize via `form.getValues()` and `form.setValues()`
-- Priority: Medium - not blocking for client-only apps
+Deferred nice-to-haves tracked in `TODO.md` (none block the internal v1 release):
+- **Query/Router DevTools integration** — router devtools/debug mode partially landed (Phase 11); query DevTools integration still open. Files: `TODO.md` lines 40, 55.
+- **Forms serialization/hydration, debounced sync validators, SSR considerations** — `TODO.md` lines 69-71.
+- **Router search params do not serialize arrays** — documented limitation, not a bug. `TODO.md` line 95.
+- **No SSR guards in kit/forms** — expected for a Lit-first browser library. `TODO.md` line 94.
 
-**Debounced Sync Validators:**
-- Problem: Only async validators are debounced; sync validators run immediately
-- Blocks: High-frequency validation triggers (e.g., on every keystroke) could be expensive with complex sync logic
-- Workaround: Use async validators with debounce wrapper
-- Priority: Low - async validators can handle most cases
+## Test Coverage Gaps
 
-**SSR Considerations:**
-- Problem: No explicit SSR guards in kit or forms (expected for Lit-first browser library)
-- Blocks: Server-side rendering with hydration not documented or tested
-- Workaround: Render on client only; use dynamic imports
-- Priority: Medium - depends on project needs
+**`.github/` config is not covered by any test framework:**
+- What's not tested: Dependabot config, workflow YAML, and the CI gate scripts have no unit tests. "Validation" is schema-lint + static grep assertions + post-merge GitHub-native observation.
+- Files: `.github/dependabot.yml`, `.github/workflows/*.yml`, `scripts/*.mjs`, `tools/*/`
+- Risk: A workflow regression (widened permission, dropped gate step, broken auth) is only caught by grep assertions or on the next real release/Dependabot cycle — not by the Vitest suite.
+- Priority: Medium — mitigated by the grep/permissions checks encoded in Phase 12 validation.
 
-**Router Query Param Array Serialization:**
-- Problem: Query parameters don't serialize arrays naturally (mentioned in TODO.md)
-- Blocks: Passing `?ids=1&ids=2&ids=3` or `?ids[]=1,2,3` requires manual parsing
-- Workaround: Use single string and split in component
-- Priority: Low - documented limitation
+**Post-merge observational gaps (cannot be verified in PR CI):**
+- What's not tested: (1) The first weekly Dependabot cycle producing grouped PRs with none for `lit`/`@tanstack/*`; (2) the next release authenticating to GitHub Packages after the `setup-node@v5` bump (release fires only on push to `main`).
+- Files: `.github/dependabot.yml`, `.github/workflows/release.yml`
+- Risk: A publish-auth regression from the `setup-node@v5` sweep surfaces only on the next real release (`E401`), and the Dependabot ignore/grouping behavior only on the first post-merge weekly cycle.
+- Priority: High to watch — recorded as Phase 12 manual-only verifications; confirm both on the next release and first Dependabot cycle.
 
----
-
-## Summary of Urgency
-
-**Fix Immediately (Critical):**
-- Link directive event listener leak (memory leak risk)
-- Link directive duplicate reconnect listeners (behavior bug)
-
-**Fix Soon (High):**
-- Add unit tests for untested public APIs (forms, kit, router core)
-- Implement deep clone fix for form state with non-JSON values
-
-**Optimize When Possible (Medium):**
-- Scheduler performance with large dependency graphs
-- Router history state validation
-- Export controller types for better DX
-
-**Future Enhancement (Low):**
-- DevTools integration
-- SSR support
-- Query param array serialization
+**`verify-consumer` is opt-in, not an always-on gate:**
+- What's not tested: The full consumer-install verification harness (`scripts/verify-consumer.mjs`) runs only on manual `workflow_dispatch`, deliberately kept out of the always-on push gate to preserve the read-only/publish-token split. Promoting it to `ci.yml` is a deferred team decision.
+- Files: `.github/workflows/verify-consumer.yml`, `scripts/verify-consumer.mjs`
+- Risk: A regression in the published-package install/resolution path is not caught automatically on every PR.
+- Priority: Medium — run `verify-consumer` manually around releases.
 
 ---
 
-*Concerns audit: 2026-08-10*
+*Concerns audit: 2026-08-23*

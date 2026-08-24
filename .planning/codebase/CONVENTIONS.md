@@ -1,175 +1,108 @@
 # Coding Conventions
 
-**Analysis Date:** 2026-08-10
+**Analysis Date:** 2026-08-23
 
 ## Naming Patterns
 
 **Files:**
-- All source files use `camelCase` (e.g., `prop.ts`, `bind.ts`, `computed.ts`, `kit-element.ts`)
-- Test files co-located or grouped with source: `[name].test.ts` (e.g., `prop.test.ts`, `bind.test.ts`)
-- Router package groups tests in subdirectory: `src/test/router.test.ts`
-- Directories use `kebab-case` (e.g., `packages/kit/src/controllers/`)
+- Source files use `camelCase` for compound names but the repo overwhelmingly uses single-word or `kebab-case` filenames: `prop.ts`, `computed.ts`, `kit-element.ts`, `query-controller.ts`, `router-provider.ts`
+- Test files co-located next to source as `[name].test.ts`: `prop.test.ts`, `computed.test.ts`, `controllers/listen.test.ts`
+- Router package groups some tests under `packages/router/src/test/`: `router.test.ts`, `matcher.test.ts`, `path.test.ts`
+- Directories use `kebab-case`: `packages/kit/src/controllers/`, `packages/router/src/router-core/`, `packages/router/src/router-lit/`
 
 **Functions:**
-- Use `camelCase` for all function names (e.g., `computed()`, `emit()`, `normalizeProp()`)
-- Private helper functions follow same pattern with leading underscore: `_recompute()`, `_depsEqual()`, `_processWatchers()`
-- Exported functions are concise and often wrapped in namespace objects: `prop.string()`, `prop.boolean()`, `listen()`
+- `camelCase` for all functions: `computed()`, `emit()`, `normalizeProp()`, `devWarn()`, `buildPath()`
+- Private helper methods use a leading underscore: `_recompute()`, `_depsEqual()`
+- Factory functions are concise verbs/nouns: `listen()`, `mediaQuery()`, `clickOutside()`, `query()`, `form()`
+- Related helpers grouped under a namespace object: `prop.string()`, `prop.boolean()`, `prop.state()` (see `packages/kit/src/prop.ts`)
 
 **Variables:**
-- Use `camelCase` for regular variables and function parameters
-- Private instance fields use leading underscore: `_computeFn`, `_prevDeps`, `_initialized`
-- Type symbols use `UPPER_SNAKE_CASE` with Symbol constructor: `WATCHERS = Symbol('kitWatchers')`
+- `camelCase` for locals and parameters
+- Private instance fields use a leading underscore: `_computeFn`, `_prevDeps`, `_initialized`, `_depsFn` (`packages/kit/src/computed.ts`)
+- Module-level constants use `UPPER_SNAKE_CASE`: `CONSTRUCTORS = new Set<unknown>([...])` (`packages/kit/src/prop.ts`)
+- Module-level dedupe/registry stores are plain `camelCase`: `warnedKeys` (`packages/kit/src/internal/dev.ts`)
 
 **Types:**
-- Type names use `PascalCase` (e.g., `ComputedController<T>`, `ListenController`, `PropertyDeclaration`)
-- Controller classes end with `Controller` suffix: `ComputedController`, `ListenController`, `QueryController`, `PersistedStateController`
-- Generic type parameters use single uppercase letters: `<T>`, `<D>` (e.g., `ComputedController<T>`)
-- Type interfaces for configuration use descriptive names: `WatchEntry`, `ControllerFactory`, `PropOptions`
-
-**Constants:**
-- Module-level constants use `UPPER_SNAKE_CASE`: `CONSTRUCTORS = new Set<unknown>([String, Number, Boolean, Object, Array])`
+- Type and interface names use `PascalCase`: `ComputedController<T>`, `PropertyDeclaration`, `MockRouterOptions`, `Validator`
+- Controller classes end with the `Controller` suffix: `ComputedController`, `ListenController`, `QueryController`, `PersistedStateController`, `SearchParamsController`
+- Generic type parameters use single uppercase letters: `<T>`, `<D>`
+- Type symbols (branding keys) use `UPPER_SNAKE_CASE` created with `Symbol()`: `WATCHERS = Symbol('kitWatchers')`
 
 ## Code Style
 
 **Formatting:**
-- No explicit config detected (`.eslintrc`, `.prettierrc` not found in repo)
-- Source follows consistent formatting with 2-space indentation
-- Strict TypeScript enforcement via `tsconfig.base.json`
+- No formatter config committed (`.prettierrc`, `.editorconfig` not present)
+- Consistent 2-space indentation throughout
+- `kit`, `forms`, `query`, `store`, `devtools` sources use single quotes and no semicolons in newer files but semicolons appear in some files (`packages/kit/src/prop.ts` uses semicolons; `packages/router` sources use double quotes). Match the style of the file/package you are editing rather than imposing one global style.
 
 **Linting:**
-- TypeScript strict mode enabled: `"strict": true`
-- No unused locals: `"noUnusedLocals": true`
-- No unused parameters: `"noUnusedParameters": true`
-- Erasable syntax only: `"erasableSyntaxOnly": true` (TS 5.9 — no constructor parameter properties)
-- No unchecked side effect imports: `"noUncheckedSideEffectImports": true`
-- No fallthrough in switch: `"noFallthroughCasesInSwitch": true`
+- No ESLint/Biome config committed. Type safety is the primary quality gate, enforced by `tsconfig.base.json`.
+- `strict: true`
+- `noUnusedLocals: true`
+- `noUnusedParameters: true`
+- `erasableSyntaxOnly: true` — TS 5.9/6 constraint; **no constructor parameter properties**. Use explicit class fields then assign in the constructor body (see `packages/kit/src/computed.ts`: fields declared, `this.host = host` assigned).
+- `noFallthroughCasesInSwitch: true`
+- `noUncheckedSideEffectImports: true`
+- `verbatimModuleSyntax: true` — forces `import type` / `export type` for type-only imports
+- `experimentalDecorators: true`, `useDefineForClassFields: false` — legacy decorator semantics for Lit
+- ES2023 target, `ESNext` module, `moduleResolution: bundler`, `allowImportingTsExtensions: true`
 
-**Special TS Constraints:**
-- `erasableSyntaxOnly` enforced across all packages: do NOT use constructor parameter properties like `constructor(private name: string)`
-- Use explicit class fields instead: `name: string` then `this.name = name`
-- Applied consistently in `packages/kit/tsconfig.base.json` extended by all packages
+**Additional gate scripts** (not linters, but enforce conventions in CI — `tools/`):
+- `tools/cem-check/` — Custom Elements Manifest completeness (exact tag-set equality)
+- `tools/typecheck-smoke/` — consumer-perspective typecheck under node16 + bundler + checkjs resolution
+- `tools/type-snapshots/` — public `.d.ts` API snapshot diffing
+- `tools/doc-check/` — extracts and typechecks README code snippets
+- `scripts/verify-consumer.mjs`, `scripts/check-single-instance.mjs`, `scripts/check-devtools-leaf.mjs`
 
 ## Import Organization
 
-**Order:**
-1. External framework imports (e.g., `import { LitElement, type PropertyValues } from 'lit'`)
-2. Type imports from external packages: `import type { ReactiveController, ReactiveElement } from 'lit'`
-3. Local relative imports: `import { normalizeProp } from './prop.ts'`
-4. Local type imports: `import type { ControllerFactory } from './types.ts'`
-
-**Path Aliases:**
-- No path aliases configured
-- All imports use relative paths or full npm package names (`@willramdev/kit`, `@tanstack/query-core`, etc.)
-
-**File Extensions:**
-- Always include `.ts` extension in imports (e.g., `./prop.ts`, `./types.ts`)
-- Enables TypeScript strict module resolution
+- No path aliases. Imports use relative paths or full npm package names (`lit`, `@tanstack/query-core`, `esm-env`, `zod`).
+- **Always include the `.ts` extension** on relative imports: `import { listen } from './listen.ts'`, `import type { Validator } from './types.ts'` — required by `allowImportingTsExtensions` + bundler resolution.
+- Type-only imports use `import type` (enforced by `verbatimModuleSyntax`): `import type { ReactiveController, ReactiveElement } from 'lit'`.
+- Vitest imports pulled explicitly per test file: `import { describe, it, expect, vi } from 'vitest'`.
 
 ## Error Handling
 
-**Patterns:**
-- Validators return `undefined` for success or error message `string` for failure
-  ```typescript
-  export function required(message = 'This field is required'): Validator {
-    return (value: unknown) => {
-      if (value == null || value === '' || value === false) return message;
-      return undefined;
-    };
-  }
-  ```
-- Guard clauses at start of functions to handle edge cases early
-- Type guards used to validate input types before processing
-- No try-catch blocks observed; relies on type safety and early returns
-- Idempotent functions use conditional logic: `if (!customElements.get(tag)) { ... }`
-
-**Error Throwing:**
-- Thrown errors include descriptive context (e.g., "No QueryClient available")
-- Kept minimal; most error cases handled via return values or undefined checks
+- Validators return `undefined` for success or an error message `string` for failure — never throw (`packages/forms/src/validators.ts`).
+- Guard clauses at the top of functions handle edge cases early; validators guard input types (`typeof value !== 'string'`) and return `undefined` (skip) for non-applicable types.
+- Idempotent registration guards rather than throwing: `if (!customElements.get(tag)) { ... }` (`define.ts`, router element registration).
+- Minimal try-catch; the codebase leans on type safety and early returns.
+- Thrown errors, where used, carry descriptive context (e.g. missing QueryClient).
 
 ## Logging
 
-**Framework:** None detected — not used in library code
-
-**Patterns:**
-- No logging infrastructure in place
-- Console logging would be handled by consumers of the library
+- No general logging infrastructure. Consumers own runtime logging.
+- Dev-only diagnostics go through `devWarn()` / `devWarnOnce()` in each package's `src/internal/dev.ts`, gated behind the `DEV` constant from `esm-env`. All messages are prefixed `[litkit]`.
+- The `DEV` gate is the **outermost** condition so a consumer's production bundler dead-code-eliminates the entire branch. `esm-env` is externalized in every Vite build to preserve this. Never move the `DEV` check inward.
+- `devWarnOnce(key, message, when)` dedupes via a module-level `Set` that survives Lit re-renders.
 
 ## Comments
 
 **When to Comment:**
-- Brief JSDoc comments on all public exports explaining purpose and usage
-- Inline comments for non-obvious logic or complex algorithms
-- Rarely used; code is self-documenting through clear naming
+- Brief JSDoc (`/** ... */`) on all public exports describing purpose and shorthand usage (see `prop.ts`, `validators.ts`, `computed.ts`).
+- Long-form module header comments explain non-obvious architectural intent, especially DCE/externalization reasoning (`packages/kit/src/internal/dev.ts`) and gate-script contracts (`tools/cem-check/assert-tags.mjs`).
+- Inline comments reserved for non-obvious logic; code otherwise self-documents through naming.
 
 **JSDoc/TSDoc:**
-- Brief one-line descriptions for functions and classes
-- Parameter descriptions used sparingly
-- Example usage shown for complex helpers like `KitElement.props()`
-- Decorator descriptions explain purpose and behavior
-
-Example from `kit-element.ts`:
-```typescript
-/**
- * Register reactive properties using Lit-compatible declarations.
- * Accepts shorthand types (String, Number, etc.) or full PropertyDeclaration objects.
- *
- * Usage in a static block:
- *   static { this.props({ title: String, open: prop.boolean({ reflect: true }) }); }
- *
- * Usage after class definition:
- *   MyElement.props({ title: String });
- */
-static props(defs: Record<string, unknown>): void { ... }
-```
+- One-line descriptions dominate. Parameter descriptions used sparingly. Overloads each get their own JSDoc line (see the two `computed()` overload signatures).
 
 ## Function Design
 
-**Size:** 
-- Most functions 10-30 lines
-- Larger functions (like `_processWatchers`) broken into private helper methods
-- Controllers and complex logic organized into classes
-
-**Parameters:** 
-- Functions accept typed parameters with clear purposes
-- Optional parameters use `?: Type` syntax
-- Rest parameters used when appropriate (`...propNames: string[]`)
-- Overloaded function signatures for multiple use cases (e.g., `listen()` as both factory and decorator)
-
-**Return Values:** 
-- Explicit return types on all functions
-- Void for side effects, typed generics for computed values
-- Controllers return `void` from lifecycle methods
-- Validators return `undefined | string`
-- Factories return controller instances: `ListenController`, `ComputedController<T>`
+- Most functions are 10-30 lines; larger logic decomposes into private underscore-prefixed helper methods on the owning class.
+- Explicit return types on all exported functions (`: PropertyDeclaration`, `: void`, `: ComputedController<T>`).
+- Overloaded signatures for polymorphic APIs: `computed()` has a deps-less and a deps-tracked overload; factories like `listen()` act as both factory and decorator.
+- Optional params use `?: Type`; defaults inline (`message = 'This field is required'`). Rest params where variadic (`...propNames`).
+- Factories return controller instances; validators return `string | undefined`; lifecycle methods return `void`.
 
 ## Module Design
 
-**Exports:**
-- All public APIs exported from index file: `packages/kit/src/index.ts`
-- Exports organized by functionality with brief comments:
-  ```typescript
-  // Core
-  export { KitElement } from './kit-element.ts';
-  export { prop, normalizeProp } from './prop.ts';
-  
-  // Derived state
-  export { computed } from './computed.ts';
-  export type { ComputedController } from './computed.ts';
-  ```
-- Type exports separated with `export type` syntax
-- Namespace objects used to group related helpers: `prop.string()`, `prop.boolean()`, etc.
-
-**Barrel Files:**
-- `packages/kit/src/controllers/index.ts` exports all controllers
-- Each package has main `index.ts` as single entry point
-- Type exports kept alongside implementation exports
-
-**Monorepo Structure:**
-- Four npm-scoped packages under `@willramdev/` scope
-- Each package independent with own `package.json`, `tsconfig.json`, `vite.config.ts`
-- Shared `tsconfig.base.json` extended by all packages
-- Build outputs: `dist/` directory with `.js`, `.cjs`, and `.d.ts` files
+- Each package has a single `index.ts` entry point re-exporting the public API, organized by section with `// Core`, `// Decorators`, `// Controllers`, `// Types` comment banners (`packages/kit/src/index.ts`).
+- Value and type exports are separated using `export type { ... }`.
+- Namespace objects group related helpers rather than exporting many flat functions (`prop`).
+- `src/internal/` holds private, non-exported implementation details (e.g. `dev.ts`) — duplicated per package to keep the internal dependency graph acyclic; never re-exported from `index.ts`.
+- Core (framework-neutral) is separated from Lit bindings per package (e.g. `router-core/` vs `router-lit/`); no Lit imports in core.
+- `kit` never imports from sibling packages — unidirectional dependency graph.
 
 ---
 
-*Convention analysis: 2026-08-10*
+*Convention analysis: 2026-08-23*
