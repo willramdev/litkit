@@ -198,7 +198,12 @@ Full detail: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
   2. Dependabot ignores `lit` / `@tanstack/*` peer-range bumps and surfaces `changesets/action` SHA bumps for manual review (never auto-merged).
   3. CI runs a dependency-advisory audit (OSV scanner or `npm audit --audit-level=high`) under the read-only token, and `actions/checkout` + `setup-node` are bumped to `@v5`.
 
-**Plans**: TBD
+**Plans**: 2 plans
+
+**Wave 1** *(parallel — zero file overlap; config-only phase, no tracer slice)*
+
+- [ ] 12-01-PLAN.md — `.github/dependabot.yml`: two grouped weekly `updates:` entries (npm + github-actions), majors split out, npm ignoring `lit`/`@tanstack/*`, zero PR-automation [DEPS-01, DEPS-02]
+- [ ] 12-02-PLAN.md — non-blocking `npm audit --audit-level=high` step in the read-only `ci.yml` gate + `actions/checkout`/`setup-node` `@v5` sweep across all four workflows (changesets SHA-pin + release auth preserved) [DEPS-02, DEPS-03]
 
 ## Progress
 
