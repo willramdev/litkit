@@ -49,6 +49,18 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      # dependency advisory audit (DEPS-03, D-01/D-02/D-04): surface high/critical
+      # npm advisories on every push/PR run. Non-blocking via `continue-on-error:
+      # true` — a fresh upstream advisory keeps a visible allowed-failure annotation
+      # in the Checks UI without red-X'ing an unrelated PR (advisory, not a gate).
+      # `--audit-level=high` fires on high OR critical; passed on the command line so
+      # it wins the npm config precedence cascade. Whole-tree audit (no --omit=dev)
+      # for fuller advisory signal. Reads the root package-lock.json v3 and POSTs the
+      # tree to the public npm advisory endpoint — needs nothing beyond the top-level
+      # `contents: read`; do NOT widen `permissions`.
+      - name: dependency advisory audit (npm audit — DEPS-03, non-blocking)
+        continue-on-error: true
+        run: npm audit --audit-level=high
       - run: npm run build
       # plain-JS ergonomics gate (TYPE-03, CR-01/WR-02). WR-02 ordering invariant:
       # this step MUST run after `npm run build` — the five js-*.js checkJs
