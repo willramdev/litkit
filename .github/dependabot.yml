@@ -1,0 +1,40 @@
+# Source: docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference
+# Dependabot v2 config. Every bump below is manually reviewed / no automatic merging.
+version: 2
+updates:
+  # ---- npm ecosystem: grouped weekly minor+patch, majors split, peers ignored ----
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"            # D-06
+    open-pull-requests-limit: 10    # discretion — default is 5
+    groups:
+      npm-minor-patch:              # D-05 — one grouped PR for safe bumps; majors fall out and open standalone
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:                         # D-07 — never narrow externalized peer ranges (all updates ignored)
+      - dependency-name: "lit"
+      - dependency-name: "@tanstack/*"
+    commit-message:
+      prefix: "deps"                # discretion
+      include: "scope"
+    labels:
+      - "dependencies"
+
+  # ---- github-actions ecosystem: grouped weekly minor+patch, majors split ----
+  # A changesets/action SHA bump surfaces here as an ordinary reviewable PR (D-08); no automatic merging.
+  - package-ecosystem: "github-actions"
+    directory: "/"                  # covers everything under .github/workflows/
+    schedule:
+      interval: "weekly"            # D-06
+    groups:
+      actions-minor-patch:          # D-05
+        update-types:
+          - "minor"
+          - "patch"
+    commit-message:
+      prefix: "ci"
+    labels:
+      - "dependencies"
+      - "github-actions"
