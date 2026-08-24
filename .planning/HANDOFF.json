@@ -1,0 +1,41 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-08-24T04:15:50.082Z",
+  "phase": "12",
+  "phase_name": "Dependency Hygiene",
+  "phase_dir": ".planning/phases/12-dependency-hygiene",
+  "plan": 2,
+  "task": 2,
+  "total_tasks": 2,
+  "status": "paused",
+  "completed_tasks": [
+    {"id": "12-01/1", "name": "Create .github/dependabot.yml (grouped weekly npm + github-actions)", "status": "done", "commit": "9570a53"},
+    {"id": "12-02/1", "name": "Non-blocking npm audit --audit-level=high step in ci.yml gate job", "status": "done", "commit": "78363d5"},
+    {"id": "12-02/2", "name": "Bump actions/checkout + actions/setup-node to @v5 across all four workflows", "status": "done", "commit": "01a79c9"}
+  ],
+  "remaining_tasks": [
+    {"id": "UAT-1", "name": "Observe first weekly Dependabot cycle: grouped npm + github-actions PRs, none for lit/@tanstack/*, none auto-merged", "status": "not_started"},
+    {"id": "UAT-2", "name": "Observe next release.yml run (push to main): changesets publish authenticates to GitHub Packages with no E401 after setup-node@v5", "status": "not_started"}
+  ],
+  "blockers": [
+    {"description": "Both remaining items are GitHub-native runtime behaviors that cannot run in PR CI — they fire only on GitHub's weekly Dependabot schedule and on a real push to main", "type": "external", "workaround": "Config verified correct at rest; observe post-merge on the live repo"}
+  ],
+  "async_jobs": [],
+  "human_actions_pending": [
+    {"action": "Run /gsd-verify-work 12 and confirm the 2 UAT items after the next Dependabot cycle and next release run", "context": "Phase 12 verification returned human_needed (8/9 config truths verified; the 9th plus the Dependabot behavior are runtime-observable only). Phase completion is finalized by verify-work once both pass.", "blocking": true}
+  ],
+  "decisions": [
+    {"decision": "Executors ran sequentially on the main working tree, not in parallel worktrees", "rationale": "workflow.use_worktrees=false forces ISOLATION=none; each executor updated STATE/ROADMAP itself", "phase": "12"},
+    {"decision": "Phase left pending (not marked complete / roadmap not advanced)", "rationale": "verify_phase_goal returned human_needed; per workflow, completion is handled by verify-work after UAT passes", "phase": "12"},
+    {"decision": "Refreshed .planning/codebase/ (all 7 docs) via 4 parallel mappers", "rationale": "post-execute codebase-drift gate flagged 65 structural elements since last mapping (Aug 17-18)", "phase": "12"}
+  ],
+  "uncommitted_files": [
+    ".claude/settings.local.json (M) — pre-existing, not phase-12 work",
+    "examples/package.json, examples/src/views/data-view.ts, examples/src/views/home-view.ts (M) — pre-existing, not phase-12 work",
+    "package-lock.json (M) — pre-existing",
+    ".gsd/, .planning/milestone.lock, qdt-inspect/ (untracked) — scratch/lock; qdt-inspect is a ~491KB gitignored tarball leftover, safe to delete",
+    ".planning/phases/11-devtools-debugging/11-PATTERNS.md, 11-RESEARCH.md, 12-dependency-hygiene/12-PATTERNS.md (untracked) — planning artifacts from prior sessions"
+  ],
+  "next_action": "Run /gsd-verify-work 12 to walk the 2 post-merge UAT items; when both pass, verify-work marks Phase 12 complete and v1.1 (final phase) is ready to close via /gsd-complete-milestone.",
+  "context_notes": "Phase 12 (Dependency Hygiene) fully executed this session: both plans committed, build + full test suite green (40 tests), wave:post gates passed (schema-drift clear, ui-safety n/a, codebase-drift advisory only), code review advisory (0 Critical / 2 Warning / 3 Info in 12-REVIEW.md), verifier confirmed all config truths + DEPS-01/02/03 traceability. Only GitHub-native post-merge observation remains. Phase 12 is the LAST phase of milestone v1.1 (Developer Experience). Advisory code-review follow-up (optional, non-blocking): add exclude-patterns: [\"changesets/action\"] to the dependabot actions-minor-patch group."
+}
