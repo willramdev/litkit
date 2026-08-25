@@ -138,6 +138,7 @@ None yet.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260825-pqg | Fix examples CI typecheck — reorder build-test to build before typecheck (examples is a dist-consumer) | 2026-08-25 | 6d0fd92 | [260825-pqg-fix-examples-ci-typecheck-in-ci-yml-buil](./quick/260825-pqg-fix-examples-ci-typecheck-in-ci-yml-buil/) |
+| fast | Fix clean-tree build order — topological workspace build (devtools after kit/query/router/store) | 2026-08-25 | 40dad53 | — (fast task) |
 
 ## Deferred Items
 
