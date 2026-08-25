@@ -32,7 +32,7 @@ See: .planning/PROJECT.md (updated 2026-08-23)
 Phase: 12 (Dependency Hygiene) — EXECUTING
 Plan: 2 of 2
 Status: Phase complete — ready for verification
-Last activity: 2026-08-23 — Phase 12 execution started
+Last activity: 2026-08-25 — Completed quick task 260825-pqg (CI build-before-typecheck fix)
 
 Progress: [█████████░] 86% (v1.1 — 6/7 phases)
 
@@ -132,6 +132,12 @@ None yet.
 - [Carry-forward] npm `workspace:`-protocol behavior on npm 11 is MEDIUM confidence — only matters if an internal `@willramdev/kit` edge is ever added; verify locally before relying on it.
 
 *(Resolved in Phase 11: the devtools research/spike unknowns — query-devtools standalone mount, Redux DevTools `JUMP_TO_STATE` wiring, `router-core` `subscribe` hook — were all resolved HIGH-confidence in 11-RESEARCH.md and shipped; DTOOL-04 was verify-only, no core change.)*
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260825-pqg | Fix examples CI typecheck — reorder build-test to build before typecheck (examples is a dist-consumer) | 2026-08-25 | 6d0fd92 | [260825-pqg-fix-examples-ci-typecheck-in-ci-yml-buil](./quick/260825-pqg-fix-examples-ci-typecheck-in-ci-yml-buil/) |
 
 ## Deferred Items
 
