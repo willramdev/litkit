@@ -9,7 +9,7 @@
     "examples"
   ],
   "scripts": {
-    "build": "npm run build --workspaces",
+    "build": "npm run build -w @willramdev/kit -w @willramdev/store -w @willramdev/query -w @willramdev/forms -w @willramdev/router -w @willramdev/devtools -w examples",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "typecheck:smoke": "tsc -p tools/typecheck-smoke/tsconfig.node16.json && tsc -p tools/typecheck-smoke/tsconfig.bundler.json && tsc -p tools/typecheck-smoke/tsconfig.checkjs.json",
     "type-snapshot": "node tools/type-snapshots.config.mjs",
