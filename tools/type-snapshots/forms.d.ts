@@ -296,6 +296,10 @@ export declare function attachFormProvider(target: EventTarget, getForm: () => F
  * Note: slotted controls are not true descendants of a shadow-DOM `<form>`, so
  * `lit-form` intentionally provides context around a user-authored native form
  * instead of trying to own one internally.
+ *
+ * @attr {boolean} native-validation - keep native browser form validation on (default false)
+ * @prop {FormInstance} form - the FormInstance driving submit/reset
+ * @slot - default slot wrapping the user-authored `<form>`
  */
 export declare class LitForm extends LitElement {
 	#private;

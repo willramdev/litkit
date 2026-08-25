@@ -315,6 +315,21 @@ export declare class SearchParamsController implements ReactiveController {
 	hostDisconnected(): void;
 	private applyParams;
 }
+/**
+ * `<router-outlet>` renders the component matched for its depth into light DOM.
+ *
+ * It resolves its `Router` from an explicit `.router` property or, failing that,
+ * from an ancestor `<router-provider>` context. On navigation errors it dispatches
+ * a bubbling, composed `router-error` CustomEvent.
+ *
+ * Registered via the idempotent `define()` wrapper, so the analyzer cannot
+ * statically resolve the tag name — `@tag` supplies it (D-11).
+ *
+ * @tag router-outlet
+ * @attr {boolean} managefocus - Move focus to the freshly-rendered route element after navigation (default true; Lit lowercases the attribute)
+ * @fires router-error - CustomEvent{ detail: { type, error, route } } dispatched on a render/load error (bubbles, composed)
+ * @prop {Router} router - Explicit router (else resolved from `<router-provider>` context)
+ */
 export declare class RouterOutlet extends LitElement {
 	router?: Router;
 	private _match;
@@ -357,6 +372,10 @@ export declare class RouterOutlet extends LitElement {
  * Descendants can resolve the router using `requestRouter(this)` or
  * it will be auto-resolved by `<router-outlet>`, `<router-link>`,
  * `RouteController`, and `SearchParamsController`.
+ *
+ * @tag router-provider
+ * @prop {Router} router - The Router provided to descendants (required)
+ * @slot - Default slot for the routed app subtree
  */
 export declare class RouterProvider extends LitElement {
 	router?: Router;
@@ -380,6 +399,9 @@ export declare class RouterProvider extends LitElement {
  * Browser-native behavior is preserved:
  *   - ctrl/cmd+click opens in new tab
  *   - middle-click opens in new tab
+ *
+ * @tag router-link
+ * @slot - Default slot for the link's visible content
  */
 export declare class RouterLink extends LitElement {
 	/** Router instance (required). */
@@ -438,9 +460,9 @@ declare class LinkDirective extends AsyncDirective {
 /**
  * Directive for client-side navigation links with automatic active class management.
  *
- * @param input - Navigation target (string path or NavigationTarget object)
- * @param router - Router instance
- * @param options - Optional configuration for active class names
+ * Invoke with the navigation target (a string path or `NavigationTarget` object),
+ * the `Router` instance, and an optional `LinkOptions` configuration for the active
+ * class names. See {@link LinkDirective.render} for the argument signature.
  */
 export declare const link: (_input: NavigationInput, _router: Router, _options?: LinkOptions | undefined) => import("lit-html/directive.js").DirectiveResult<typeof LinkDirective>;
 /** Custom event name used to request a `Router` from the DOM context. */

@@ -48,7 +48,12 @@ export declare const LIT_QUERY_CLIENT_REQUEST = "lit-query:request-client";
 export declare function requestQueryClient(target: EventTarget): QueryClient | undefined;
 /** Attaches a `QueryClient` provider to a DOM element. Returns a cleanup function. */
 export declare function attachQueryClientProvider(target: EventTarget, getClient: () => QueryClient): () => void;
-/** Custom element that provides a `QueryClient` to descendant components via DOM context. */
+/**
+ * Custom element that provides a `QueryClient` to descendant components via DOM context.
+ *
+ * @prop {QueryClient} client - the QueryClient provided to descendants (defaults to createQueryClient())
+ * @slot - default slot for the subtree that consumes the QueryClient
+ */
 export declare class LitQueryClientProvider extends LitElement {
 	#private;
 	client: QueryClient;
