@@ -7,12 +7,14 @@
   "name": "litkit API",
   "highlightLanguages": ["bash", "console", "css", "html", "ini", "javascript", "json", "jsonc", "json5", "yaml", "tsx", "typescript"],
   "treatWarningsAsErrors": true,
+  "blockTags": ["@defaultValue", "@deprecated", "@example", "@jsx", "@param", "@privateRemarks", "@remarks", "@returns", "@see", "@throws", "@typeParam", "@author", "@callback", "@category", "@categoryDescription", "@default", "@document", "@extends", "@augments", "@yields", "@group", "@groupDescription", "@import", "@inheritDoc", "@license", "@module", "@mergeModuleWith", "@prop", "@property", "@return", "@satisfies", "@since", "@sortStrategy", "@template", "@this", "@type", "@typedef", "@summary", "@preventInline", "@inlineType", "@preventExpand", "@expandType", "@tag", "@attr", "@slot", "@fires"],
   "validation": {
     "notExported": false,
     "invalidLink": false
   },
   "packageOptions": {
     "excludeInternal": true,
+    "blockTags": ["@defaultValue", "@deprecated", "@example", "@jsx", "@param", "@privateRemarks", "@remarks", "@returns", "@see", "@throws", "@typeParam", "@author", "@callback", "@category", "@categoryDescription", "@default", "@document", "@extends", "@augments", "@yields", "@group", "@groupDescription", "@import", "@inheritDoc", "@license", "@module", "@mergeModuleWith", "@prop", "@property", "@return", "@satisfies", "@since", "@sortStrategy", "@template", "@this", "@type", "@typedef", "@summary", "@preventInline", "@inlineType", "@preventExpand", "@expandType", "@tag", "@attr", "@slot", "@fires"],
     "validation": {
       "notExported": false,
       "invalidLink": false
