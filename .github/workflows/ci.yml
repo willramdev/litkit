@@ -1,7 +1,7 @@
 name: ci
 
-# Read-only CI gate for litkit. Runs the green baseline (install/typecheck/
-# build/test) on every push and pull request to main. No write scopes, no
+# Read-only CI gate for litkit. Runs the green baseline (install/build/
+# typecheck/test) on every push and pull request to main. No write scopes, no
 # registry credentials, and no publish step — publish auth is Phase-4 release.yml.
 on:
   push:
@@ -28,8 +28,13 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: npm
       - run: npm ci
-      - run: npm run typecheck
+      # Build must precede typecheck: the root `npm run typecheck` fans out to the
+      # `examples` workspace, which resolves `@willramdev/*` through each package's
+      # exports map into the freshly built `dist/*.d.ts` of all five packages. On a
+      # clean checkout those artifacts don't exist until `npm run build` runs, so a
+      # build-first order is required (mirrors the gate job's ordering invariants).
       - run: npm run build
+      - run: npm run typecheck
       - run: npm run test
 
   # Single-Node gate: exports/types packaging + changeset presence + coverage.
