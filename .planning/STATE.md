@@ -140,6 +140,8 @@ None yet.
 | 260825-pqg | Fix examples CI typecheck — reorder build-test to build before typecheck (examples is a dist-consumer) | 2026-08-25 | 6d0fd92 | [260825-pqg-fix-examples-ci-typecheck-in-ci-yml-buil](./quick/260825-pqg-fix-examples-ci-typecheck-in-ci-yml-buil/) |
 | fast | Fix clean-tree build order — topological workspace build (devtools after kit/query/router/store) | 2026-08-25 | 40dad53 | — (fast task) |
 | fast | Fix docs.yml typedoc — add devtools entry point + register CEM block tags (@tag/@attr/@slot/@fires) | 2026-08-25 | a40d234 | — (fast task) |
+| fast | Re-baseline 4 stale type-SemVer snapshots (forms/query/router, doc-only non-breaking) | 2026-08-25 | a69dd45 | — (fast task) |
+| fast | Empty changeset for release-irrelevant CI/build/docs fixes (satisfies changeset-status gate) | 2026-08-25 | 4617a3a | — (fast task) |
 
 ## Deferred Items
 
