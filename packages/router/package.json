@@ -52,7 +52,7 @@
   ],
   "scripts": {
     "dev": "vite",
-    "cem": "cem analyze",
+    "cem": "cem analyze && node ../../tools/cem-check/normalize-cem-eol.mjs .",
     "build": "node scripts/build.js && tsc -p tsconfig.build.json && npm run cem",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

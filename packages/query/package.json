@@ -43,7 +43,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "cem": "cem analyze",
+    "cem": "cem analyze && node ../../tools/cem-check/normalize-cem-eol.mjs .",
     "build": "vite build && tsc -p tsconfig.build.json && npm run cem",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
