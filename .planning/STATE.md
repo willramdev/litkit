@@ -142,6 +142,7 @@ None yet.
 | fast | Fix docs.yml typedoc — add devtools entry point + register CEM block tags (@tag/@attr/@slot/@fires) | 2026-08-25 | a40d234 | — (fast task) |
 | fast | Re-baseline 4 stale type-SemVer snapshots (forms/query/router, doc-only non-breaking) | 2026-08-25 | a69dd45 | — (fast task) |
 | fast | Empty changeset for release-irrelevant CI/build/docs fixes (satisfies changeset-status gate) | 2026-08-25 | 4617a3a | — (fast task) |
+| 260825-spn | Harden release path — regenerate CEM on `changeset version` + LF-normalize CEM output (verified passed) | 2026-08-25 | db70361 | [260825-spn-harden-release-path-regenerate-cem-on-ch](./quick/260825-spn-harden-release-path-regenerate-cem-on-ch/) |
 
 ## Deferred Items
 
