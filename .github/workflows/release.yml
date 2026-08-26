@@ -31,6 +31,7 @@ jobs:
       - run: npm ci
       - uses: changesets/action@198f833dd7d863100ea6e28967bc9a9fdefadb0a  # v2.1.0
         with:
+          version: npm run version                    # regenerate + stage CEM on the Version Packages bump
           publish-script: npx changeset publish       # v2 renamed publish -> publish-script
           github-token: ${{ secrets.GITHUB_TOKEN }}   # v2 needs the INPUT, not env
         env:

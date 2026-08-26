@@ -21,6 +21,7 @@
     "test": "npm run test --workspaces --if-present",
     "coverage": "vitest run --coverage",
     "changeset:status": "changeset status",
+    "version": "changeset version && npm run build && git add -A",
     "dev:kit": "npm run dev -w @willramdev/kit",
     "dev:router": "npm run dev -w @willramdev/router",
     "dev:query": "npm run dev -w @willramdev/query",
