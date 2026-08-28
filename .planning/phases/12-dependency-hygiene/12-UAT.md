@@ -55,7 +55,13 @@ blocked: 0
     regardless of workflow permissions. Flipped: can_approve_pull_request_reviews
     is now true. release.yml already had pull-requests:write (line 18) — no
     workflow defect.
-    Cause 2 (OPEN): the release re-run executed against origin/main (556300f),
+    Cause 3 (FIXED in-tree): after pushing, release.yml ran against the fixed tree
+    and failed in 14s at the changesets/action step — real workflow defect: the
+    v2.1.0 SHA-pin renamed the `version` input to `version-script`, but release.yml
+    line 34 still used the old `version:` name (the sibling `publish`->`publish-script`
+    rename had been applied on line 35, this one missed). Action errored before any
+    version/publish work. Fixed: line 34 -> `version-script: npm run version`.
+    Cause 2 (RESOLVED by push): the release re-run executed against origin/main (556300f),
     which is 3 commits BEHIND local HEAD (a0e8c51). The three unpushed commits are
     exactly the CEM freshness fixes: 558dc70 (normalize CEM EOL to LF), db70361
     (regenerate CEM on `changeset version` bump), a0e8c51 (harden release path,
@@ -72,6 +78,7 @@ blocked: 0
   missing:
     - "DONE: enable repo setting 'Allow GitHub Actions to create and approve pull requests' (can_approve_pull_request_reviews now true)."
     - "Push local commits 558dc70, db70361, a0e8c51 to origin/main. The push fires release.yml against the fixed state — the CEM freshness gate passes (HEAD CEM byte-clean) and changesets opens the Version Packages PR carrying regenerated 1.1.0 CEM."
+    - "DONE (in-tree): release.yml line 34 `version:` -> `version-script:` (changesets/action v2 input rename). Commit + push to re-fire release.yml."
     - "Merge the Version Packages PR so the publish step runs — finally proving test-2's E401 / setup-node@v5 publish-auth path."
   fix_type: push-existing-commits + human-observe
   debug_session: ""
