@@ -3,7 +3,7 @@ status: diagnosed
 phase: 12-dependency-hygiene
 source: [12-VERIFICATION.md]
 started: "2026-08-24T02:54:23Z"
-updated: "2026-08-25T00:00:00Z"
+updated: "2026-08-27T00:00:00Z"
 ---
 
 ## Current Test
@@ -22,11 +22,14 @@ expected: On the next `release.yml` run, the `npx changeset publish` step authen
 why_human: release.yml fires only on push to main, so publish-auth survival after setup-node@v5's fallback removal is provable only on a real release run (RESEARCH Pitfall #1 / A1). Tagged `verification: backstop` in the plan; present + wired but runtime behavior unexercised.
 result: issue
 reported: |
-  release.yml run failed at the changesets/action `version` step (creating the
-  "Version Packages" PR):
+  Run 1: release.yml failed at the changesets/action `version` step:
     Error: GitHub Actions is not permitted to create or approve pull requests.
-    https://docs.github.com/rest/pulls/pulls#create-a-pull-request
-  Publish step never reached — test-2's setup-node@v5 / E401 publish-auth path unexercised.
+  RESOLVED — repo setting flipped (can_approve_pull_request_reviews: true).
+  Run 2 (after enabling): advanced past `version`, then failed at the ci.yml CEM
+  freshness gate (`git add -A -- packages/*/custom-elements.json ...` + git diff,
+  exit 1). Two drift classes: (a) escaped \r\n in CEM string values vs regenerated
+  \n; (b) web-types.json committed 1.0.0 vs regenerated 1.1.0.
+  Publish step still never reached — test-2's E401 publish-auth path unexercised.
 severity: blocker
 
 ## Summary
@@ -43,15 +46,32 @@ blocked: 0
 - gap_id: G-12-2
   truth: "release.yml completes on push to main — changesets opens/updates the Version Packages PR, and (once merged) the publish step authenticates to GitHub Packages with no E401 after setup-node@v5"
   status: failed
-  reason: "User reported: release run errored — 'GitHub Actions is not permitted to create or approve pull requests' at the changesets version step; publish never ran"
+  reason: "Two sequential causes: (1) 'Allow GitHub Actions to create and approve pull requests' was disabled — RESOLVED; (2) release then failed the ci.yml CEM freshness gate because it ran against a stale origin/main missing the three local CEM-fix commits."
   severity: blocker
   test: 2
-  root_cause: "Repo/org setting 'Allow GitHub Actions to create and approve pull requests' (Settings → Actions → General → Workflow permissions) is DISABLED. GitHub blocks GITHUB_TOKEN-driven PR creation independent of workflow permissions. release.yml already grants `pull-requests: write` (line 18) — no workflow-file defect. Orthogonal to Phase 12's setup-node@v5 bump; a latent Phase 4 release-config gap surfaced on first real changesets PR-creation run."
+  root_cause: |
+    Cause 1 (RESOLVED): repo setting 'Allow GitHub Actions to create and approve
+    pull requests' was DISABLED — GitHub blocks GITHUB_TOKEN-driven PR creation
+    regardless of workflow permissions. Flipped: can_approve_pull_request_reviews
+    is now true. release.yml already had pull-requests:write (line 18) — no
+    workflow defect.
+    Cause 2 (OPEN): the release re-run executed against origin/main (556300f),
+    which is 3 commits BEHIND local HEAD (a0e8c51). The three unpushed commits are
+    exactly the CEM freshness fixes: 558dc70 (normalize CEM EOL to LF), db70361
+    (regenerate CEM on `changeset version` bump), a0e8c51 (harden release path,
+    `version: npm run version` wired in release.yml). Both drift classes in the
+    failure map to those missing commits: escaped \r\n → 558dc70; web-types
+    1.0.0→1.1.0 → db70361/a0e8c51. HEAD's committed CEM is already byte-clean
+    (0 raw CR, 0 escaped \r\n; pkg/web-types versions consistent at 1.0.0). Not a
+    code defect — the fix exists in-tree, unpushed.
   artifacts:
     - path: ".github/workflows/release.yml"
-      issue: "No defect — pull-requests:write already present (line 18); failure is the account/repo setting, not the workflow"
+      issue: "No defect — pull-requests:write (line 18) + `version: npm run version` (line 34) both present on HEAD"
+    - path: "(git state)"
+      issue: "origin/main 556300f is 3 commits behind local HEAD a0e8c51; the CEM-fix commits 558dc70/db70361/a0e8c51 are unpushed"
   missing:
-    - "Enable repo setting: Settings → Actions → General → Workflow permissions → check 'Allow GitHub Actions to create and approve pull requests' (+ the org-level toggle if litkit lives under an org). Human GitHub-UI action — no code change."
-    - "Re-run release (push to main / re-run failed workflow) so changesets creates the Version Packages PR; merge it to exercise the publish step and finally prove test-2's E401 / setup-node@v5 publish-auth path."
-  fix_type: human-action-no-code
+    - "DONE: enable repo setting 'Allow GitHub Actions to create and approve pull requests' (can_approve_pull_request_reviews now true)."
+    - "Push local commits 558dc70, db70361, a0e8c51 to origin/main. The push fires release.yml against the fixed state — the CEM freshness gate passes (HEAD CEM byte-clean) and changesets opens the Version Packages PR carrying regenerated 1.1.0 CEM."
+    - "Merge the Version Packages PR so the publish step runs — finally proving test-2's E401 / setup-node@v5 publish-auth path."
+  fix_type: push-existing-commits + human-observe
   debug_session: ""

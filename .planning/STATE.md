@@ -125,7 +125,7 @@ Full v1.0 decision log archived in PROJECT.md (Key Decisions) and `.planning/mil
 
 ### Pending Todos
 
-None yet.
+- [tooling/minor] Harden CEM EOL normalizer against escaped `\r\n` in JSON string values (local-Windows regenerate could re-drift the freshness gate) — `2026-08-27-harden-cem-eol-normalizer-against-escaped-crlf.md`. Route: `/gsd-quick`. Non-blocking for v1.1.
 
 ### Blockers/Concerns
 
