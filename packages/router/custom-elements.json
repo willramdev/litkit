@@ -1175,7 +1175,7 @@
               }
             }
           ],
-          "description": "Serialize a query object into a query string (without leading `?`).\r\n\r\nArray values become repeated keys (`tag=a&tag=b`), the inverse of\r\nparseQuery. `undefined` array entries are skipped."
+          "description": "Serialize a query object into a query string (without leading `?`).\n\nArray values become repeated keys (`tag=a&tag=b`), the inverse of\nparseQuery. `undefined` array entries are skipped."
         },
         {
           "kind": "function",
@@ -1193,7 +1193,7 @@
               }
             }
           ],
-          "description": "Parse a URLSearchParams into a plain object.\r\nSingle-value keys become strings; repeated keys become string arrays."
+          "description": "Parse a URLSearchParams into a plain object.\nSingle-value keys become strings; repeated keys become string arrays."
         }
       ],
       "exports": [
@@ -1684,7 +1684,7 @@
         {
           "kind": "variable",
           "name": "link",
-          "description": "Directive for client-side navigation links with automatic active class management.\r\n\r\nInvoke with the navigation target (a string path or `NavigationTarget` object),\r\nthe `Router` instance, and an optional `LinkOptions` configuration for the active\r\nclass names. See LinkDirective.render for the argument signature."
+          "description": "Directive for client-side navigation links with automatic active class management.\n\nInvoke with the navigation target (a string path or `NavigationTarget` object),\nthe `Router` instance, and an optional `LinkOptions` configuration for the active\nclass names. See LinkDirective.render for the argument signature."
         }
       ],
       "exports": [
@@ -1925,7 +1925,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<router-link>` renders an `<a>` element with client-side navigation.\r\n\r\nUsage:\r\n  html`<router-link .router=${router} to=\"/users\">Users</router-link>`\r\n  html`<router-link .router=${router} to=\"/users/42\" replace>User</router-link>`\r\n\r\nActive class behavior:\r\n  - `activeClass` is added when the resolved path is a prefix of the current route\r\n  - `exactActiveClass` is added when the resolved path exactly matches\r\n\r\nBrowser-native behavior is preserved:\r\n  - ctrl/cmd+click opens in new tab\r\n  - middle-click opens in new tab",
+          "description": "`<router-link>` renders an `<a>` element with client-side navigation.\n\nUsage:\n  html`<router-link .router=${router} to=\"/users\">Users</router-link>`\n  html`<router-link .router=${router} to=\"/users/42\" replace>User</router-link>`\n\nActive class behavior:\n  - `activeClass` is added when the resolved path is a prefix of the current route\n  - `exactActiveClass` is added when the resolved path exactly matches\n\nBrowser-native behavior is preserved:\n  - ctrl/cmd+click opens in new tab\n  - middle-click opens in new tab",
           "name": "RouterLink",
           "slots": [
             {
@@ -2120,7 +2120,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "`<router-outlet>` renders the component matched for its depth into light DOM.\r\n\r\nIt resolves its `Router` from an explicit `.router` property or, failing that,\r\nfrom an ancestor `<router-provider>` context. On navigation errors it dispatches\r\na bubbling, composed `router-error` CustomEvent.\r\n\r\nRegistered via the idempotent `define()` wrapper, so the analyzer cannot\r\nstatically resolve the tag name — `@tag` supplies it (D-11).",
+          "description": "`<router-outlet>` renders the component matched for its depth into light DOM.\n\nIt resolves its `Router` from an explicit `.router` property or, failing that,\nfrom an ancestor `<router-provider>` context. On navigation errors it dispatches\na bubbling, composed `router-error` CustomEvent.\n\nRegistered via the idempotent `define()` wrapper, so the analyzer cannot\nstatically resolve the tag name — `@tag` supplies it (D-11).",
           "name": "RouterOutlet",
           "members": [
             {
@@ -2433,7 +2433,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Provides a `Router` instance to all descendant components via DOM context.\r\n\r\nUsage:\r\n  html`\r\n    <router-provider .router=${router}>\r\n      <my-app></my-app>\r\n    </router-provider>\r\n  `\r\n\r\nDescendants can resolve the router using `requestRouter(this)` or\r\nit will be auto-resolved by `<router-outlet>`, `<router-link>`,\r\n`RouteController`, and `SearchParamsController`.",
+          "description": "Provides a `Router` instance to all descendant components via DOM context.\n\nUsage:\n  html`\n    <router-provider .router=${router}>\n      <my-app></my-app>\n    </router-provider>\n  `\n\nDescendants can resolve the router using `requestRouter(this)` or\nit will be auto-resolved by `<router-outlet>`, `<router-link>`,\n`RouteController`, and `SearchParamsController`.",
           "name": "RouterProvider",
           "slots": [
             {

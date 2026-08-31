@@ -1,6 +1,6 @@
 {
   "name": "@willramdev/devtools",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Opt-in, dev-gated, tree-shakeable debugging helpers for litkit: store time-travel, query-cache inspection, router match log",
   "keywords": [
     "lit",
@@ -45,9 +45,9 @@
     "esm-env": "^1.2.2"
   },
   "peerDependencies": {
-    "@willramdev/store": "^1.0.0",
-    "@willramdev/query": "^1.0.0",
-    "@willramdev/router": "^1.0.0",
+    "@willramdev/store": "^1.1.0",
+    "@willramdev/query": "^1.1.0",
+    "@willramdev/router": "^1.1.0",
     "@tanstack/query-core": "^5.0.0",
     "@tanstack/query-devtools": "^5.91.0"
   },

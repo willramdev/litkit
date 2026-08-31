@@ -1472,7 +1472,7 @@
                   }
                 }
               ],
-              "description": "Subscribe to any state change (form or field).\r\nReturns an unsubscribe function."
+              "description": "Subscribe to any state change (form or field).\nReturns an unsubscribe function."
             },
             {
               "kind": "method",
@@ -1620,7 +1620,7 @@
                   }
                 }
               ],
-              "description": "Lazily create & mount a TanStack FieldApi the first time a path is\r\naccessed.  Subsequent calls for the same path return the cached instance."
+              "description": "Lazily create & mount a TanStack FieldApi the first time a path is\naccessed.  Subsequent calls for the same path return the cached instance."
             },
             {
               "kind": "method",
@@ -1661,7 +1661,7 @@
               "name": "getFieldMeta",
               "return": {
                 "type": {
-                  "text": "{\r\n    isTouched: boolean;\r\n    isDirty: boolean;\r\n    isValid: boolean;\r\n    isValidating: boolean;\r\n  }"
+                  "text": "{\n    isTouched: boolean;\n    isDirty: boolean;\n    isValid: boolean;\n    isValidating: boolean;\n  }"
                 }
               },
               "parameters": [
