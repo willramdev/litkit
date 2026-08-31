@@ -1,6 +1,6 @@
 {
   "name": "@willramdev/kit",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Ergonomic base class, helpers, and controllers for building Lit web components",
   "keywords": [
     "lit",

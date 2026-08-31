@@ -37,7 +37,7 @@
             {
               "name": "optionsInput",
               "type": {
-                "text": "| MutationObserverOptions<TData, TError, TVariables, TOnMutateResult>\r\n    | (() => MutationObserverOptions<TData, TError, TVariables, TOnMutateResult>)"
+                "text": "| MutationObserverOptions<TData, TError, TVariables, TOnMutateResult>\n    | (() => MutationObserverOptions<TData, TError, TVariables, TOnMutateResult>)"
               }
             },
             {
@@ -73,14 +73,14 @@
           "name": "query",
           "return": {
             "type": {
-              "text": "ControllerFactory<\r\n  QueryController<TQueryFnData, TError, TData, TQueryData, TQueryKey>\r\n>"
+              "text": "ControllerFactory<\n  QueryController<TQueryFnData, TError, TData, TQueryData, TQueryKey>\n>"
             }
           },
           "parameters": [
             {
               "name": "optionsInput",
               "type": {
-                "text": "| QueryObserverOptions<TQueryFnData, TError, TData, TQueryData, TQueryKey>\r\n    | (() => QueryObserverOptions<TQueryFnData, TError, TData, TQueryData, TQueryKey>)"
+                "text": "| QueryObserverOptions<TQueryFnData, TError, TData, TQueryData, TQueryKey>\n    | (() => QueryObserverOptions<TQueryFnData, TError, TData, TQueryData, TQueryKey>)"
               }
             },
             {
@@ -251,7 +251,7 @@
               "name": "#optionsInput",
               "privacy": "private",
               "type": {
-                "text": "MutationOptionsInput<\r\n    TData,\r\n    TError,\r\n    TVariables,\r\n    TOnMutateResult\r\n  >"
+                "text": "MutationOptionsInput<\n    TData,\n    TError,\n    TVariables,\n    TOnMutateResult\n  >"
               },
               "default": "optionsInput"
             },
@@ -308,7 +308,7 @@
               "kind": "field",
               "name": "observer",
               "type": {
-                "text": "MutationObserver<\r\n    TData,\r\n    TError,\r\n    TVariables,\r\n    TOnMutateResult\r\n  >"
+                "text": "MutationObserver<\n    TData,\n    TError,\n    TVariables,\n    TOnMutateResult\n  >"
               },
               "readonly": true
             },
@@ -316,7 +316,7 @@
               "kind": "field",
               "name": "result",
               "type": {
-                "text": "MutationObserverResult<\r\n    TData,\r\n    TError,\r\n    TVariables,\r\n    TOnMutateResult\r\n  >"
+                "text": "MutationObserverResult<\n    TData,\n    TError,\n    TVariables,\n    TOnMutateResult\n  >"
               },
               "readonly": true
             },
@@ -359,7 +359,7 @@
                 {
                   "name": "optionsInput",
                   "type": {
-                    "text": "MutationOptionsInput<\r\n      TData,\r\n      TError,\r\n      TVariables,\r\n      TOnMutateResult\r\n    >"
+                    "text": "MutationOptionsInput<\n      TData,\n      TError,\n      TVariables,\n      TOnMutateResult\n    >"
                   }
                 }
               ]
@@ -426,7 +426,7 @@
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "MutationObserverOptions<\r\n    TData,\r\n    TError,\r\n    TVariables,\r\n    TOnMutateResult\r\n  >"
+                  "text": "MutationObserverOptions<\n    TData,\n    TError,\n    TVariables,\n    TOnMutateResult\n  >"
                 }
               }
             },
@@ -620,7 +620,7 @@
               "name": "#optionsInput",
               "privacy": "private",
               "type": {
-                "text": "QueryOptionsInput<\r\n    TQueryFnData,\r\n    TError,\r\n    TData,\r\n    TQueryData,\r\n    TQueryKey\r\n  >"
+                "text": "QueryOptionsInput<\n    TQueryFnData,\n    TError,\n    TData,\n    TQueryData,\n    TQueryKey\n  >"
               },
               "default": "optionsInput"
             },
@@ -637,7 +637,7 @@
               "name": "#observer",
               "privacy": "private",
               "type": {
-                "text": "QueryObserver<\r\n    TQueryFnData,\r\n    TError,\r\n    TData,\r\n    TQueryData,\r\n    TQueryKey\r\n  > | undefined"
+                "text": "QueryObserver<\n    TQueryFnData,\n    TError,\n    TData,\n    TQueryData,\n    TQueryKey\n  > | undefined"
               }
             },
             {
@@ -686,7 +686,7 @@
               "kind": "field",
               "name": "observer",
               "type": {
-                "text": "QueryObserver<\r\n    TQueryFnData,\r\n    TError,\r\n    TData,\r\n    TQueryData,\r\n    TQueryKey\r\n  >"
+                "text": "QueryObserver<\n    TQueryFnData,\n    TError,\n    TData,\n    TQueryData,\n    TQueryKey\n  >"
               },
               "readonly": true
             },
@@ -737,7 +737,7 @@
                 {
                   "name": "optionsInput",
                   "type": {
-                    "text": "QueryOptionsInput<\r\n      TQueryFnData,\r\n      TError,\r\n      TData,\r\n      TQueryData,\r\n      TQueryKey\r\n    >"
+                    "text": "QueryOptionsInput<\n      TQueryFnData,\n      TError,\n      TData,\n      TQueryData,\n      TQueryKey\n    >"
                   }
                 }
               ]
@@ -843,7 +843,7 @@
               "privacy": "private",
               "return": {
                 "type": {
-                  "text": "QueryObserverOptions<\r\n    TQueryFnData,\r\n    TError,\r\n    TData,\r\n    TQueryData,\r\n    TQueryKey\r\n  >"
+                  "text": "QueryObserverOptions<\n    TQueryFnData,\n    TError,\n    TData,\n    TQueryData,\n    TQueryKey\n  >"
                 }
               }
             },
