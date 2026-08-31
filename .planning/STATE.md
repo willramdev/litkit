@@ -31,7 +31,7 @@ See: .planning/PROJECT.md (updated 2026-08-31)
 Phase: 12
 Plan: Not started
 Status: All phases complete
-Last activity: 2026-08-31 — Phase 12 complete
+Last activity: 2026-08-31 — v1.1 published (all 6 pkgs 1.1.0); milestone audit PASSED; quick task 260831-qtz (CEM EOL normalizer hardening); local rebased onto published origin/main
 
 Progress: [████████████████████] 100% (v1.1 — 7/7 phases, 21/21 plans)
 
@@ -144,6 +144,7 @@ Full v1.0 decision log archived in PROJECT.md (Key Decisions) and `.planning/mil
 | fast | Re-baseline 4 stale type-SemVer snapshots (forms/query/router, doc-only non-breaking) | 2026-08-25 | a69dd45 | — (fast task) |
 | fast | Empty changeset for release-irrelevant CI/build/docs fixes (satisfies changeset-status gate) | 2026-08-25 | 4617a3a | — (fast task) |
 | 260825-spn | Harden release path — regenerate CEM on `changeset version` + LF-normalize CEM output (verified passed) | 2026-08-25 | db70361 | [260825-spn-harden-release-path-regenerate-cem-on-ch](./quick/260825-spn-harden-release-path-regenerate-cem-on-ch/) |
+| 260831-qtz | Harden CEM EOL normalizer against escaped `\r\n` in JSON string values (defensive; formatting-preserving strip + parse-equality guard; no-op on current LF manifests) | 2026-08-31 | 66595b2 | [260831-qtz-harden-cem-eol-normalizer-against-escape](./quick/260831-qtz-harden-cem-eol-normalizer-against-escape/) |
 
 ## Deferred Items
 
