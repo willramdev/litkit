@@ -3,7 +3,7 @@ status: diagnosed
 phase: 12-dependency-hygiene
 source: [12-VERIFICATION.md]
 started: "2026-08-24T02:54:23Z"
-updated: "2026-08-27T00:00:00Z"
+updated: "2026-08-31T00:00:00Z"
 ---
 
 ## Current Test
@@ -77,8 +77,60 @@ blocked: 0
       issue: "origin/main 556300f is 3 commits behind local HEAD a0e8c51; the CEM-fix commits 558dc70/db70361/a0e8c51 are unpushed"
   missing:
     - "DONE: enable repo setting 'Allow GitHub Actions to create and approve pull requests' (can_approve_pull_request_reviews now true)."
-    - "Push local commits 558dc70, db70361, a0e8c51 to origin/main. The push fires release.yml against the fixed state — the CEM freshness gate passes (HEAD CEM byte-clean) and changesets opens the Version Packages PR carrying regenerated 1.1.0 CEM."
-    - "DONE (in-tree): release.yml line 34 `version:` -> `version-script:` (changesets/action v2 input rename). Commit + push to re-fire release.yml."
-    - "Merge the Version Packages PR so the publish step runs — finally proving test-2's E401 / setup-node@v5 publish-auth path."
+    - "DONE (pushed): 558dc70, db70361, a0e8c51 are now on origin/main — the CEM freshness gate is satisfied on origin (HEAD CEM byte-clean)."
+    - "DONE (in-tree, UNPUSHED): release.yml `version:` -> `version-script:` fixed in commit ca1005f. This is the SOLE remaining defect blocking release — confirmed by run 33140420054 (8-28, a0e8c51) which errored `The following inputs have been renamed: version -> version-script`."
+    - "OPEN — push ca1005f (+55ce6aa) to origin/main. Fires release.yml against the corrected workflow: changesets/action runs the version step, updates the Version Packages PR (#7) with the 1.1.0 bumps + regenerated CEM. OUTWARD ACTION — needs user authorization."
+    - "OPEN — merge the Version Packages PR (#7) so the publish job runs — finally proving test-2's E401 / setup-node@v5 publish-auth path."
   fix_type: push-existing-commits + human-observe
+  debug_session: ""
+
+## Live Reconciliation (2026-08-31)
+
+- **Test 1 — live-confirmed PASS.** Dependabot opened grouped PRs on the live repo: #4 npm-minor-patch (5 updates, grouped), #1 changesets/action (actions-minor-patch group); majors standalone (#6 typescript 6->7, #5 jsdom, #3 setup-node 5->7, #2 checkout 5->7). Zero PRs for `lit`/`@tanstack/*`. None auto-merged (all OPEN). Matches expected.
+- **Test 2 — STILL OPEN (blocker unresolved).** All 6 packages remain `1.0.0`; only tags `v1.0`/`v1.0.0`; nothing published at 1.1.0. Version Packages PR #7 is OPEN but stale (2026-08-25). Last release.yml run 33140420054 (8-28, on a0e8c51) FAILED in 19s at the `version->version-script` rename. The fix (ca1005f) is committed locally, unpushed (local 2 ahead of origin/main). Publish/E401 path never reached — test 2 remains an open blocker.
+- **Side note (not a phase-12 UAT criterion):** the open Dependabot PRs' `ci` checks are red on 8-28 (npm-minor-patch group, changesets/action bump) — separate follow-up, does not gate test 2.
+- **Remaining to close test 2:** push ca1005f -> observe release.yml passes the version step + refreshes Version PR #7 -> merge #7 -> observe publish authenticates with no E401. Push is an outward action pending user authorization.
+
+### Update 2026-08-31T22:03 — push fired, release run 33444326270 SUCCEEDED
+
+- Pushed ca1005f (+55ce6aa): `a0e8c51..ca1005f main -> main`.
+- release.yml run 33444326270 completed **success** in 36s. Every step green: checkout@v5, setup-node@v5, npm ci, changesets/action (version step — the `version-script` rename fix cleared the prior error), post steps.
+- changesets/action regenerated the CEM manifests (no freshness-gate failure) and **updated Version Packages PR #7** (updatedAt 22:03:21) with 1.1.0 release notes for all six `@willramdev/*` packages (kit/router/query/forms/store/devtools).
+- **Blocker fixed.** The `version->version-script` defect that killed every prior release run is resolved and proven on a live run.
+- **Publish/E401 proof — still pending merge.** changesets/action on a source push only refreshes the Version PR; the publish job runs only when PR #7 merges. Test 2's E401/setup-node@v5 publish-auth assertion is therefore proven only after #7 is merged and the publish job runs green. Merging #7 ships v1.1.0 to GitHub Packages — a deliberate release action pending user authorization.
+
+### Update 2026-08-31T22:05 — PR #7 merged, publish job RAN, failed E403 (NOT E401)
+
+- Merged Version Packages PR #7 (merge commit e217d8c, 22:04:53). release.yml publish run 33444507220 fired.
+- **Original test-2 concern DISPROVEN.** setup-node@v5 did NOT break publish auth — the `npx changeset publish` step authenticated (no E401). checkout@v5/setup-node@v5/npm ci all green; changesets reported "No changesets found. Attempting to publish any unpublished packages".
+- **NEW blocker (distinct cause).** Publish then failed E403 on the pre-publish READ:
+  ```
+  Received an unexpected error for @willramdev/store: E403
+  403 Forbidden - GET https://npm.pkg.github.com/@willramdev%2fstore
+    - Permission permission_denied: read_package
+  ##[error]Publish command exited with code 1
+  ```
+- **v1.1.0 NOT published.** All six packages still 1.0.0; no v1.1 tag. `@willramdev/devtools` returns 404 "Package not found" (new Phase-11 leaf, never published).
+- **Root cause (HIGH-confidence direction, needs owner confirmation in package settings):** release.yml auths with the built-in `GITHUB_TOKEN` (line 36/38) and has `packages: write` (line 18). But the `@willramdev/*` packages were first published MANUALLY with a maintainer PAT at v1.0 (per 04-02-PLAN "the maintainer supplies it via ~/.npmrc for the manual 1.0.0 publish") — they were never published by the repo's Actions GITHUB_TOKEN, so the litkit repo is not granted Actions access on the packages and GITHUB_TOKEN is denied read (403 read_package). This is a GitHub Packages access/linkage setting, NOT a workflow-code or .npmrc auth-line defect (the always-auth warning confirms a token IS configured — the request is authenticated but forbidden).
+- **Fix path (repo-owner action + a decision):** for each of the six packages, GitHub → Packages → package → Package settings → "Manage Actions access" → add repo `willramdev/litkit` with the **Write** role (devtools will auto-link on its first Actions publish once one package proves the path); OR switch release.yml publish auth to a `write:packages` PAT (contradicts the no-PAT decision D-08). Then re-run release (push to main or re-run 33444507220). This is outside the codebase — no code change closes it.
+
+## Gaps (added 2026-08-31)
+
+- gap_id: G-12-2b
+  truth: "release.yml publish job publishes all six @willramdev/* packages at 1.1.0 to GitHub Packages"
+  status: failed
+  reason: "Publish authenticated (no E401 — original concern resolved) but failed E403 permission_denied:read_package on the pre-publish GET of @willramdev/store. GITHUB_TOKEN lacks Actions access to the user-scoped packages first published via a manual PAT at v1.0."
+  severity: blocker
+  test: 2
+  root_cause: "Packages first published manually with a user PAT (not by the repo's Actions GITHUB_TOKEN); litkit repo not granted Actions read/write on the packages -> 403 read_package. Confirmed direction: release.yml already has packages:write + GITHUB_TOKEN wiring intact; auth succeeds to a 403 (forbidden), not a 401 (unauthenticated). Full confirmation needs a read:packages-scoped view of each package's repository linkage / Actions-access setting."
+  artifacts:
+    - path: ".github/workflows/release.yml"
+      issue: "No code defect — packages:write (18) + GITHUB_TOKEN input (36) + NODE_AUTH_TOKEN env (38) all present and correct."
+    - path: "(GitHub Packages settings)"
+      issue: "Six @willramdev/* packages likely not granting Actions access to willramdev/litkit; devtools not yet published (404)."
+  missing:
+    - "Grant willramdev/litkit repo Write role under each package's 'Manage Actions access' (GitHub Packages package settings) — store/kit/router/query/forms; devtools auto-links on first Actions publish."
+    - "OR (decision) switch release.yml publish auth to a write:packages PAT — reverses the no-PAT decision D-08."
+    - "Re-run release (push to main or re-run run 33444507220) and observe all six publish at 1.1.0 with no E403."
+  fix_type: repo-settings + decision + human-observe
   debug_session: ""

@@ -5,10 +5,10 @@ milestone_name: Developer Experience
 current_phase: 12
 current_phase_name: Dependency Hygiene
 status: verifying
-stopped_at: Completed 12-02-PLAN.md
-last_updated: "2026-08-24T02:43:18.392Z"
-last_activity: 2026-08-23
-last_activity_desc: Phase 12 execution started
+stopped_at: "Phase 12 UAT: test 1 PASS (live); test 2 release blocker — version-script fix shipped + Version PR flow green, but publish fails E403 read_package (GITHUB_TOKEN lacks Actions access to manually-PAT-published packages). v1.1.0 NOT published."
+last_updated: "2026-08-31T22:10:00.000Z"
+last_activity: 2026-08-31
+last_activity_desc: "Phase 12 verify-work — pushed version-script fix (release run green), merged Version PR #7; publish job failed E403 read_package. New gap G-12-2b."
 state_head: 01a79c9b3578cf5be719d72f646c9ec9dda91dd7
 progress:
   total_phases: 7
@@ -129,6 +129,7 @@ Full v1.0 decision log archived in PROJECT.md (Key Decisions) and `.planning/mil
 
 ### Blockers/Concerns
 
+- **[OPEN — blocks Phase 12 / v1.1 close] G-12-2b: release publish fails E403 `read_package`.** release.yml publish job authenticates fine (no E401 — original test-2 concern resolved), but `changeset publish` hits `403 permission_denied: read_package` on the pre-publish GET of `@willramdev/store`. Cause: the `@willramdev/*` packages were first published MANUALLY with a maintainer PAT at v1.0, so the litkit repo's Actions `GITHUB_TOKEN` isn't granted access → denied read. Fix = grant `willramdev/litkit` Write role under each package's "Manage Actions access" (GitHub Packages settings) OR switch to a `write:packages` PAT (reverses D-08), then re-run release. v1.1.0 unpublished (all packages 1.0.0; devtools 404). Repo-owner settings action — no code change closes it. Full record in `12-UAT.md` gap G-12-2b.
 - [Carry-forward] npm `workspace:`-protocol behavior on npm 11 is MEDIUM confidence — only matters if an internal `@willramdev/kit` edge is ever added; verify locally before relying on it.
 
 *(Resolved in Phase 11: the devtools research/spike unknowns — query-devtools standalone mount, Redux DevTools `JUMP_TO_STATE` wiring, `router-core` `subscribe` hook — were all resolved HIGH-confidence in 11-RESEARCH.md and shipped; DTOOL-04 was verify-only, no core change.)*
