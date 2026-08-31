@@ -33,14 +33,14 @@
   },
   "dependencies": {
     "typescript": "6.0.3",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.11"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
-    "@changesets/cli": "^3.0.0",
+    "@changesets/cli": "^3.0.1",
     "@vitest/coverage-v8": "^4.1.9",
     "dts-bundle-generator": "9.5.1",
-    "publint": "^0.3.23",
+    "publint": "^0.3.24",
     "typedoc": "0.28.20"
   }
 }
