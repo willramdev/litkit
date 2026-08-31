@@ -2,19 +2,19 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Developer Experience
-current_phase: 12
-status: completed
+status: Awaiting next milestone
 stopped_at: Phase 12 complete — all phases complete
-last_updated: "2026-08-31T23:10:14.135Z"
+last_updated: "2026-08-31T23:44:21.459Z"
 last_activity: 2026-08-31
-last_activity_desc: Phase 12 complete
-state_head: 59bfdc2e37618b3bc48be0e18b6e141df5f6f93b
+last_activity_desc: Milestone v1.1 completed and archived
+state_head: 476d87b2f9df10be7b6b1697d194801ffa67b5fe
 progress:
   total_phases: 7
   completed_phases: 7
   total_plans: 21
   completed_plans: 21
   percent: 100
+current_phase: 12
 ---
 
 # Project State
@@ -24,16 +24,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-31)
 
 **Core value:** A consumer building a Lit app against litkit gets first-class docs, editor autocomplete, dev-time guardrails, and debugging — with zero change to the v1.0 runtime contract (externalization, tree-shaking, single-instance dedup, acyclic graph).
-**Current focus:** v1.1 Developer Experience — all 7 phases complete; ready to close milestone
+**Current focus:** v1.1 Developer Experience SHIPPED (all six `@willramdev/*` at 1.1.0) — planning next milestone
 
 ## Current Position
 
-Phase: 12
-Plan: Not started
-Status: All phases complete
-Last activity: 2026-08-31 — v1.1 published (all 6 pkgs 1.1.0); milestone audit PASSED; quick task 260831-qtz (CEM EOL normalizer hardening); local rebased onto published origin/main
-
-Progress: [████████████████████] 100% (v1.1 — 7/7 phases, 21/21 plans)
+Phase: Milestone v1.1 complete
+Plan: —
+Status: Awaiting next milestone
+Last activity: 2026-08-31 — Milestone v1.1 completed and archived
 
 ## Performance Metrics
 
@@ -138,13 +136,6 @@ Full v1.0 decision log archived in PROJECT.md (Key Decisions) and `.planning/mil
 
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
-| 260825-pqg | Fix examples CI typecheck — reorder build-test to build before typecheck (examples is a dist-consumer) | 2026-08-25 | 6d0fd92 | [260825-pqg-fix-examples-ci-typecheck-in-ci-yml-buil](./quick/260825-pqg-fix-examples-ci-typecheck-in-ci-yml-buil/) |
-| fast | Fix clean-tree build order — topological workspace build (devtools after kit/query/router/store) | 2026-08-25 | 40dad53 | — (fast task) |
-| fast | Fix docs.yml typedoc — add devtools entry point + register CEM block tags (@tag/@attr/@slot/@fires) | 2026-08-25 | a40d234 | — (fast task) |
-| fast | Re-baseline 4 stale type-SemVer snapshots (forms/query/router, doc-only non-breaking) | 2026-08-25 | a69dd45 | — (fast task) |
-| fast | Empty changeset for release-irrelevant CI/build/docs fixes (satisfies changeset-status gate) | 2026-08-25 | 4617a3a | — (fast task) |
-| 260825-spn | Harden release path — regenerate CEM on `changeset version` + LF-normalize CEM output (verified passed) | 2026-08-25 | db70361 | [260825-spn-harden-release-path-regenerate-cem-on-ch](./quick/260825-spn-harden-release-path-regenerate-cem-on-ch/) |
-| 260831-qtz | Harden CEM EOL normalizer against escaped `\r\n` in JSON string values (defensive; formatting-preserving strip + parse-equality guard; no-op on current LF manifests) | 2026-08-31 | 66595b2 | [260831-qtz-harden-cem-eol-normalizer-against-escape](./quick/260831-qtz-harden-cem-eol-normalizer-against-escape/) |
 
 ## Deferred Items
 
@@ -162,4 +153,4 @@ Resume file: None
 
 ## Operator Next Steps
 
-- Plan the next phase with `/gsd-plan-phase 12` (or `/gsd-discuss-phase 12` first)
+- Start the next milestone with /gsd-new-milestone

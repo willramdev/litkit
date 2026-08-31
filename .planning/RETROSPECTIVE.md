@@ -43,6 +43,49 @@
 
 ---
 
+## Milestone: v1.1 — Developer Experience
+
+**Shipped:** 2026-08-31
+**Phases:** 7 | **Plans:** 21 | **Tasks:** 45
+**Timeline:** 2026-08-19 → 2026-08-31
+
+### What Was Built
+- Type-SemVer `.d.ts` shape gate (8 flattened snapshots) + plain-JS ergonomics — no public API forces a generic (Phase 6).
+- One shared `esm-env` DEV-gate mechanism, duplicated per-package to preserve the acyclic graph, driving prod-stripped dev warnings proven to minify to zero (Phase 7).
+- Hosted `packages`-mode TypeDoc site deployed via an isolated OIDC `docs.yml` Pages workflow (Phase 8).
+- Custom Elements Manifest + VS Code custom-data + JetBrains web-types for forms/query/router, guarded by tag-set-equality and byte-stable freshness gates (Phase 9).
+- Private `examples/` four-seam app that doubles as the single-instance externalization canary (Phase 10).
+- Opt-in `@willramdev/devtools` leaf (store time-travel, lazy query panel, router log) with zero forced runtime dependency (Phase 11).
+- Grouped Dependabot + advisory `npm audit` gate + `@v5` action bumps — and the whole set published at `1.1.0` (Phase 12).
+
+### What Worked
+- **Substrate-first ordering.** Leading with the type-SemVer gate (P6) and the shared dev-gate (P7) meant docs/CEM/warnings/devtools all built on a proven foundation — the additive/non-breaking invariant held across all seven phases.
+- **Tracer-first continued to pay off** (forms CEM slice → copied to query/router; devtools `attachRouterLog` tracer → store/query attach fns).
+- **The examples app as a live integration canary** caught cross-package dedup regressions that unit tests could not.
+
+### What Was Inefficient
+- **The auth-bearing release path was never exercised end-to-end until the actual publish**, so a multi-cause failure chain surfaced only at close-time UAT: the changesets/action v2 `version`→`version-script` input rename, CEM drift, and finally a `403 read_package` on publish. Each cost a round-trip to diagnose against live GitHub.
+- **A GitHub Packages linkage gotcha bit hard.** v1.0 was published manually with a maintainer PAT, so the packages were never linked to the repo — the Actions `GITHUB_TOKEN` was denied read (`E403`) on the first real automated publish. Fixed by granting the repo Actions Write access per package (no PAT).
+- **A carried todo's premise had gone stale.** The "CEM EOL normalizer" hardening assumed the analyzer emits `\r\n` from CRLF sources; by close-time it normalized to `\n` on both platforms, so the fix landed as defensive-only. Re-verifying the premise first would have reframed it sooner.
+- **Local diverged from the remote after the changesets Version PR merged.** The publish merged a Version-Packages commit on origin while local kept advancing planning commits — needed a rebase to reconcile before the milestone close.
+
+### Patterns Established
+- **Per-package dev-gate copy over a shared import** — duplicate the tiny `esm-env` gate into each package to keep `kit` import-free and the graph acyclic.
+- **Grant repo Actions access to every new `@willramdev/*` scoped package after its first publish** — otherwise `GITHUB_TOKEN` 403s on read.
+- **Formatting-preserving textual normalization** for machine-generated artifacts whose tooling emits mixed compact/expanded JSON (a `JSON.stringify` round-trip would drift them).
+
+### Key Lessons
+1. Exercise the auth-bearing release/publish path end-to-end (in a dry or real run) before relying on it — config that "looks correct at rest" hides input renames, drift, and permission gaps that only a live run surfaces.
+2. `GITHUB_TOKEN` can only touch packages linked to the repo; a package first published out-of-band (manual PAT) needs an explicit Actions-access grant.
+3. Re-verify a carried todo's premise against the current toolchain before implementing — a fix for a bug that no longer reproduces is at best defensive.
+4. After a changesets publish merges its Version PR on the remote, reconcile local before continuing to commit.
+
+### Cost Observations
+- Model profile: `adaptive`; exact opus/sonnet/haiku mix not instrumented.
+- Notable: most phase execution was fast (many plans 1–5 min); the disproportionate cost was close-time release debugging, not feature build.
+
+---
+
 ## Cross-Milestone Trends
 
 ### Process Evolution
@@ -50,14 +93,18 @@
 | Milestone | Phases | Plans | Key Change |
 |-----------|--------|-------|------------|
 | v1.0 Harden & Ship | 5 | 20 | Baseline process — tracer-first phases, verify-by-execution harnesses |
+| v1.1 Developer Experience | 7 | 21 | Substrate-first ordering; additive/non-breaking invariant held; release-path E2E gap surfaced at close |
 
 ### Cumulative Quality
 
 | Milestone | Tests | Coverage | Zero-Dep Harnesses |
 |-----------|-------|----------|--------------------|
 | v1.0 Harden & Ship | Critical-path suites, all 5 packages | Report-only (no % gate) | 3 (smoke-consumer, doc-check, verify-consumer) |
+| v1.1 Developer Experience | + devtools suite (27 cases), full router suite (256) | Report-only (no % gate) | + type-snapshot gate, CEM freshness/tag-set gates, single-instance canary, dev-strip harness |
 
 ### Top Lessons (Verified Across Milestones)
 
-1. Prove config-correctness by execution, not file presence. *(v1.0)*
+1. Prove config-correctness by execution, not file presence. *(v1.0, reaffirmed v1.1 — release path)*
 2. Fix correctness upstream so downstream phases can test and verify it. *(v1.0)*
+3. Exercise the auth-bearing release/publish path end-to-end before relying on it. *(v1.1)*
+4. `GITHUB_TOKEN` reaches only repo-linked packages; grant Actions access to any out-of-band-published scoped package. *(v1.1)*
