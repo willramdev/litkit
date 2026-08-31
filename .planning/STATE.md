@@ -3,44 +3,43 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Developer Experience
 current_phase: 12
-current_phase_name: Dependency Hygiene
-status: verifying
-stopped_at: "Phase 12 UAT: test 1 PASS (live); test 2 release blocker — version-script fix shipped + Version PR flow green, but publish fails E403 read_package (GITHUB_TOKEN lacks Actions access to manually-PAT-published packages). v1.1.0 NOT published."
-last_updated: "2026-08-31T22:10:00.000Z"
+status: completed
+stopped_at: Phase 12 complete — all phases complete
+last_updated: "2026-08-31T23:10:14.135Z"
 last_activity: 2026-08-31
-last_activity_desc: "Phase 12 verify-work — pushed version-script fix (release run green), merged Version PR #7; publish job failed E403 read_package. New gap G-12-2b."
-state_head: 01a79c9b3578cf5be719d72f646c9ec9dda91dd7
+last_activity_desc: Phase 12 complete
+state_head: 59bfdc2e37618b3bc48be0e18b6e141df5f6f93b
 progress:
   total_phases: 7
-  completed_phases: 6
+  completed_phases: 7
   total_plans: 21
   completed_plans: 21
-  percent: 86
+  percent: 100
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-08-23)
+See: .planning/PROJECT.md (updated 2026-08-31)
 
 **Core value:** A consumer building a Lit app against litkit gets first-class docs, editor autocomplete, dev-time guardrails, and debugging — with zero change to the v1.0 runtime contract (externalization, tree-shaking, single-instance dedup, acyclic graph).
-**Current focus:** Phase 12 — Dependency Hygiene
+**Current focus:** v1.1 Developer Experience — all 7 phases complete; ready to close milestone
 
 ## Current Position
 
-Phase: 12 (Dependency Hygiene) — EXECUTING
-Plan: 2 of 2
-Status: Phase complete — ready for verification
-Last activity: 2026-08-25 — Completed quick task 260825-pqg (CI build-before-typecheck fix)
+Phase: 12
+Plan: Not started
+Status: All phases complete
+Last activity: 2026-08-31 — Phase 12 complete
 
-Progress: [█████████░] 86% (v1.1 — 6/7 phases)
+Progress: [████████████████████] 100% (v1.1 — 7/7 phases, 21/21 plans)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 35 (v1.0, archived)
+- Total plans completed: 37 (v1.0, archived)
 - Average duration: — min
 - Total execution time: — hours
 
@@ -54,6 +53,7 @@ Progress: [█████████░] 86% (v1.1 — 6/7 phases)
 | 09 | 3 | - | - |
 | 10 | 2 | - | - |
 | 11 | 3 | - | - |
+| 12 | 2 | - | - |
 
 **Recent Trend:**
 
@@ -129,7 +129,7 @@ Full v1.0 decision log archived in PROJECT.md (Key Decisions) and `.planning/mil
 
 ### Blockers/Concerns
 
-- **[OPEN — blocks Phase 12 / v1.1 close] G-12-2b: release publish fails E403 `read_package`.** release.yml publish job authenticates fine (no E401 — original test-2 concern resolved), but `changeset publish` hits `403 permission_denied: read_package` on the pre-publish GET of `@willramdev/store`. Cause: the `@willramdev/*` packages were first published MANUALLY with a maintainer PAT at v1.0, so the litkit repo's Actions `GITHUB_TOKEN` isn't granted access → denied read. Fix = grant `willramdev/litkit` Write role under each package's "Manage Actions access" (GitHub Packages settings) OR switch to a `write:packages` PAT (reverses D-08), then re-run release. v1.1.0 unpublished (all packages 1.0.0; devtools 404). Repo-owner settings action — no code change closes it. Full record in `12-UAT.md` gap G-12-2b.
+- **[RESOLVED 2026-08-31] G-12-2 / G-12-2b: release publish path.** All six `@willramdev/*` published at 1.1.0 (run 33444507220). Chain fixed: version→version-script rename (ca1005f); publish E403 `read_package` fixed by granting `willramdev/litkit` the **Write** role under each package's GitHub Packages "Manage Actions access" (no PAT — D-08 preserved). **Standing note for future releases:** any NEW `@willramdev/*` package must be granted repo Actions access after its first publish (devtools auto-linked on this run). setup-node@v5 did NOT break publish auth (no E401).
 - [Carry-forward] npm `workspace:`-protocol behavior on npm 11 is MEDIUM confidence — only matters if an internal `@willramdev/kit` edge is ever added; verify locally before relying on it.
 
 *(Resolved in Phase 11: the devtools research/spike unknowns — query-devtools standalone mount, Redux DevTools `JUMP_TO_STATE` wiring, `router-core` `subscribe` hook — were all resolved HIGH-confidence in 11-RESEARCH.md and shipped; DTOOL-04 was verify-only, no core change.)*
@@ -156,7 +156,7 @@ Items acknowledged and carried forward from previous milestone close:
 ## Session Continuity
 
 Last session: 2026-08-24T02:43:17.649Z
-Stopped at: Completed 12-02-PLAN.md
+Stopped at: Phase 12 complete — all phases complete
 Resume file: None
 
 ## Operator Next Steps

@@ -1,9 +1,9 @@
 ---
-status: diagnosed
+status: complete
 phase: 12-dependency-hygiene
 source: [12-VERIFICATION.md]
 started: "2026-08-24T02:54:23Z"
-updated: "2026-08-31T00:00:00Z"
+updated: "2026-08-31T23:10:00Z"
 ---
 
 ## Current Test
@@ -20,7 +20,7 @@ result: pass
 ### 2. release.yml publish auth after setup-node@v5 (next push to main)
 expected: On the next `release.yml` run, the `npx changeset publish` step authenticates to GitHub Packages with no `E401` after the `setup-node@v5` bump — the removed dummy NODE_AUTH_TOKEN fallback does not break publish auth (NODE_AUTH_TOKEN on the changesets step is the sole auth path and works).
 why_human: release.yml fires only on push to main, so publish-auth survival after setup-node@v5's fallback removal is provable only on a real release run (RESEARCH Pitfall #1 / A1). Tagged `verification: backstop` in the plan; present + wired but runtime behavior unexercised.
-result: issue
+result: pass
 reported: |
   Run 1: release.yml failed at the changesets/action `version` step:
     Error: GitHub Actions is not permitted to create or approve pull requests.
@@ -31,12 +31,20 @@ reported: |
   \n; (b) web-types.json committed 1.0.0 vs regenerated 1.1.0.
   Publish step still never reached — test-2's E401 publish-auth path unexercised.
 severity: blocker
+resolution: |
+  RESOLVED 2026-08-31T23:08 on release run 33444507220. Chain of causes cleared:
+  (1) version->version-script rename (ca1005f, pushed); (2) CEM freshness (already
+  on origin); (3) publish E403 read_package (G-12-2b) — fixed by granting the
+  willramdev/litkit repo Write role under each package's Actions access.
+  Publish authenticated with NO E401 (original test-2 concern disproven) and, once
+  access was granted, NO E403 — all six @willramdev/* packages published at 1.1.0
+  with git tags + GitHub Releases created. Test 2 PASS.
 
 ## Summary
 
 total: 2
-passed: 1
-issues: 1
+passed: 2
+issues: 0
 pending: 0
 skipped: 0
 blocked: 0
@@ -45,7 +53,9 @@ blocked: 0
 
 - gap_id: G-12-2
   truth: "release.yml completes on push to main — changesets opens/updates the Version Packages PR, and (once merged) the publish step authenticates to GitHub Packages with no E401 after setup-node@v5"
-  status: failed
+  status: resolved
+  resolved_by: "release run 33444507220 (2026-08-31) — version-script fix + Actions-access grant; all six pkgs published 1.1.0, no E401/E403"
+  resolved_at: 2026-08-31
   reason: "Two sequential causes: (1) 'Allow GitHub Actions to create and approve pull requests' was disabled — RESOLVED; (2) release then failed the ci.yml CEM freshness gate because it ran against a stale origin/main missing the three local CEM-fix commits."
   severity: blocker
   test: 2
@@ -118,7 +128,9 @@ blocked: 0
 
 - gap_id: G-12-2b
   truth: "release.yml publish job publishes all six @willramdev/* packages at 1.1.0 to GitHub Packages"
-  status: failed
+  status: resolved
+  resolved_by: "Granted willramdev/litkit repo Write role under each package's Actions access; re-ran publish job 33444507220 — Successfully published all six @willramdev/* at 1.1.0, no E403"
+  resolved_at: 2026-08-31
   reason: "Publish authenticated (no E401 — original concern resolved) but failed E403 permission_denied:read_package on the pre-publish GET of @willramdev/store. GITHUB_TOKEN lacks Actions access to the user-scoped packages first published via a manual PAT at v1.0."
   severity: blocker
   test: 2

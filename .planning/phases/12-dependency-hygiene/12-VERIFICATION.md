@@ -1,11 +1,12 @@
 ---
 phase: 12-dependency-hygiene
 verified: 2026-08-23T00:00:00Z
-status: human_needed
+status: passed
 score: 8/9 must-haves verified
 behavior_unverified: 1 # release.yml publish auth after setup-node@v5 — post-merge backstop, cannot run in PR CI
 overrides_applied: 0
 human_verification:
+
   - test: "After the first weekly Dependabot cycle against the live repo, inspect the repo's Dependabot PR list."
     expected: "One grouped npm PR and one grouped github-actions PR appear (minor+patch batched, majors standalone); NO PR proposes a `lit` or `@tanstack/*` bump; no PR is auto-merged."
     why_human: "GitHub-native runtime behavior — Dependabot fires only on GitHub's weekly schedule; cannot be exercised in PR CI. Config is verified correct; only live PR behavior remains."
@@ -13,6 +14,7 @@ human_verification:
     expected: "The `npx changeset publish` step authenticates with no `E401` after the `setup-node@v5` bump — the removed dummy NODE_AUTH_TOKEN fallback does not break publish auth."
     why_human: "release.yml fires only on push to main, so publish-auth survival after the setup-node@v5 fallback removal is provable only on a real release run (RESEARCH Pitfall #1 / A1). Tagged `verification: backstop` in the plan; present + wired but runtime behavior unexercised."
 behavior_unverified_items:
+
   - truth: "Post-merge: the next release.yml run authenticates to GitHub Packages after the setup-node@v5 bump (no E401)."
     test: "Push to main and observe the release.yml changesets publish step."
     expected: "Publish authenticates with no E401; NODE_AUTH_TOKEN on the changesets step is the sole auth path and works."

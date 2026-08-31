@@ -1,0 +1,73 @@
+{
+  "contract": "1.0.0",
+  "flavor": "core",
+  "milestone": "v1.1 — Developer Experience",
+  "phases": [
+    {
+      "number": "1",
+      "name": "Build & Typecheck Hardening",
+      "status": "complete"
+    },
+    {
+      "number": "2",
+      "name": "Tests & CI",
+      "status": "complete"
+    },
+    {
+      "number": "3",
+      "name": "Docs",
+      "status": "complete"
+    },
+    {
+      "number": "4",
+      "name": "Release Automation & Publish",
+      "status": "complete"
+    },
+    {
+      "number": "5",
+      "name": "Consumer Install Verification",
+      "status": "complete"
+    },
+    {
+      "number": "6",
+      "name": "Sharper Types & Plain-JS Ergonomics + Type-SemVer Gate",
+      "status": "complete"
+    },
+    {
+      "number": "7",
+      "name": "Dev-Gate & Prod-Stripped Dev Warnings",
+      "status": "complete"
+    },
+    {
+      "number": "8",
+      "name": "Hosted TypeDoc API Reference Site",
+      "status": "complete"
+    },
+    {
+      "number": "9",
+      "name": "Custom Elements Manifest",
+      "status": "complete"
+    },
+    {
+      "number": "10",
+      "name": "Examples Integration App",
+      "status": "complete"
+    },
+    {
+      "number": "11",
+      "name": "Devtools & Debugging",
+      "status": "complete"
+    },
+    {
+      "number": "12",
+      "name": "Dependency Hygiene",
+      "status": "complete"
+    }
+  ],
+  "next": {
+    "command": "/gsd:new-milestone",
+    "label": "Start a new milestone",
+    "reason": "All phases complete — start a new milestone"
+  },
+  "updated_at": "2026-08-31T23:10:14.165Z"
+}

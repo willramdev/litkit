@@ -43,15 +43,17 @@ All five packages install cleanly from GitHub Packages and work as documented �
 - ✓ Standalone `examples/` integration app — private, never-published `examples/` workspace exercising all four cross-package seams (router + query + forms + store) end-to-end against the real built `dist/`, doubling as the externalization canary (`resolve.dedupe` + `check-single-instance.mjs` prove single-instance `lit`/`@tanstack/*`) and manual QA surface; excluded from releases via `private:true` + Changesets `ignore` — Validated in Phase 10: Examples Integration App (DX-03; EXPL-01/02/03), UAT-verified (three seams live) + security-reviewed (6/6 threats closed)
 - ✓ Opt-in devtools — new `@willramdev/devtools` leaf package (optional store/query/router peers, `sideEffects:false`, DEV-gated via a local `esm-env` copy, fully tree-shakeable, never added to any `sideEffects` allowlist) with three per-module attach fns: `attachStoreDevtools` (bidirectional Redux DevTools store time-travel, `isTimeTravel` feedback-loop guard, bounded `maxAge`), `attachQueryDevtools` (lazy-mounted standalone TanStack Query Devtools panel bound to the app `QueryClient`), and `attachRouterLog` (dev-only match log over the public `router.subscribe`) — Validated in Phase 11: Devtools & Debugging (DTOOL-01/02/03/04), UAT-verified (store time-travel + query panel live) + security-reviewed (8/8 threats closed)
 
+- ✓ Custom Elements Manifest (`custom-elements.json`) for all element-exposing packages → IDE autocomplete (VS Code + JetBrains editor plugins), CI freshness + completeness gates — Validated in Phase 9: Custom Elements Manifest (DX-01)
+- ✓ Sharper types & editor autocomplete on existing APIs — every public generic infers from a required value arg (no required type args); type-SemVer `.d.ts` shape gate (8 flattened snapshots) locks the surface — Validated in Phase 6: Sharper Types (TYPE-01/03)
+- ✓ Dev-time warnings & error messages (duplicate registration, invalid route config) — `esm-env` DEV-gated, dead-code-eliminated to zero in production builds — Validated in Phase 7: Dev-Gate & Prod-Stripped Warnings
+- ✓ Plain-JS ergonomics — clean no-TypeScript experience, sensible defaults, no required generics — Validated in Phase 6: Sharper Types & Plain-JS Ergonomics
+- ✓ Dependabot + dependency-audit hygiene in CI — grouped weekly npm + github-actions updates (minor+patch grouped, majors split, `lit`/`@tanstack/*` ignored), non-blocking `npm audit --audit-level=high` gate step; UAT-confirmed live (grouped PRs opened, none for lit/@tanstack, none auto-merged) — Validated in Phase 12: Dependency Hygiene (DX-04)
+
 ### Active
 
-<!-- v1.1 "Developer Experience" — DX polish on the shipped v1.0 surface. Additive, non-breaking. Detailed REQ-IDs in .planning/REQUIREMENTS.md. -->
+<!-- v1.1 "Developer Experience" complete — all target requirements validated across Phases 6-12. Milestone ready to close via /gsd-complete-milestone. -->
 
-- [ ] Custom Elements Manifest (`custom-elements.json`) for element-exposing packages → IDE autocomplete (DX-01)
-- [ ] Dependabot + dependency-audit hygiene in CI (DX-04)
-- [ ] Sharper types & editor autocomplete on existing APIs (tighter generics, fewer casts)
-- [ ] Dev-time warnings & error messages (missing provider, bad route, API misuse) — stripped from prod builds
-- [ ] Plain-JS ergonomics — clean no-TypeScript experience, sensible defaults, no required generics
+_(none — all v1.1 requirements validated)_
 
 ### Out of Scope
 
@@ -90,6 +92,7 @@ All five packages install cleanly from GitHub Packages and work as documented �
 | Deploy docs via an isolated `docs.yml` Pages workflow (own least-privilege token scope, `enablement: true` self-enable) rather than folding into `ci.yml` | Keeps read-only CI and auth-bearing release tokens disjoint from the Pages scope; self-enable removes the first-run-before-Pages-enabled 404 race | ✓ Good — site live at willramdev.github.io/litkit (Phase 8) |
 | Examples app uses plain `"*"` workspace deps (not `workspace:*`) + inverse app-mode Vite config (bundle + `resolve.dedupe`, no `build.lib`/`external`) | npm 11 throws `EUNSUPPORTEDPROTOCOL` on `workspace:*`; the app must bundle + dedupe to act as the single-instance externalization canary | ✓ Good — four-seam app live, `check-single-instance.mjs` green under full load (Phase 10) |
 | Ship devtools as a new opt-in `@willramdev/devtools` leaf, never a forced dependency (DEV-gated, `sideEffects:false`, excluded from every `sideEffects` allowlist, per-module split + lazy `await import` for the heavy query panel) reusing the Phase 7 dev-gate; DTOOL-04 satisfied verify-only over the existing public `router.subscribe` (no `router-core` change, per D-07) | Zero runtime cost to consumers who don't import it; preserves the acyclic graph + tree-shaking + externalization invariants | ✓ Good — 6th leaf package, three tree-shakeable attach fns, DTOOL-01 proven (build+typecheck+27 tests+publint+attw+leaf-rule); Phase 11 |
+| Grant each `@willramdev/*` GitHub Packages package the litkit repo's **Actions "Write"** access (keep built-in `GITHUB_TOKEN`, no PAT — D-08 preserved) | v1.0 was published manually with a maintainer PAT, so the packages weren't linked to the repo — the Actions `GITHUB_TOKEN` got `403 read_package` on `changeset publish`. Granting repo Actions access is the least-privilege fix; adding a `write:packages` PAT was the rejected alternative | ✓ Good — all six `@willramdev/*` published at 1.1.0 (run 33444507220, Phase 12 UAT). **Standing rule:** any NEW `@willramdev/*` package needs repo Actions access after its first publish (setup-node@v5 does NOT break publish auth — no E401) |
 
 ## Evolution
 
@@ -109,4 +112,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-23 after Phase 11 — opt-in `@willramdev/devtools` leaf package (DTOOL-01/02/03/04) shipped with store time-travel, query-cache inspection, and router match logging; validated by UAT (store + query panel live) + security review (8/8 threats closed).*
+*Last updated: 2026-08-31 after Phase 12 — Dependency Hygiene (DX-04) validated (grouped Dependabot + non-blocking audit gate, live-confirmed); all 5 v1.1 Active requirements moved to Validated; the full release path proven end-to-end — all six `@willramdev/*` published at 1.1.0 to GitHub Packages (E403 read_package fixed via repo Actions-access grant). v1.1 "Developer Experience" milestone 100% complete (7/7 phases), ready to close via /gsd-complete-milestone.*
