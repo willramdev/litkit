@@ -1,0 +1,19 @@
+{
+  // Docs-only TS program for TypeDoc (referenced from typedoc.json). The docs
+  // build (docs.yml) runs `npx typedoc` with NO prior `npm run build`, so the
+  // sibling packages' `dist/*.d.ts` do not exist. devtools is the only package
+  // that imports siblings (its OPTIONAL peers @willramdev/router / @willramdev/store),
+  // so map those type-only imports to each sibling's source here — resolving them
+  // without a build. Tests are excluded: they import test-only helpers
+  // (createMockRouter, createStore) that are not part of a sibling's public API
+  // and do not belong in the API reference.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@willramdev/router": ["../router/src/index.ts"],
+      "@willramdev/store": ["../store/src/index.ts"],
+      "@willramdev/query": ["../query/src/index.ts"]
+    }
+  },
+  "exclude": ["**/*.test.ts"]
+}
