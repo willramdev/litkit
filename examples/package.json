@@ -19,7 +19,7 @@
     "@tanstack/form-core": "^1.28.5"
   },
   "devDependencies": {
-    "vite": "^8.0.1",
+    "vite": "^8.2.2",
     "typescript": "6.0.3"
   }
 }
