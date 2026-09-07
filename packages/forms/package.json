@@ -71,9 +71,9 @@
     "custom-element-vs-code-integration": "^1.5.0",
     "lit": "^3.3.2",
     "typescript": "^6.0.3",
-    "vite": "^8.0.1",
+    "vite": "^8.2.2",
     "vitest": "^4.1.9",
-    "zod": "^4.3.6"
+    "zod": "^4.5.4"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
