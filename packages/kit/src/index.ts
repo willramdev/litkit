@@ -36,5 +36,44 @@ export type {
   ClickOutsideController,
 } from './controllers/index.ts';
 
+// HTTP client (also available framework-neutral from `@willramdev/kit/http`)
+export {
+  HttpClient,
+  HttpError,
+  InterceptorManager,
+  createHttpClient,
+  http,
+  isHttpError,
+} from './http/index.ts';
+export type {
+  HttpBasicAuth,
+  HttpBody,
+  HttpClientConfig,
+  HttpClientDefaults,
+  HttpErrorCode,
+  HttpErrorOptions,
+  HttpFetch,
+  HttpFulfilledHandler,
+  HttpHeaders,
+  HttpInterceptor,
+  HttpInterceptors,
+  HttpMethod,
+  HttpParamValue,
+  HttpParams,
+  HttpProgressEvent,
+  HttpRejectedHandler,
+  HttpRequest,
+  HttpRequestConfig,
+  HttpResponse,
+  HttpResponseType,
+  HttpRetryContext,
+  HttpRetryOptions,
+  HttpSchema,
+  HttpXsrfOptions,
+  StandardSchemaIssue,
+  StandardSchemaResult,
+  StandardSchemaV1,
+} from './http/index.ts';
+
 // Types
 export type { ControllerFactory } from './types.ts';
