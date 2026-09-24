@@ -1,6 +1,7 @@
-// BUILD-06 smoke consumer for the remaining six @willramdev subpaths:
-//   @willramdev/kit `.`, @willramdev/kit/http, @willramdev/store `.`,
-//   @willramdev/query `.`, @willramdev/forms `.`, and @willramdev/forms/zod.
+// BUILD-06 smoke consumer for the remaining seven @willramdev subpaths:
+//   @willramdev/kit `.`, @willramdev/kit/http, @willramdev/kit/context,
+//   @willramdev/store `.`, @willramdev/query `.`, @willramdev/forms `.`, and
+//   @willramdev/forms/zod.
 //
 // Type-checked (never executed) by tsc under BOTH `node16` and `bundler`
 // module resolution to prove that every one of these published subpaths
@@ -17,6 +18,8 @@
 import { KitElement, type ControllerFactory } from "@willramdev/kit";
 // @willramdev/kit/http — the framework-neutral HTTP client factory + a type.
 import { createHttpClient, type HttpResponse } from "@willramdev/kit/http";
+// @willramdev/kit/context — the framework-neutral context factory + a type.
+import { createContext, type Context } from "@willramdev/kit/context";
 // @willramdev/store `.` — a factory value + the store type.
 import { createStore, type Store } from "@willramdev/store";
 // @willramdev/query `.` — a client factory value + a controller-config type.
@@ -30,6 +33,7 @@ import { zodValidator } from "@willramdev/forms/zod";
 // import; a stripped import would hide an unresolved subpath.
 void KitElement;
 void createHttpClient;
+void createContext;
 void createStore;
 void createQueryClient;
 void form;
@@ -38,6 +42,7 @@ void zodValidator;
 // Reference each type-only import so it, too, participates in resolution.
 export type SmokeControllerFactory = ControllerFactory<never>;
 export type SmokeHttpResponse = HttpResponse<unknown>;
+export type SmokeContext = Context<unknown>;
 export type SmokeStore = Store<unknown>;
 export type SmokeQueryControllerConfig = QueryControllerConfig;
 export type SmokeFormInstance = FormInstance<Record<string, unknown>>;

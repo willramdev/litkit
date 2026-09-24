@@ -4,11 +4,13 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   build: {
     lib: {
-      // `http` is a framework-neutral subpath (`@willramdev/kit/http`); the main
-      // entry re-exports it, so both share one chunk and one `http` instance.
+      // `http` and `context` are framework-neutral subpaths
+      // (`@willramdev/kit/http`, `@willramdev/kit/context`); the main entry
+      // re-exports them, so each shares one chunk (and one `http` instance).
       entry: {
         kit: resolve(__dirname, 'src/index.ts'),
         http: resolve(__dirname, 'src/http/index.ts'),
+        context: resolve(__dirname, 'src/context/index.ts'),
       },
       formats: ['es'],
     },

@@ -8,7 +8,8 @@
     "reactive-controller",
     "custom-elements",
     "http",
-    "fetch"
+    "fetch",
+    "context"
   ],
   "license": "MIT",
   "author": "William Ramanand",
@@ -30,6 +31,10 @@
     "./http": {
       "types": "./dist/http/index.d.ts",
       "import": "./dist/http.js"
+    },
+    "./context": {
+      "types": "./dist/context/index.d.ts",
+      "import": "./dist/context.js"
     }
   },
   "files": [
@@ -52,6 +57,7 @@
     "lit": "^3.0.0"
   },
   "devDependencies": {
+    "@lit/context": "^1.1.6",
     "lit": "^3.3.2",
     "typescript": "^6.0.3",
     "vite": "^8.0.1",
