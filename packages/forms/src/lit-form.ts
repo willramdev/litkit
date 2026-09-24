@@ -1,7 +1,8 @@
 import { LitElement, css, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
+import { provide, type ContextProvider } from '@willramdev/kit/context';
 import type { FormInstance } from './types.ts';
-import { attachFormProvider } from './form-context.ts';
+import { answerLegacyFormRequests, formContext } from './form-context.ts';
 
 /**
  * Provides a `FormInstance` to descendant controls and enhances a native child
@@ -10,6 +11,9 @@ import { attachFormProvider } from './form-context.ts';
  * Note: slotted controls are not true descendants of a shadow-DOM `<form>`, so
  * `lit-form` intentionally provides context around a user-authored native form
  * instead of trying to own one internally.
+ *
+ * It provides under `formContext`, so custom controls can also read the form
+ * with `consume(this, formContext)` from `@willramdev/kit/context`.
  *
  * @attr {boolean} native-validation - keep native browser form validation on (default false)
  * @prop {FormInstance} form - the FormInstance driving submit/reset
@@ -29,13 +33,15 @@ export class LitForm extends LitElement {
     this.#syncForms();
   });
 
-  #detachProvider?: () => void;
+  #provider?: ContextProvider<FormInstance<any>>;
 
   constructor() {
     super();
     this.form = null;
     this.nativeValidation = false;
-    this.#detachProvider = attachFormProvider(this, () => this.form);
+    // Lives as long as the element (not detached on disconnect), so a moved
+    // <lit-form> keeps answering, like its context provider does.
+    answerLegacyFormRequests(this, () => this.form);
     this.addEventListener('submit', this.#handleSubmit as EventListener);
     this.addEventListener('reset', this.#handleReset as EventListener);
   }
@@ -49,9 +55,28 @@ export class LitForm extends LitElement {
     });
   }
 
+  // Property setters call requestUpdate synchronously. Directives like
+  // bind('email') look the form up while their template renders, possibly
+  // before this element connects, so the provider must be current right away.
+  requestUpdate(...args: Parameters<LitElement['requestUpdate']>): void {
+    super.requestUpdate(...args);
+    if (args[0] === 'form') this.#syncProvider();
+  }
+
+  #syncProvider(): void {
+    const form = this.form;
+    if (form) {
+      if (this.#provider) this.#provider.value = form;
+      else this.#provider = provide(this, formContext, form);
+    } else if (this.#provider) {
+      // Without a form, stop answering so requests reach an outer <lit-form>.
+      this.#provider.dispose();
+      this.#provider = undefined;
+    }
+  }
+
   disconnectedCallback(): void {
     this.#observer.disconnect();
-    this.#detachProvider?.();
     this.removeEventListener('submit', this.#handleSubmit as EventListener);
     this.removeEventListener('reset', this.#handleReset as EventListener);
     super.disconnectedCallback();

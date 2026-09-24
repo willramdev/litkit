@@ -203,6 +203,70 @@ export function provide<C extends UnknownContext>(
   return new Provider(target, context, value);
 }
 
+// One live subscription. The request's callback is `handle`; `stop` closes
+// over this object, so whoever holds `stop` keeps `handle` alive for the
+// root, which only holds parked callbacks weakly.
+class ContextSubscription {
+  private _receive: (value: unknown) => void;
+  private _unsubscribe: (() => void) | undefined = undefined;
+  private _active = true;
+
+  constructor(receive: (value: unknown) => void) {
+    this._receive = receive;
+  }
+
+  handle = (value: unknown, unsubscribe?: () => void): void => {
+    if (!this._active) {
+      unsubscribe?.();
+      return;
+    }
+    if (unsubscribe !== this._unsubscribe) {
+      // A different provider answered (a nearer one appeared): leave the old one.
+      this._unsubscribe?.();
+      this._unsubscribe = unsubscribe;
+    }
+    this._receive(value);
+  };
+
+  stop = (): void => {
+    this._active = false;
+    this._unsubscribe?.();
+    this._unsubscribe = undefined;
+  };
+}
+
+/**
+ * Low-level subscription for library authors writing their own controllers.
+ * Calls `callback` with the value of the nearest provider above `target` —
+ * now, if one answers, and again whenever the value is replaced, a provider
+ * appears later, or a nearer provider takes over. Returns a function that
+ * stops the subscription; keep it for as long as you want updates.
+ *
+ * Unlike `consume()`, it never registers a controller, requests a render, or
+ * logs warnings, so it slots into an existing controller's lifecycle.
+ *
+ * @example
+ * ```js
+ * hostConnected() {
+ *   this.stop = subscribeContext(this.host, routerContext, (router) => this.use(router));
+ * }
+ * hostDisconnected() {
+ *   this.stop?.();
+ * }
+ * ```
+ */
+export function subscribeContext<C extends UnknownContext>(
+  target: EventTarget,
+  context: C,
+  callback: (value: ContextType<C>) => void
+): () => void {
+  if (typeof target.dispatchEvent !== 'function') return () => {};
+  ensureContextRoot();
+  const subscription = new ContextSubscription(callback as (value: unknown) => void);
+  target.dispatchEvent(new ContextRequestEvent(context, target, subscription.handle, true));
+  return subscription.stop;
+}
+
 class Consumer<T> implements ContextConsumer<T> {
   private _target: EventTarget;
   private _context: UnknownContext;
@@ -211,9 +275,8 @@ class Consumer<T> implements ContextConsumer<T> {
   private _host: ControllerHost | undefined = undefined;
   private _value: T;
   private _resolved = false;
-  private _answered = false;
   private _checked = false;
-  private _unsubscribe: (() => void) | undefined = undefined;
+  private _stop: (() => void) | undefined = undefined;
 
   constructor(target: EventTarget, context: UnknownContext, options: ConsumeOptions<T>) {
     this._target = target;
@@ -266,41 +329,35 @@ class Consumer<T> implements ContextConsumer<T> {
 
   private _connect(): void {
     if (typeof this._target.dispatchEvent !== 'function') return;
-    if (this._subscribe) ensureContextRoot();
-    this._answered = false;
-    this._target.dispatchEvent(
-      new ContextRequestEvent(
-        this._context,
-        this._target,
-        this._callback as ContextCallback<unknown>,
-        this._subscribe
-      )
-    );
+    this._stop?.();
+    let answered = false;
+    const receive = (value: unknown): void => {
+      answered = true;
+      this._resolved = true;
+      this._set(value as T);
+    };
+    if (this._subscribe) {
+      this._stop = subscribeContext(this._target, this._context, receive);
+    } else {
+      this._target.dispatchEvent(
+        new ContextRequestEvent(this._context, this._target, (value, unsubscribe) => {
+          // A non-compliant provider subscribed us anyway; release it.
+          unsubscribe?.();
+          receive(value);
+        })
+      );
+    }
     // Reconnected somewhere no provider covers: drop the old provider's value.
-    if (!this._answered && this._resolved) {
+    if (!answered && this._resolved) {
       this._resolved = false;
       this._set(defaultOf(this._context) as T);
     }
   }
 
   private _disconnect(): void {
-    this._unsubscribe?.();
-    this._unsubscribe = undefined;
+    this._stop?.();
+    this._stop = undefined;
   }
-
-  private _callback = (value: T, unsubscribe?: () => void): void => {
-    this._answered = true;
-    if (!this._subscribe) {
-      // A non-compliant provider subscribed us anyway; release it.
-      unsubscribe?.();
-    } else if (unsubscribe !== this._unsubscribe) {
-      // A different provider answered (a nearer one appeared): leave the old one.
-      this._unsubscribe?.();
-      this._unsubscribe = unsubscribe;
-    }
-    this._resolved = true;
-    this._set(value);
-  };
 
   private _set(value: T): void {
     const previous = this._value;

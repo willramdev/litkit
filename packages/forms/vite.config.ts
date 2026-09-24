@@ -18,6 +18,7 @@ export default defineConfig({
         /^@lit/,
         /^@tanstack/,
         /^zod/,
+        /^@willramdev\/kit(\/|$)/,
       ],
     },
   },

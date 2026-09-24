@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { LitElement, html } from 'lit';
-import { consume, createContext, provide, requestContext } from './context.ts';
+import { consume, createContext, provide, requestContext, subscribeContext } from './context.ts';
 import type { UnknownContext } from './types.ts';
 
 function el(parent: Node = document.body, tag = 'div'): HTMLElement {
@@ -266,6 +266,72 @@ describe('late and nested providers', () => {
     middleProvider.value = 'middle 2';
     expect(inside.value).toBe('middle 2');
     expect(outside.value).toBe('outer 2');
+  });
+});
+
+describe('subscribeContext', () => {
+  it('calls back with the current value, then on every replacement', () => {
+    const ctx = createContext<number>('sub-updates');
+    const parent = el();
+    const provider = provide(parent, ctx, 1);
+    const callback = vi.fn();
+
+    subscribeContext(el(parent), ctx, callback);
+    provider.value = 2;
+
+    expect(callback.mock.calls).toEqual([[1], [2]]);
+  });
+
+  it('picks up a later provider and hands over to a nearer one', () => {
+    const ctx = createContext<string>('sub-late');
+    const outer = el();
+    const middle = el(outer);
+    const callback = vi.fn();
+    subscribeContext(el(middle), ctx, callback);
+    expect(callback).not.toHaveBeenCalled();
+
+    const outerProvider = provide(outer, ctx, 'outer');
+    provide(middle, ctx, 'middle');
+    outerProvider.value = 'outer 2';
+
+    expect(callback.mock.calls).toEqual([['outer'], ['middle']]);
+  });
+
+  it('stops calling back after the returned function runs', () => {
+    const ctx = createContext<number>('sub-stop');
+    const parent = el();
+    const provider = provide(parent, ctx, 1);
+    const callback = vi.fn();
+
+    const stop = subscribeContext(el(parent), ctx, callback);
+    stop();
+    provider.value = 2;
+    provide(el(parent), ctx, 3);
+
+    expect(callback.mock.calls).toEqual([[1]]);
+  });
+
+  it('never registers a controller or requests an update on a Lit-like host', () => {
+    const ctx = createContext<number>('sub-host');
+    const parent = el();
+    provide(parent, ctx, 1);
+    const host = Object.assign(el(parent), {
+      addController: vi.fn(),
+      removeController: vi.fn(),
+      requestUpdate: vi.fn(),
+    });
+
+    subscribeContext(host, ctx, () => {});
+
+    expect(host.addController).not.toHaveBeenCalled();
+    expect(host.requestUpdate).not.toHaveBeenCalled();
+  });
+
+  it('is a no-op for a target that cannot dispatch events', () => {
+    const callback = vi.fn();
+    const stop = subscribeContext({} as EventTarget, createContext<number>('sub-ssr'), callback);
+    stop();
+    expect(callback).not.toHaveBeenCalled();
   });
 });
 

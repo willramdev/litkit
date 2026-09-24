@@ -11,7 +11,7 @@ export default defineConfig({
       formats: ['es'],
     },
     rollupOptions: {
-      external: ['lit', 'lit/decorators.js', '@tanstack/query-core'],
+      external: ['lit', 'lit/decorators.js', '@tanstack/query-core', /^@willramdev\/kit(\/|$)/],
     },
   },
   test: {

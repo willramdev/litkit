@@ -117,7 +117,7 @@
         },
         {
           "name": "router-provider",
-          "description": "Provides a `Router` instance to all descendant components via DOM context.\n\nUsage:\n  html`\n    <router-provider .router=${router}>\n      <my-app></my-app>\n    </router-provider>\n  `\n\nDescendants can resolve the router using `requestRouter(this)` or\nit will be auto-resolved by `<router-outlet>`, `<router-link>`,\n`RouteController`, and `SearchParamsController`.\n---\n\n\n### **Slots:**\n - _default_ - Default slot for the routed app subtree",
+          "description": "Provides a `Router` instance to all descendant components via DOM context.\n\nUsage:\n  html`\n    <router-provider .router=${router}>\n      <my-app></my-app>\n    </router-provider>\n  `\n\nIt provides under `routerContext`, so descendants can read the router with\n`consume(this, routerContext)` from `@willramdev/kit/context` (or\n`requestRouter(this)`). `<router-outlet>`, `<router-link>`,\n`RouteController`, and `SearchParamsController` find it automatically, and\nfollow it when `.router` is replaced or the provider appears after them.\n---\n\n\n### **Slots:**\n - _default_ - Default slot for the routed app subtree",
           "doc-url": "",
           "attributes": [],
           "slots": [

@@ -13,7 +13,7 @@
 // workspaces hoist these deps to the root node_modules.
 import { execFileSync } from 'node:child_process'
 
-const pkgs = ['lit', '@tanstack/query-core', '@tanstack/form-core']
+const pkgs = ['lit', '@tanstack/query-core', '@tanstack/form-core', '@willramdev/kit']
 let failed = false
 
 for (const pkg of pkgs) {

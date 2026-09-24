@@ -8,7 +8,7 @@
  * @module
  */
 
-export { createContext, provide, consume, requestContext } from './context.ts';
+export { createContext, provide, consume, requestContext, subscribeContext } from './context.ts';
 export { ContextRequestEvent, ContextProviderEvent } from './events.ts';
 
 export type {

@@ -4,7 +4,7 @@
   "tags": [
     {
       "name": "lit-query-client-provider",
-      "description": "Custom element that provides a `QueryClient` to descendant components via DOM context.\n---\n\n\n### **Slots:**\n - _default_ - default slot for the subtree that consumes the QueryClient",
+      "description": "Custom element that provides a `QueryClient` to descendant components via DOM context.\n\nIt provides under `queryClientContext`, so descendants can also read the\nclient with `consume(this, queryClientContext)` from `@willramdev/kit/context`.\n---\n\n\n### **Slots:**\n - _default_ - default slot for the subtree that consumes the QueryClient",
       "attributes": [],
       "references": []
     }

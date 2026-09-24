@@ -148,6 +148,8 @@ class LoginForm extends LitElement {
 
 `lit-form` provides context and wires submit/reset for the descendant native `<form>`, but it does not replace the real form element. Keep using a real `<form>` inside it so native form semantics still work.
 
+`lit-form` provides the form under `formContext`, a key for kit's [context](../kit/README.md#context) functions, so a custom control can read it with `consume(this, formContext)` from `@willramdev/kit/context`. `attachFormProvider(target, getForm)` still works but is deprecated in favor of `provide()`.
+
 ## Core API
 
 ### FormController

@@ -44,6 +44,7 @@ export {
   createContext,
   provide,
   requestContext,
+  subscribeContext,
 } from './context/index.ts';
 export type {
   ConsumeOptions,

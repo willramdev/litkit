@@ -52,22 +52,26 @@ All descendants inside `<router-provider>` automatically resolve the router — 
 </router-provider>
 ```
 
-All `<router-outlet>`, `<router-link>`, `RouteController`, and `SearchParamsController` inside the provider resolve the router automatically.
+All `<router-outlet>`, `<router-link>`, `RouteController`, and `SearchParamsController` inside the provider resolve the router automatically. They also pick up a router that is set after they connect (or a provider element that is defined later), and follow it when `.router` is replaced.
 
-### Option 2: Manual provider
+### Option 2: Provide from any element
+
+`<router-provider>` provides the router under `routerContext`, a key for kit's [context](../kit/README.md#context) functions. Use it to provide from any element, or to read the router in your own components:
 
 ```ts
-import { attachRouterProvider } from '@willramdev/router';
+import { consume, provide } from '@willramdev/kit/context';
+import { routerContext } from '@willramdev/router';
 
-connectedCallback() {
-  super.connectedCallback();
-  this._detach = attachRouterProvider(this, () => this.router);
-}
-disconnectedCallback() {
-  this._detach?.();
-  super.disconnectedCallback();
+// Provide: assigning provider.value later updates every consumer.
+const provider = provide(document.body, routerContext, router);
+
+// Read in a component; it re-renders when the router is replaced.
+class Breadcrumbs extends KitElement {
+  router = consume(this, routerContext); // Router | undefined
 }
 ```
+
+`attachRouterProvider(target, getRouter)` still works but is deprecated in favor of `provide()`.
 
 ### Option 3: Explicit property
 

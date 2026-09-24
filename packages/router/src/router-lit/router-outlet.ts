@@ -1,7 +1,7 @@
 import { LitElement, html, nothing } from "lit";
 import { property, state } from "lit/decorators.js";
 import type { Router, RouteMatch, MatchedRoute, RouteDefinition } from "../router-core/types.ts";
-import { requestRouter } from "./router-context.ts";
+import { watchRouter } from "./router-context.ts";
 import { define } from "../define.ts";
 import { devWarnOnce } from "../internal/dev.ts";
 
@@ -34,6 +34,9 @@ export class RouterOutlet extends LitElement {
 
   private _unsubscribe?: () => void;
   private _previousRouter?: Router;
+  private _contextRouter?: Router;
+  private _stopWatching?: () => void;
+  private _connecting = false;
   private _depth = 0;
   private _renderedElement: HTMLElement | null = null;
   private _renderedTagName: string | null = null;
@@ -46,17 +49,28 @@ export class RouterOutlet extends LitElement {
     if (this.router) return this.router;
     const parent = this.findParentOutlet();
     if (parent) return parent.effectiveRouter;
-    return requestRouter(this);
+    return this._contextRouter;
   }
 
   override connectedCallback(): void {
     super.connectedCallback();
     this._depth = this.computeDepth();
+    // Follow the provided router: one that arrives after this outlet connects,
+    // or replaces the current one, re-subscribes and re-renders the outlet.
+    this._connecting = true;
+    this._stopWatching = watchRouter(this, (router) => {
+      this._contextRouter = router;
+      if (!this._connecting && !this.router) this.subscribeToRouter();
+    });
+    this._connecting = false;
     this.subscribeToRouter();
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
+    this._stopWatching?.();
+    this._stopWatching = undefined;
+    this._contextRouter = undefined;
     this._unsubscribe?.();
     this._unsubscribe = undefined;
     this._renderedElement = null;

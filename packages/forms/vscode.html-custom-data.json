@@ -4,7 +4,7 @@
   "tags": [
     {
       "name": "lit-form",
-      "description": "Provides a `FormInstance` to descendant controls and enhances a native child\n`<form>` by wiring submit/reset to the controller.\n\nNote: slotted controls are not true descendants of a shadow-DOM `<form>`, so\n`lit-form` intentionally provides context around a user-authored native form\ninstead of trying to own one internally.\n---\n\n\n### **Slots:**\n - _default_ - default slot wrapping the user-authored `<form>`",
+      "description": "Provides a `FormInstance` to descendant controls and enhances a native child\n`<form>` by wiring submit/reset to the controller.\n\nNote: slotted controls are not true descendants of a shadow-DOM `<form>`, so\n`lit-form` intentionally provides context around a user-authored native form\ninstead of trying to own one internally.\n\nIt provides under `formContext`, so custom controls can also read the form\nwith `consume(this, formContext)` from `@willramdev/kit/context`.\n---\n\n\n### **Slots:**\n - _default_ - default slot wrapping the user-authored `<form>`",
       "attributes": [
         {
           "name": "native-validation",

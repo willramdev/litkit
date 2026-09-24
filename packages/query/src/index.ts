@@ -17,8 +17,10 @@ import { MutationController, type MutationControllerConfig } from './mutation-co
 export {
   LIT_QUERY_CLIENT_REQUEST,
   attachQueryClientProvider,
+  queryClientContext,
   requestQueryClient,
 } from './query-client-context.ts'
+export type { QueryClientContext } from './query-client-context.ts'
 export { LitQueryClientProvider } from './query-client-provider.ts'
 
 type ControllerFactory<T extends ReactiveController> = (host: ReactiveElement) => T
