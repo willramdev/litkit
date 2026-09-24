@@ -1,6 +1,6 @@
 # @willramdev/kit
 
-Ergonomic base class, helpers, controllers, and a fetch-based [HTTP client](#http-client) for building Lit web components.
+Ergonomic base class, helpers, controllers, [context](#context), and a fetch-based [HTTP client](#http-client) for building Lit web components.
 
 ## Install
 
@@ -249,6 +249,78 @@ Syncs a reactive value with `localStorage` (or custom storage). Responds to `sto
 theme = persistedState(this, 'theme', { default: 'system' });
 // this.theme.value → reads/writes localStorage['theme']
 ```
+
+## Context
+
+Pass a value, such as an API client, a theme or the current user, from an element to every
+descendant that asks for it, without passing it through each layer in between. It follows the
+web-components [Context Protocol](https://github.com/webcomponents-cg/community-protocols/blob/main/proposals/context.md),
+so it works together with [`@lit/context`](https://lit.dev/docs/data/context/) in both directions.
+
+Import it from `@willramdev/kit`, or from `@willramdev/kit/context`, which has no Lit dependency.
+
+<!-- doc-check -->
+```ts
+import { KitElement, consume, createContext, createHttpClient, provide, type HttpClient } from '@willramdev/kit';
+import { html } from 'lit';
+
+// Define each context once, in a shared module.
+export const themeContext = createContext('theme', { defaultValue: 'light' });
+export const apiContext = createContext<HttpClient>('api');
+
+// Provide from any element...
+provide(document.body, apiContext, createHttpClient({ baseURL: '/api' }));
+
+// ...or from a component. Assigning .value updates every consumer.
+class AppShell extends KitElement {
+  theme = provide(this, themeContext, 'light');
+
+  toggleTheme() {
+    this.theme.value = this.theme.value === 'light' ? 'dark' : 'light';
+  }
+
+  render() {
+    return html`<slot></slot>`;
+  }
+}
+
+// Consume anywhere below. The element re-renders when the value changes.
+class UserCard extends KitElement {
+  theme = consume(this, themeContext); // string (it has a default)
+  api = consume(this, apiContext); // HttpClient | undefined (no default)
+
+  render() {
+    return html`<p class=${this.theme.value}>…</p>`;
+  }
+}
+```
+
+| Function | Purpose |
+|----------|---------|
+| `createContext(name, { defaultValue? })` | Creates a context. Every call returns a distinct context, even when two share a name. |
+| `provide(target, context, value)` | Provides `value` to descendants of `target`. Returns `{ value, dispose() }`. |
+| `consume(target, context, { subscribe?, onChange? })` | Receives the value from the nearest provider. Returns `{ value, resolved, dispose() }`. |
+| `requestContext(target, context)` | Reads the value once, without subscribing. |
+
+How it behaves:
+
+- **Nearest provider wins.** Requests pass through shadow roots. An element placed in a slot gets
+  its value from the component that owns the slot.
+- **Consumers stay up to date.** A consumer updates when its provider's value is replaced, when a
+  provider appears later (for example, one whose element is defined lazily), and when a nearer
+  provider is added. `{ subscribe: false }` reads the value once instead.
+- **Replace values; don't mutate them.** Consumers are notified when `.value` is set to a
+  different value (compared with `Object.is`). Context is for passing services and settings down
+  the page, not for fast-changing state; use `@willramdev/store` for that.
+- **Defaults.** With a `defaultValue`, consumers get it when no provider is found, and the value
+  type never includes `undefined`. Leave services without a default so a missing provider shows
+  up. In development, a Lit element that renders with no provider and no default logs a one-time
+  `[litkit]` warning.
+- **Works on any element.** On a Lit element (`provide(this, …)`, `consume(this, …)`), both follow
+  the element's lifecycle. On any other element they start immediately and run until
+  `dispose()`.
+- **Plain JavaScript:** the type comes from `defaultValue`, or from a JSDoc annotation:
+  `/** @type {import('@willramdev/kit').Context<Api>} */ const apiContext = createContext('api');`
 
 ## HTTP client
 

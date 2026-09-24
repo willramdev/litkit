@@ -36,6 +36,26 @@ export type {
   ClickOutsideController,
 } from './controllers/index.ts';
 
+// Context (also available framework-neutral from `@willramdev/kit/context`)
+export {
+  ContextProviderEvent,
+  ContextRequestEvent,
+  consume,
+  createContext,
+  provide,
+  requestContext,
+} from './context/index.ts';
+export type {
+  ConsumeOptions,
+  Context,
+  ContextCallback,
+  ContextConsumer,
+  ContextProvider,
+  ContextType,
+  ContextValue,
+  UnknownContext,
+} from './context/index.ts';
+
 // HTTP client (also available framework-neutral from `@willramdev/kit/http`)
 export {
   HttpClient,
