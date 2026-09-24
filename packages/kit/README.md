@@ -301,6 +301,7 @@ class UserCard extends KitElement {
 | `provide(target, context, value)` | Provides `value` to descendants of `target`. Returns `{ value, dispose() }`. |
 | `consume(target, context, { subscribe?, onChange? })` | Receives the value from the nearest provider. Returns `{ value, resolved, dispose() }`. |
 | `requestContext(target, context)` | Reads the value once, without subscribing. |
+| `subscribeContext(target, context, callback)` | For library authors writing their own controllers: calls `callback` with the current value and every change. Returns a function that stops the subscription. It never registers a controller, triggers a re-render, or logs a warning. |
 
 How it behaves:
 
@@ -319,6 +320,9 @@ How it behaves:
 - **Works on any element.** On a Lit element (`provide(this, …)`, `consume(this, …)`), both follow
   the element's lifecycle. On any other element they start immediately and run until
   `dispose()`.
+- **Built-in contexts.** `routerContext` (`@willramdev/router`), `queryClientContext`
+  (`@willramdev/query`) and `formContext` (`@willramdev/forms`) are what `<router-provider>`,
+  `<lit-query-client-provider>` and `<lit-form>` provide under.
 - **Plain JavaScript:** the type comes from `defaultValue`, or from a JSDoc annotation:
   `/** @type {import('@willramdev/kit').Context<Api>} */ const apiContext = createContext('api');`
 

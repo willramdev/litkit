@@ -111,16 +111,22 @@ html`
 users = new QueryController(this, { queryKey: ['users'], queryFn: fetchUsers });
 ```
 
-### Option 3: Manual provider
+### Option 3: Provide from any element
+
+`<lit-query-client-provider>` provides the client under `queryClientContext`, a key for kit's [context](../kit/README.md#context) functions. Use it to provide from any element, or to read the client in your own components:
 
 ```ts
-import { attachQueryClientProvider } from '@willramdev/query';
+import { consume, provide } from '@willramdev/kit/context';
+import { queryClientContext } from '@willramdev/query';
 
-connectedCallback() {
-  super.connectedCallback();
-  this.detach = attachQueryClientProvider(this, () => this.client);
+provide(document.body, queryClientContext, client);
+
+class CacheStatus extends KitElement {
+  client = consume(this, queryClientContext); // QueryClient | undefined
 }
 ```
+
+`QueryController` and `MutationController` look the client up once, when they connect, and throw if none is found. `attachQueryClientProvider(target, getClient)` still works but is deprecated in favor of `provide()`.
 
 ## Core API
 

@@ -11,10 +11,12 @@ export type { LinkOptions } from "./link.ts";
 export { RouteController } from "./route-controller.ts";
 export { SearchParamsController } from "./search-params-controller.ts";
 export {
+  routerContext,
   LIT_ROUTER_REQUEST,
   requestRouter,
   attachRouterProvider,
 } from "./router-context.ts";
+export type { RouterContext } from "./router-context.ts";
 export { route } from "./route-decorator.ts";
 export type { RoutableElement } from "./route-decorator.ts";
 

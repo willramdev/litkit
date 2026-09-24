@@ -286,8 +286,39 @@ declare class FieldDirective extends Directive {
 declare const fieldDirective: (...values: unknown[]) => import("lit-html/directive.js").DirectiveResult<typeof FieldDirective>;
 export declare function field<T extends Record<string, unknown>>(form: FormInstance<T>, path: string, renderFn: (field: FieldInstance) => unknown): ReturnType<typeof fieldDirective>;
 export declare function field(path: string, renderFn: (field: FieldInstance) => unknown): ReturnType<typeof fieldDirective>;
+/** Type of {@link formContext}: a Context Protocol key for a `FormInstance`. */
+export type FormContext = symbol & {
+	readonly __context__: FormInstance<any>;
+};
+/**
+ * The context key `<lit-form>` provides its `FormInstance` under. Use it with
+ * `consume`, `provide`, `subscribeContext`, or `requestContext` from
+ * `@willramdev/kit/context`, or with `@lit/context`.
+ *
+ * A `Symbol.for` key, so two installed copies of this package still agree.
+ */
+export declare const formContext: FormContext;
+/**
+ * Event name of the pre-context-protocol form request.
+ * @deprecated Use `formContext`. `<lit-form>` still answers this event in 1.x;
+ * it will be removed in 2.0.
+ */
 export declare const LIT_FORM_REQUEST = "lit-form:request-form";
+/**
+ * Resolve the `FormInstance` from the nearest `<lit-form>` (or other provider)
+ * above `target`, once. Also finds providers that only answer the legacy
+ * `lit-form:request-form` event.
+ */
 export declare function requestFormContext(target: EventTarget): FormInstance<any> | undefined;
+/**
+ * Make `target` provide a `FormInstance` to its descendants. `getForm` is read
+ * on each request; while it returns nothing, requests pass to outer providers.
+ * Returns a cleanup function.
+ *
+ * @deprecated Use `provide(target, formContext, form)` from
+ * `@willramdev/kit/context`, which also updates subscribed consumers when the
+ * form is replaced. Will be removed in 2.0.
+ */
 export declare function attachFormProvider(target: EventTarget, getForm: () => FormInstance<any> | null | undefined): () => void;
 /**
  * Provides a `FormInstance` to descendant controls and enhances a native child
@@ -296,6 +327,9 @@ export declare function attachFormProvider(target: EventTarget, getForm: () => F
  * Note: slotted controls are not true descendants of a shadow-DOM `<form>`, so
  * `lit-form` intentionally provides context around a user-authored native form
  * instead of trying to own one internally.
+ *
+ * It provides under `formContext`, so custom controls can also read the form
+ * with `consume(this, formContext)` from `@willramdev/kit/context`.
  *
  * @attr {boolean} native-validation - keep native browser form validation on (default false)
  * @prop {FormInstance} form - the FormInstance driving submit/reset
@@ -316,6 +350,7 @@ export declare class LitForm extends LitElement {
 	nativeValidation: boolean;
 	constructor();
 	connectedCallback(): void;
+	requestUpdate(...args: Parameters<LitElement["requestUpdate"]>): void;
 	disconnectedCallback(): void;
 	protected updated(): void;
 	render(): import("lit-html").TemplateResult<1>;

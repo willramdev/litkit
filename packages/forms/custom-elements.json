@@ -655,7 +655,33 @@
           "type": {
             "text": "string"
           },
-          "default": "'lit-form:request-form'"
+          "default": "'lit-form:request-form'",
+          "description": "Event name of the pre-context-protocol form request.",
+          "deprecated": "Use `formContext`. `<lit-form>` still answers this event in 1.x;\nit will be removed in 2.0."
+        },
+        {
+          "kind": "function",
+          "name": "answerLegacyFormRequests",
+          "return": {
+            "type": {
+              "text": "() => void"
+            }
+          },
+          "parameters": [
+            {
+              "name": "target",
+              "type": {
+                "text": "EventTarget"
+              }
+            },
+            {
+              "name": "getForm",
+              "type": {
+                "text": "() => FormInstance<any> | null | undefined"
+              }
+            }
+          ],
+          "description": "Answer the legacy `lit-form:request-form` event while `getForm` returns a\nform; otherwise let the request pass. Internal; removed in 2.0."
         },
         {
           "kind": "function",
@@ -678,7 +704,15 @@
                 "text": "() => FormInstance<any> | null | undefined"
               }
             }
-          ]
+          ],
+          "description": "Make `target` provide a `FormInstance` to its descendants. `getForm` is read\non each request; while it returns nothing, requests pass to outer providers.\nReturns a cleanup function.",
+          "deprecated": "Use `provide(target, formContext, form)` from\n`@willramdev/kit/context`, which also updates subscribed consumers when the\nform is replaced. Will be removed in 2.0."
+        },
+        {
+          "kind": "variable",
+          "name": "formContext",
+          "default": "Symbol.for('@willramdev/forms:form')",
+          "description": "The context key `<lit-form>` provides its `FormInstance` under. Use it with\n`consume`, `provide`, `subscribeContext`, or `requestContext` from\n`@willramdev/kit/context`, or with `@lit/context`.\n\nA `Symbol.for` key, so two installed copies of this package still agree."
         },
         {
           "kind": "function",
@@ -695,7 +729,8 @@
                 "text": "EventTarget"
               }
             }
-          ]
+          ],
+          "description": "Resolve the `FormInstance` from the nearest `<lit-form>` (or other provider)\nabove `target`, once. Also finds providers that only answer the legacy\n`lit-form:request-form` event."
         }
       ],
       "exports": [
@@ -709,9 +744,25 @@
         },
         {
           "kind": "js",
+          "name": "answerLegacyFormRequests",
+          "declaration": {
+            "name": "answerLegacyFormRequests",
+            "module": "src/form-context.ts"
+          }
+        },
+        {
+          "kind": "js",
           "name": "attachFormProvider",
           "declaration": {
             "name": "attachFormProvider",
+            "module": "src/form-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "formContext",
+          "declaration": {
+            "name": "formContext",
             "module": "src/form-context.ts"
           }
         },
@@ -1218,6 +1269,14 @@
         },
         {
           "kind": "js",
+          "name": "FormContext",
+          "declaration": {
+            "name": "FormContext",
+            "module": "./form-context.ts"
+          }
+        },
+        {
+          "kind": "js",
           "name": "FormController",
           "declaration": {
             "name": "FormController",
@@ -1334,6 +1393,14 @@
           "declaration": {
             "name": "form",
             "module": "src/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "formContext",
+          "declaration": {
+            "name": "formContext",
+            "module": "./form-context.ts"
           }
         },
         {
@@ -2013,7 +2080,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Provides a `FormInstance` to descendant controls and enhances a native child\n`<form>` by wiring submit/reset to the controller.\n\nNote: slotted controls are not true descendants of a shadow-DOM `<form>`, so\n`lit-form` intentionally provides context around a user-authored native form\ninstead of trying to own one internally.",
+          "description": "Provides a `FormInstance` to descendant controls and enhances a native child\n`<form>` by wiring submit/reset to the controller.\n\nNote: slotted controls are not true descendants of a shadow-DOM `<form>`, so\n`lit-form` intentionally provides context around a user-authored native form\ninstead of trying to own one internally.\n\nIt provides under `formContext`, so custom controls can also read the form\nwith `consume(this, formContext)` from `@willramdev/kit/context`.",
           "name": "LitForm",
           "slots": [
             {
@@ -2050,10 +2117,20 @@
             },
             {
               "kind": "field",
-              "name": "#detachProvider",
+              "name": "#provider",
               "privacy": "private",
               "type": {
-                "text": "() => void | undefined"
+                "text": "ContextProvider<FormInstance<any>> | undefined"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#syncProvider",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
               }
             },
             {

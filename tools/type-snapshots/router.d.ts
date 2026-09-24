@@ -253,7 +253,9 @@ export interface MockRouter extends Router {
  * A reactive controller that subscribes to router changes and triggers
  * host updates when the route changes.
  *
- * If no router is provided, it will be resolved from context (via `<router-provider>`).
+ * If no router is provided, it is taken from the nearest `<router-provider>`
+ * (the `routerContext`) and followed: a provider that appears after the host
+ * connects, or a replaced `.router`, is picked up and re-renders the host.
  *
  * Usage:
  *   class MyPage extends LitElement {
@@ -272,7 +274,10 @@ export declare class RouteController implements ReactiveController {
 	private _match;
 	private _unsubscribe?;
 	private readonly host;
+	private readonly _explicitRouter;
 	private _router;
+	private _stopWatching?;
+	private _connecting;
 	constructor(host: ReactiveControllerHost & EventTarget, router?: Router);
 	get match(): RouteMatch | null;
 	get params(): Record<string, string>;
@@ -280,6 +285,8 @@ export declare class RouteController implements ReactiveController {
 	get meta(): Record<string, unknown>;
 	hostConnected(): void;
 	hostDisconnected(): void;
+	/** Track `router`'s matches; re-render unless this is the initial connect. */
+	private _follow;
 }
 /**
  * Reactive controller that provides two-way access to URL search params.
@@ -289,13 +296,18 @@ export declare class RouteController implements ReactiveController {
  *
  * Writes navigate via the router (using `replace` by default).
  *
- * If no router is provided, it will be resolved from context (via `<router-provider>`).
+ * If no router is provided, it is taken from the nearest `<router-provider>`
+ * (the `routerContext`) and followed: a provider that appears after the host
+ * connects, or a replaced `.router`, is picked up and re-renders the host.
  */
 export declare class SearchParamsController implements ReactiveController {
 	private readonly host;
+	private readonly _explicitRouter;
 	private _router;
 	private _match;
 	private _unsubscribe?;
+	private _stopWatching?;
+	private _connecting;
 	constructor(host: ReactiveControllerHost & EventTarget, router?: Router);
 	/** Current search params as a URLSearchParams instance. */
 	get params(): URLSearchParams;
@@ -313,6 +325,8 @@ export declare class SearchParamsController implements ReactiveController {
 	setAll(params: Record<string, string>): void;
 	hostConnected(): void;
 	hostDisconnected(): void;
+	/** Track `router`'s matches; re-render unless this is the initial connect. */
+	private _follow;
 	private applyParams;
 }
 /**
@@ -336,6 +350,9 @@ export declare class RouterOutlet extends LitElement {
 	private _error;
 	private _unsubscribe?;
 	private _previousRouter?;
+	private _contextRouter?;
+	private _stopWatching?;
+	private _connecting;
 	private _depth;
 	private _renderedElement;
 	private _renderedTagName;
@@ -369,9 +386,11 @@ export declare class RouterOutlet extends LitElement {
  *     </router-provider>
  *   `
  *
- * Descendants can resolve the router using `requestRouter(this)` or
- * it will be auto-resolved by `<router-outlet>`, `<router-link>`,
- * `RouteController`, and `SearchParamsController`.
+ * It provides under `routerContext`, so descendants can read the router with
+ * `consume(this, routerContext)` from `@willramdev/kit/context` (or
+ * `requestRouter(this)`). `<router-outlet>`, `<router-link>`,
+ * `RouteController`, and `SearchParamsController` find it automatically, and
+ * follow it when `.router` is replaced or the provider appears after them.
  *
  * @tag router-provider
  * @prop {Router} router - The Router provided to descendants (required)
@@ -379,9 +398,12 @@ export declare class RouterOutlet extends LitElement {
  */
 export declare class RouterProvider extends LitElement {
 	router?: Router;
-	private _detach?;
+	private _provider?;
+	private _detachLegacy?;
+	requestUpdate(...args: Parameters<LitElement["requestUpdate"]>): void;
 	connectedCallback(): void;
 	disconnectedCallback(): void;
+	private _syncProvider;
 	render(): import("lit-html").TemplateResult<1>;
 	static styles: import("lit").CSSResult;
 }
@@ -417,6 +439,8 @@ export declare class RouterLink extends LitElement {
 	private _unsubscribe?;
 	private _previousRouter?;
 	private _resolvedRouter?;
+	private _stopWatching?;
+	private _connecting;
 	/** The effective router: explicit property or resolved from context. */
 	private get effectiveRouter();
 	connectedCallback(): void;
@@ -465,11 +489,39 @@ declare class LinkDirective extends AsyncDirective {
  * class names. See {@link LinkDirective.render} for the argument signature.
  */
 export declare const link: (_input: NavigationInput, _router: Router, _options?: LinkOptions | undefined) => import("lit-html/directive.js").DirectiveResult<typeof LinkDirective>;
-/** Custom event name used to request a `Router` from the DOM context. */
+/** Type of {@link routerContext}: a Context Protocol key for a `Router`. */
+export type RouterContext = symbol & {
+	readonly __context__: Router;
+};
+/**
+ * The context key `<router-provider>` provides its `Router` under. Use it with
+ * `consume`, `provide`, `subscribeContext`, or `requestContext` from
+ * `@willramdev/kit/context`, or with `@lit/context`.
+ *
+ * It is a `Symbol.for` key rather than a unique one because this package ships
+ * separate self-contained bundles (the main entry and `/lit`): every copy must
+ * agree on the key for a provider from one to answer a consumer from another.
+ */
+export declare const routerContext: RouterContext;
+/**
+ * Event name of the pre-context-protocol router request.
+ * @deprecated Use `routerContext`. `<router-provider>` still answers this
+ * event in 1.x; it will be removed in 2.0.
+ */
 export declare const LIT_ROUTER_REQUEST = "lit-router:request";
-/** Dispatches a context-request event to resolve a `Router` from an ancestor provider. */
+/**
+ * Resolve the `Router` from the nearest provider above `target`, once. Also
+ * finds providers that only answer the legacy `lit-router:request` event.
+ */
 export declare function requestRouter(target: EventTarget): Router | undefined;
-/** Attaches a `Router` provider to a DOM element. Returns a cleanup function. */
+/**
+ * Make `target` provide a `Router` to its descendants. `getRouter` is read on
+ * each request. Returns a cleanup function.
+ *
+ * @deprecated Use `provide(target, routerContext, router)` from
+ * `@willramdev/kit/context`, which also updates consumers when the router is
+ * replaced. Will be removed in 2.0.
+ */
 export declare function attachRouterProvider(target: EventTarget, getRouter: () => Router): () => void;
 export type RouteProperty = "match" | "params" | "query" | "meta" | "name" | "hash" | "pathname";
 /**

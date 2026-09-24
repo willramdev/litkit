@@ -155,6 +155,14 @@
         },
         {
           "kind": "js",
+          "name": "QueryClientContext",
+          "declaration": {
+            "name": "QueryClientContext",
+            "module": "./query-client-context.ts"
+          }
+        },
+        {
+          "kind": "js",
           "name": "QueryController",
           "declaration": {
             "name": "QueryController",
@@ -207,6 +215,14 @@
           "declaration": {
             "name": "query",
             "module": "src/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "queryClientContext",
+          "declaration": {
+            "name": "queryClientContext",
+            "module": "./query-client-context.ts"
           }
         },
         {
@@ -465,7 +481,32 @@
             "text": "string"
           },
           "default": "'lit-query:request-client'",
-          "description": "Custom event name used to request a `QueryClient` from the DOM context."
+          "description": "Event name of the pre-context-protocol client request.",
+          "deprecated": "Use `queryClientContext`. `<lit-query-client-provider>` still\nanswers this event in 1.x; it will be removed in 2.0."
+        },
+        {
+          "kind": "function",
+          "name": "answerLegacyQueryClientRequests",
+          "return": {
+            "type": {
+              "text": "() => void"
+            }
+          },
+          "parameters": [
+            {
+              "name": "target",
+              "type": {
+                "text": "EventTarget"
+              }
+            },
+            {
+              "name": "getClient",
+              "type": {
+                "text": "() => QueryClient"
+              }
+            }
+          ],
+          "description": "Answer the legacy `lit-query:request-client` event. Internal; removed in 2.0."
         },
         {
           "kind": "function",
@@ -489,7 +530,14 @@
               }
             }
           ],
-          "description": "Attaches a `QueryClient` provider to a DOM element. Returns a cleanup function."
+          "description": "Make `target` provide a `QueryClient` to its descendants. `getClient` is\nread on each request. Returns a cleanup function.",
+          "deprecated": "Use `provide(target, queryClientContext, client)` from\n`@willramdev/kit/context`, which also updates subscribed consumers when the\nclient is replaced. Will be removed in 2.0."
+        },
+        {
+          "kind": "variable",
+          "name": "queryClientContext",
+          "default": "Symbol.for('@willramdev/query:client')",
+          "description": "The context key `<lit-query-client-provider>` provides its `QueryClient`\nunder. Use it with `consume`, `provide`, `subscribeContext`, or\n`requestContext` from `@willramdev/kit/context`, or with `@lit/context`.\n\nA `Symbol.for` key, so two installed copies of this package still agree."
         },
         {
           "kind": "function",
@@ -507,7 +555,7 @@
               }
             }
           ],
-          "description": "Dispatches a context-request event to resolve a `QueryClient` from an ancestor provider."
+          "description": "Resolve the `QueryClient` from the nearest provider above `target`, once.\nAlso finds providers that only answer the legacy `lit-query:request-client`\nevent."
         }
       ],
       "exports": [
@@ -521,9 +569,25 @@
         },
         {
           "kind": "js",
+          "name": "answerLegacyQueryClientRequests",
+          "declaration": {
+            "name": "answerLegacyQueryClientRequests",
+            "module": "src/query-client-context.ts"
+          }
+        },
+        {
+          "kind": "js",
           "name": "attachQueryClientProvider",
           "declaration": {
             "name": "attachQueryClientProvider",
+            "module": "src/query-client-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "queryClientContext",
+          "declaration": {
+            "name": "queryClientContext",
             "module": "src/query-client-context.ts"
           }
         },
@@ -543,7 +607,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Custom element that provides a `QueryClient` to descendant components via DOM context.",
+          "description": "Custom element that provides a `QueryClient` to descendant components via DOM context.\n\nIt provides under `queryClientContext`, so descendants can also read the\nclient with `consume(this, queryClientContext)` from `@willramdev/kit/context`.",
           "name": "LitQueryClientProvider",
           "slots": [
             {
@@ -562,10 +626,28 @@
             },
             {
               "kind": "field",
-              "name": "#detachProvider",
+              "name": "#provider",
+              "privacy": "private",
+              "type": {
+                "text": "ContextProvider<QueryClient> | undefined"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#detachLegacy",
               "privacy": "private",
               "type": {
                 "text": "() => void | undefined"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#syncProvider",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
               }
             }
           ],

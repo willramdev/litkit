@@ -296,6 +296,27 @@ export declare function createContext<T>(name: string, options: {
  */
 export declare function provide<C extends UnknownContext>(target: EventTarget, context: C, value: ContextType<C>): ContextProvider<ContextType<C>>;
 /**
+ * Low-level subscription for library authors writing their own controllers.
+ * Calls `callback` with the value of the nearest provider above `target` —
+ * now, if one answers, and again whenever the value is replaced, a provider
+ * appears later, or a nearer provider takes over. Returns a function that
+ * stops the subscription; keep it for as long as you want updates.
+ *
+ * Unlike `consume()`, it never registers a controller, requests a render, or
+ * logs warnings, so it slots into an existing controller's lifecycle.
+ *
+ * @example
+ * ```js
+ * hostConnected() {
+ *   this.stop = subscribeContext(this.host, routerContext, (router) => this.use(router));
+ * }
+ * hostDisconnected() {
+ *   this.stop?.();
+ * }
+ * ```
+ */
+export declare function subscribeContext<C extends UnknownContext>(target: EventTarget, context: C, callback: (value: ContextType<C>) => void): () => void;
+/**
  * Receive `context` from the nearest provider above `target`, including
  * through shadow roots.
  *

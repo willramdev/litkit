@@ -1,7 +1,7 @@
 import { LitElement, html, nothing } from "lit";
 import { property } from "lit/decorators.js";
 import type { NavigationInput, Router, RouteChangeCallback } from "../router-core/types.ts";
-import { requestRouter } from "./router-context.ts";
+import { watchRouter } from "./router-context.ts";
 import { define } from "../define.ts";
 import { devWarnOnce } from "../internal/dev.ts";
 
@@ -50,6 +50,8 @@ export class RouterLink extends LitElement {
   private _unsubscribe?: () => void;
   private _previousRouter?: Router;
   private _resolvedRouter?: Router;
+  private _stopWatching?: () => void;
+  private _connecting = false;
 
   /** The effective router: explicit property or resolved from context. */
   private get effectiveRouter(): Router | undefined {
@@ -59,13 +61,25 @@ export class RouterLink extends LitElement {
   override connectedCallback(): void {
     super.connectedCallback();
     if (!this.router) {
-      this._resolvedRouter = requestRouter(this);
+      // Follow the provided router: one that arrives after this link connects,
+      // or replaces the current one, re-subscribes and re-renders the link.
+      this._connecting = true;
+      this._stopWatching = watchRouter(this, (router) => {
+        this._resolvedRouter = router;
+        if (!this._connecting && !this.router) {
+          this.subscribeToRouter();
+          this.requestUpdate();
+        }
+      });
+      this._connecting = false;
     }
     this.subscribeToRouter();
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
+    this._stopWatching?.();
+    this._stopWatching = undefined;
     this._unsubscribe?.();
     this._unsubscribe = undefined;
     this._resolvedRouter = undefined;

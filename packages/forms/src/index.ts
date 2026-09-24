@@ -9,8 +9,10 @@ export { field } from './field.ts';
 export {
   LIT_FORM_REQUEST,
   attachFormProvider,
+  formContext,
   requestFormContext,
 } from './form-context.ts';
+export type { FormContext } from './form-context.ts';
 export { LitForm } from './lit-form.ts';
 
 /** Controller factory — creates a form controller bound to the host. */

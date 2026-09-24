@@ -50,6 +50,9 @@
     "test": "vitest run",
     "prepublishOnly": "npm run typecheck && npm run build"
   },
+  "dependencies": {
+    "@willramdev/kit": "^1.1.0"
+  },
   "peerDependencies": {
     "@tanstack/query-core": "^5.0.0",
     "lit": "^3.0.0"

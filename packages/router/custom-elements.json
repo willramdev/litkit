@@ -216,6 +216,14 @@
         },
         {
           "kind": "js",
+          "name": "RouterContext",
+          "declaration": {
+            "name": "RouterContext",
+            "module": "./router-lit/index.ts"
+          }
+        },
+        {
+          "kind": "js",
           "name": "RouterLink",
           "declaration": {
             "name": "RouterLink",
@@ -427,6 +435,14 @@
           "name": "routeState",
           "declaration": {
             "name": "routeState",
+            "module": "./router-lit/index.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "routerContext",
+          "declaration": {
+            "name": "routerContext",
             "module": "./router-lit/index.ts"
           }
         },
@@ -1597,6 +1613,14 @@
         },
         {
           "kind": "js",
+          "name": "RouterContext",
+          "declaration": {
+            "name": "RouterContext",
+            "module": "./router-context.ts"
+          }
+        },
+        {
+          "kind": "js",
           "name": "RouterLink",
           "declaration": {
             "name": "RouterLink",
@@ -1669,6 +1693,14 @@
         },
         {
           "kind": "js",
+          "name": "routerContext",
+          "declaration": {
+            "name": "routerContext",
+            "module": "./router-context.ts"
+          }
+        },
+        {
+          "kind": "js",
           "name": "searchParams",
           "declaration": {
             "name": "searchParams",
@@ -1704,7 +1736,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "A reactive controller that subscribes to router changes and triggers\nhost updates when the route changes.\n\nIf no router is provided, it will be resolved from context (via `<router-provider>`).\n\nUsage:\n  class MyPage extends LitElement {\n    private routeCtrl = new RouteController(this, router);\n    // or, with context:\n    private routeCtrl = new RouteController(this);\n\n    render() {\n      const match = this.routeCtrl.match;\n      const params = this.routeCtrl.params;\n      return html`<p>User: ${params.id}</p>`;\n    }\n  }",
+          "description": "A reactive controller that subscribes to router changes and triggers\nhost updates when the route changes.\n\nIf no router is provided, it is taken from the nearest `<router-provider>`\n(the `routerContext`) and followed: a provider that appears after the host\nconnects, or a replaced `.router`, is picked up and re-renders the host.\n\nUsage:\n  class MyPage extends LitElement {\n    private routeCtrl = new RouteController(this, router);\n    // or, with context:\n    private routeCtrl = new RouteController(this);\n\n    render() {\n      const match = this.routeCtrl.match;\n      const params = this.routeCtrl.params;\n      return html`<p>User: ${params.id}</p>`;\n    }\n  }",
           "name": "RouteController",
           "members": [
             {
@@ -1736,12 +1768,39 @@
             },
             {
               "kind": "field",
+              "name": "_explicitRouter",
+              "type": {
+                "text": "Router | undefined"
+              },
+              "privacy": "private",
+              "readonly": true,
+              "default": "router"
+            },
+            {
+              "kind": "field",
               "name": "_router",
               "type": {
                 "text": "Router | undefined"
               },
               "privacy": "private",
               "default": "router"
+            },
+            {
+              "kind": "field",
+              "name": "_stopWatching",
+              "type": {
+                "text": "() => void | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_connecting",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
             },
             {
               "kind": "field",
@@ -1792,6 +1851,25 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "_follow",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "router",
+                  "type": {
+                    "text": "Router"
+                  }
+                }
+              ],
+              "description": "Track `router`'s matches; re-render unless this is the initial connect."
             }
           ]
         }
@@ -1847,7 +1925,32 @@
             "text": "string"
           },
           "default": "\"lit-router:request\"",
-          "description": "Custom event name used to request a `Router` from the DOM context."
+          "description": "Event name of the pre-context-protocol router request.",
+          "deprecated": "Use `routerContext`. `<router-provider>` still answers this\nevent in 1.x; it will be removed in 2.0."
+        },
+        {
+          "kind": "function",
+          "name": "answerLegacyRouterRequests",
+          "return": {
+            "type": {
+              "text": "() => void"
+            }
+          },
+          "parameters": [
+            {
+              "name": "target",
+              "type": {
+                "text": "EventTarget"
+              }
+            },
+            {
+              "name": "getRouter",
+              "type": {
+                "text": "() => Router | undefined"
+              }
+            }
+          ],
+          "description": "Answer the legacy `lit-router:request` event while `getRouter` returns a\nrouter; otherwise let the request pass. Internal; removed in 2.0."
         },
         {
           "kind": "function",
@@ -1871,7 +1974,8 @@
               }
             }
           ],
-          "description": "Attaches a `Router` provider to a DOM element. Returns a cleanup function."
+          "description": "Make `target` provide a `Router` to its descendants. `getRouter` is read on\neach request. Returns a cleanup function.",
+          "deprecated": "Use `provide(target, routerContext, router)` from\n`@willramdev/kit/context`, which also updates consumers when the router is\nreplaced. Will be removed in 2.0."
         },
         {
           "kind": "function",
@@ -1889,7 +1993,37 @@
               }
             }
           ],
-          "description": "Dispatches a context-request event to resolve a `Router` from an ancestor provider."
+          "description": "Resolve the `Router` from the nearest provider above `target`, once. Also\nfinds providers that only answer the legacy `lit-router:request` event."
+        },
+        {
+          "kind": "variable",
+          "name": "routerContext",
+          "default": "Symbol.for(\"@willramdev/router:router\")",
+          "description": "The context key `<router-provider>` provides its `Router` under. Use it with\n`consume`, `provide`, `subscribeContext`, or `requestContext` from\n`@willramdev/kit/context`, or with `@lit/context`.\n\nIt is a `Symbol.for` key rather than a unique one because this package ships\nseparate self-contained bundles (the main entry and `/lit`): every copy must\nagree on the key for a provider from one to answer a consumer from another."
+        },
+        {
+          "kind": "function",
+          "name": "watchRouter",
+          "return": {
+            "type": {
+              "text": "() => void"
+            }
+          },
+          "parameters": [
+            {
+              "name": "target",
+              "type": {
+                "text": "EventTarget"
+              }
+            },
+            {
+              "name": "callback",
+              "type": {
+                "text": "(router: Router) => void"
+              }
+            }
+          ],
+          "description": "Follow the `Router` from the nearest provider above `target`: `callback`\nruns now if one answers, and again when the router is replaced, a provider\nappears later, or a nearer one takes over. Falls back to a one-time legacy\nlookup. Returns a function that stops following. Internal."
         }
       ],
       "exports": [
@@ -1898,6 +2032,14 @@
           "name": "LIT_ROUTER_REQUEST",
           "declaration": {
             "name": "LIT_ROUTER_REQUEST",
+            "module": "src/router-lit/router-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "answerLegacyRouterRequests",
+          "declaration": {
+            "name": "answerLegacyRouterRequests",
             "module": "src/router-lit/router-context.ts"
           }
         },
@@ -1914,6 +2056,22 @@
           "name": "requestRouter",
           "declaration": {
             "name": "requestRouter",
+            "module": "src/router-lit/router-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "routerContext",
+          "declaration": {
+            "name": "routerContext",
+            "module": "src/router-lit/router-context.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "watchRouter",
+          "declaration": {
+            "name": "watchRouter",
             "module": "src/router-lit/router-context.ts"
           }
         }
@@ -2005,6 +2163,23 @@
                 "text": "Router | undefined"
               },
               "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_stopWatching",
+              "type": {
+                "text": "() => void | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_connecting",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
             },
             {
               "kind": "field",
@@ -2164,6 +2339,31 @@
                 "text": "Router | undefined"
               },
               "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_contextRouter",
+              "type": {
+                "text": "Router | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_stopWatching",
+              "type": {
+                "text": "() => void | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_connecting",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
             },
             {
               "kind": "field",
@@ -2433,7 +2633,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Provides a `Router` instance to all descendant components via DOM context.\n\nUsage:\n  html`\n    <router-provider .router=${router}>\n      <my-app></my-app>\n    </router-provider>\n  `\n\nDescendants can resolve the router using `requestRouter(this)` or\nit will be auto-resolved by `<router-outlet>`, `<router-link>`,\n`RouteController`, and `SearchParamsController`.",
+          "description": "Provides a `Router` instance to all descendant components via DOM context.\n\nUsage:\n  html`\n    <router-provider .router=${router}>\n      <my-app></my-app>\n    </router-provider>\n  `\n\nIt provides under `routerContext`, so descendants can read the router with\n`consume(this, routerContext)` from `@willramdev/kit/context` (or\n`requestRouter(this)`). `<router-outlet>`, `<router-link>`,\n`RouteController`, and `SearchParamsController` find it automatically, and\nfollow it when `.router` is replaced or the provider appears after them.",
           "name": "RouterProvider",
           "slots": [
             {
@@ -2452,11 +2652,29 @@
             },
             {
               "kind": "field",
-              "name": "_detach",
+              "name": "_provider",
+              "type": {
+                "text": "ContextProvider<Router> | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_detachLegacy",
               "type": {
                 "text": "() => void | undefined"
               },
               "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_syncProvider",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
             }
           ],
           "superclass": {
@@ -2484,7 +2702,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "Reactive controller that provides two-way access to URL search params.\n\nReads are reactive — the controller subscribes to router changes and\ntriggers `requestUpdate()` when the query string changes.\n\nWrites navigate via the router (using `replace` by default).\n\nIf no router is provided, it will be resolved from context (via `<router-provider>`).",
+          "description": "Reactive controller that provides two-way access to URL search params.\n\nReads are reactive — the controller subscribes to router changes and\ntriggers `requestUpdate()` when the query string changes.\n\nWrites navigate via the router (using `replace` by default).\n\nIf no router is provided, it is taken from the nearest `<router-provider>`\n(the `routerContext`) and followed: a provider that appears after the host\nconnects, or a replaced `.router`, is picked up and re-renders the host.",
           "name": "SearchParamsController",
           "members": [
             {
@@ -2496,6 +2714,16 @@
               "privacy": "private",
               "readonly": true,
               "default": "host"
+            },
+            {
+              "kind": "field",
+              "name": "_explicitRouter",
+              "type": {
+                "text": "Router | undefined"
+              },
+              "privacy": "private",
+              "readonly": true,
+              "default": "router"
             },
             {
               "kind": "field",
@@ -2522,6 +2750,23 @@
                 "text": "() => void | undefined"
               },
               "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_stopWatching",
+              "type": {
+                "text": "() => void | undefined"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "_connecting",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
             },
             {
               "kind": "field",
@@ -2663,6 +2908,25 @@
                   "text": "void"
                 }
               }
+            },
+            {
+              "kind": "method",
+              "name": "_follow",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "router",
+                  "type": {
+                    "text": "Router"
+                  }
+                }
+              ],
+              "description": "Track `router`'s matches; re-render unless this is the initial connect."
             },
             {
               "kind": "method",

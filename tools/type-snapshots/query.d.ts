@@ -42,14 +42,44 @@ export declare class QueryController<TQueryFnData = unknown, TError = DefaultErr
 	/** Cancel the in-flight query for this controller's exact query key. */
 	cancel(options?: CancelOptions): Promise<void>;
 }
-/** Custom event name used to request a `QueryClient` from the DOM context. */
+/** Type of {@link queryClientContext}: a Context Protocol key for a `QueryClient`. */
+export type QueryClientContext = symbol & {
+	readonly __context__: QueryClient;
+};
+/**
+ * The context key `<lit-query-client-provider>` provides its `QueryClient`
+ * under. Use it with `consume`, `provide`, `subscribeContext`, or
+ * `requestContext` from `@willramdev/kit/context`, or with `@lit/context`.
+ *
+ * A `Symbol.for` key, so two installed copies of this package still agree.
+ */
+export declare const queryClientContext: QueryClientContext;
+/**
+ * Event name of the pre-context-protocol client request.
+ * @deprecated Use `queryClientContext`. `<lit-query-client-provider>` still
+ * answers this event in 1.x; it will be removed in 2.0.
+ */
 export declare const LIT_QUERY_CLIENT_REQUEST = "lit-query:request-client";
-/** Dispatches a context-request event to resolve a `QueryClient` from an ancestor provider. */
+/**
+ * Resolve the `QueryClient` from the nearest provider above `target`, once.
+ * Also finds providers that only answer the legacy `lit-query:request-client`
+ * event.
+ */
 export declare function requestQueryClient(target: EventTarget): QueryClient | undefined;
-/** Attaches a `QueryClient` provider to a DOM element. Returns a cleanup function. */
+/**
+ * Make `target` provide a `QueryClient` to its descendants. `getClient` is
+ * read on each request. Returns a cleanup function.
+ *
+ * @deprecated Use `provide(target, queryClientContext, client)` from
+ * `@willramdev/kit/context`, which also updates subscribed consumers when the
+ * client is replaced. Will be removed in 2.0.
+ */
 export declare function attachQueryClientProvider(target: EventTarget, getClient: () => QueryClient): () => void;
 /**
  * Custom element that provides a `QueryClient` to descendant components via DOM context.
+ *
+ * It provides under `queryClientContext`, so descendants can also read the
+ * client with `consume(this, queryClientContext)` from `@willramdev/kit/context`.
  *
  * @prop {QueryClient} client - the QueryClient provided to descendants (defaults to createQueryClient())
  * @slot - default slot for the subtree that consumes the QueryClient
@@ -57,6 +87,7 @@ export declare function attachQueryClientProvider(target: EventTarget, getClient
 export declare class LitQueryClientProvider extends LitElement {
 	#private;
 	client: QueryClient;
+	requestUpdate(...args: Parameters<LitElement["requestUpdate"]>): void;
 	connectedCallback(): void;
 	disconnectedCallback(): void;
 	render(): import("lit-html").TemplateResult<1>;

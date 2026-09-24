@@ -60,6 +60,8 @@ export {
   SearchParamsController,
   routeState,
   searchParams,
+  routerContext,
+  type RouterContext,
   LIT_ROUTER_REQUEST,
   requestRouter,
   attachRouterProvider,
