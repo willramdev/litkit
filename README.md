@@ -6,7 +6,7 @@ A set of five composable [Lit](https://lit.dev) web-component packages — an er
 
 | Package | Purpose | Install |
 |---------|---------|---------|
-| [`@willramdev/kit`](packages/kit)       | Ergonomic Lit base class, controllers, and decorators | `npm i @willramdev/kit lit` |
+| [`@willramdev/kit`](packages/kit)       | Ergonomic Lit base class, controllers, decorators, and a fetch-based HTTP client | `npm i @willramdev/kit lit` |
 | [`@willramdev/router`](packages/router) | SPA router: guards, lazy loading, nested routes         | `npm i @willramdev/router lit` |
 | [`@willramdev/query`](packages/query)   | Lit controllers for TanStack Query data fetching        | `npm i @willramdev/query @tanstack/query-core lit` |
 | [`@willramdev/forms`](packages/forms)   | Type-safe form state, validation, and binding           | `npm i @willramdev/forms @tanstack/form-core lit` |

@@ -25,13 +25,16 @@
 //                                       `[litkit] router → …` console.groupCollapsed
 //                                       body must strip in a consumer prod build
 //                                       exactly like the Phase 7 warnings (WR-03).
+//   9. kit HTTP client misspelled-option hints — via `createHttpClient`
+//                                       (@willramdev/kit/http, re-exported from
+//                                       the kit main entry).
 //
 // All re-export-only: no calls, no DOM construction. Importing RouterOutlet /
 // RouterLink from @willramdev/router's main entry resolves to router's
 // sideEffects-allowlisted bundled dist (dist/router.js, dist/router-lit.js), so
 // Rollup retains that file's full top-level code — including router's define()
 // collision-check call — regardless of whether these exports are ever invoked.
-export { define } from '@willramdev/kit';
+export { define, createHttpClient } from '@willramdev/kit';
 export {
   RouterOutlet,
   RouterLink,
