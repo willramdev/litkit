@@ -39,8 +39,9 @@ export class LitForm extends LitElement {
     super();
     this.form = null;
     this.nativeValidation = false;
-    // Lives as long as the element (not detached on disconnect), so a moved
-    // <lit-form> keeps answering, like its context provider does.
+    // These listeners live as long as the element and are never removed on
+    // disconnect, so a moved <lit-form> keeps answering and keeps wiring
+    // submit/reset. Listeners on the element itself can't outlive it.
     answerLegacyFormRequests(this, () => this.form);
     this.addEventListener('submit', this.#handleSubmit as EventListener);
     this.addEventListener('reset', this.#handleReset as EventListener);
@@ -77,8 +78,6 @@ export class LitForm extends LitElement {
 
   disconnectedCallback(): void {
     this.#observer.disconnect();
-    this.removeEventListener('submit', this.#handleSubmit as EventListener);
-    this.removeEventListener('reset', this.#handleReset as EventListener);
     super.disconnectedCallback();
   }
 
