@@ -23,7 +23,7 @@ const DEP_MAPS = [
   'devDependencies',
   'optionalDependencies',
 ]
-const CORE = ['kit', 'router', 'query', 'forms', 'store']
+const CORE = ['kit', 'http', 'router', 'query', 'forms', 'store']
 
 let failed = false
 

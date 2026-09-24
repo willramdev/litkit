@@ -1,7 +1,7 @@
 /**
- * `@willramdev/kit/http` — a fetch-based HTTP client with interceptors,
- * timeouts, retries, schema validation, and typed errors. Framework-neutral:
- * this entry has no Lit dependency. Also re-exported from `@willramdev/kit`.
+ * `@willramdev/http` — a fetch-based HTTP client with interceptors, timeouts,
+ * retries, schema validation, and typed errors. Framework-neutral: no Lit or
+ * other framework dependency, so it runs in browsers, workers, Node, and SSR.
  *
  * @module
  */

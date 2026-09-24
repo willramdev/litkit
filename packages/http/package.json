@@ -1,34 +1,31 @@
 {
-  "name": "@willramdev/kit",
+  "name": "@willramdev/http",
   "version": "1.1.0",
-  "description": "Ergonomic base class, helpers, controllers, and context for building Lit web components",
+  "description": "A fetch-based HTTP client with interceptors, timeouts, retries, schema validation, and typed errors. JavaScript-first, fully typed, framework-neutral",
   "keywords": [
-    "lit",
-    "web-components",
-    "reactive-controller",
-    "custom-elements",
-    "context"
+    "http",
+    "fetch",
+    "http-client",
+    "interceptors",
+    "retry",
+    "standard-schema"
   ],
   "license": "MIT",
   "author": "William Ramanand",
   "repository": {
     "type": "git",
     "url": "https://github.com/willramdev/litkit.git",
-    "directory": "packages/kit"
+    "directory": "packages/http"
   },
   "type": "module",
   "sideEffects": false,
-  "main": "./dist/kit.js",
-  "module": "./dist/kit.js",
+  "main": "./dist/http.js",
+  "module": "./dist/http.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/kit.js"
-    },
-    "./context": {
-      "types": "./dist/context/index.d.ts",
-      "import": "./dist/context.js"
+      "import": "./dist/http.js"
     }
   },
   "files": [
@@ -38,7 +35,6 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "dev": "vite",
     "build": "vite build && tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
@@ -47,15 +43,12 @@
   "dependencies": {
     "esm-env": "^1.2.2"
   },
-  "peerDependencies": {
-    "lit": "^3.0.0"
-  },
   "devDependencies": {
-    "@lit/context": "^1.1.6",
-    "lit": "^3.3.2",
+    "jsdom": "^29.0.1",
     "typescript": "^6.0.3",
     "vite": "^8.0.1",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.9",
+    "zod": "^4.3.6"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"

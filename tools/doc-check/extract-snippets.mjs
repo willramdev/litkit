@@ -30,6 +30,7 @@ const SNIPPETS_DIR = join(HERE, '.snippets');
 const FILES = [
   'README.md',
   'packages/kit/README.md',
+  'packages/http/README.md',
   'packages/router/README.md',
   'packages/query/README.md',
   'packages/forms/README.md',

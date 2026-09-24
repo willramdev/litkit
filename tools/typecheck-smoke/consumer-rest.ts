@@ -1,5 +1,5 @@
 // BUILD-06 smoke consumer for the remaining seven @willramdev subpaths:
-//   @willramdev/kit `.`, @willramdev/kit/http, @willramdev/kit/context,
+//   @willramdev/kit `.`, @willramdev/kit/context, @willramdev/http `.`,
 //   @willramdev/store `.`, @willramdev/query `.`, @willramdev/forms `.`, and
 //   @willramdev/forms/zod.
 //
@@ -16,8 +16,8 @@
 
 // @willramdev/kit `.` — a base-class value + a type binding.
 import { KitElement, type ControllerFactory } from "@willramdev/kit";
-// @willramdev/kit/http — the framework-neutral HTTP client factory + a type.
-import { createHttpClient, type HttpResponse } from "@willramdev/kit/http";
+// @willramdev/http `.` — the HTTP client factory + a type.
+import { createHttpClient, type HttpResponse } from "@willramdev/http";
 // @willramdev/kit/context — the framework-neutral context factory + a type.
 import { createContext, type Context } from "@willramdev/kit/context";
 // @willramdev/store `.` — a factory value + the store type.

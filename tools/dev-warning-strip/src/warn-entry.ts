@@ -25,9 +25,8 @@
 //                                       `[litkit] router → …` console.groupCollapsed
 //                                       body must strip in a consumer prod build
 //                                       exactly like the Phase 7 warnings (WR-03).
-//   9. kit HTTP client misspelled-option hints — via `createHttpClient`
-//                                       (@willramdev/kit/http, re-exported from
-//                                       the kit main entry).
+//   9. HTTP client misspelled-option hints — via `createHttpClient`
+//                                       (@willramdev/http).
 //  10. kit context unresolved-consumer warning — via `consume`
 //                                       (@willramdev/kit/context, re-exported
 //                                       from the kit main entry).
@@ -37,7 +36,8 @@
 // sideEffects-allowlisted bundled dist (dist/router.js, dist/router-lit.js), so
 // Rollup retains that file's full top-level code — including router's define()
 // collision-check call — regardless of whether these exports are ever invoked.
-export { define, createHttpClient, consume } from '@willramdev/kit';
+export { define, consume } from '@willramdev/kit';
+export { createHttpClient } from '@willramdev/http';
 export {
   RouterOutlet,
   RouterLink,

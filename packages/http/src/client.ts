@@ -1,4 +1,4 @@
-import { DEV, devWarnOnce } from '../internal/dev.ts';
+import { DEV, devWarnOnce } from './internal/dev.ts';
 import { mergeConfig, normalizeRequest, stripQuery, toDefaults } from './config.ts';
 import { HttpError, isHttpError } from './errors.ts';
 import { InterceptorManager } from './interceptors.ts';
@@ -286,7 +286,7 @@ export class HttpClient {
  *
  * @example
  * ```js
- * import { createHttpClient } from '@willramdev/kit/http';
+ * import { createHttpClient } from '@willramdev/http';
  *
  * export const api = createHttpClient({
  *   baseURL: 'https://api.example.com',
@@ -305,7 +305,7 @@ export function createHttpClient(config?: HttpClientConfig): HttpClient {
  *
  * @example
  * ```js
- * import { http } from '@willramdev/kit/http';
+ * import { http } from '@willramdev/http';
  *
  * const { data } = await http.get('https://api.example.com/status');
  * ```

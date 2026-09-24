@@ -1,5 +1,0 @@
----
-"@willramdev/kit": minor
----
-
-feat(kit): add a fetch-based HTTP client, exported from `@willramdev/kit` and the new Lit-free `@willramdev/kit/http` subpath. Includes `createHttpClient()`, a shared `http` instance, and `client.extend()`. Request and response interceptors run in registration order, and `use()` returns an unregister function. Also included: automatic JSON bodies and response parsing, `params` serialization, `baseURL`, timeouts, `AbortSignal` cancellation, and retries with exponential backoff that honor `Retry-After`. Failures reject with a single `HttpError` whose `code` is one of `ERR_STATUS`, `ERR_NETWORK`, `ERR_TIMEOUT`, `ERR_ABORTED`, `ERR_PARSE`, or `ERR_VALIDATION`. `response.data` is validated and typed through a `schema` option that takes a Standard Schema (Zod, Valibot, …) or a plain parser function, so neither JavaScript nor TypeScript callers need generics. Also adds Basic auth, opt-in XSRF cookie-to-header, download progress, and dev-only warnings for axios-style option names.

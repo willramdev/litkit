@@ -126,11 +126,11 @@ async function negativeControl() {
   log(`NEGATIVE-CONTROL PASS (${hits} "${LITKIT_PREFIX}" occurrence(s) retained with DEV=true)`);
 }
 
-// STEP 3 — no-`process` proof: importing kit's, router's AND devtools' OWN raw
+// STEP 3 — no-`process` proof: importing kit's, http's, router's AND devtools' OWN raw
 // dist with process unset must not throw `process is not defined`. Targets the
 // packages directly (not the harness bundle): the harness's production build
 // already inlined esm-env's resolved condition, so the real no-process risk lives
-// in each package's unbundled dist, which keeps a bare esm-env import. All three
+// in each package's unbundled dist, which keeps a bare esm-env import. All four
 // packages are imported sequentially in the SAME child process after process is
 // nulled.
 function runProbe(probeSource) {
@@ -144,6 +144,7 @@ function runProbe(probeSource) {
 function noProcessProof() {
   const imports = [
     "await import('@willramdev/kit');",
+    "await import('@willramdev/http');",
     "await import('@willramdev/router');",
     "await import('@willramdev/devtools');",
   ];
@@ -158,7 +159,7 @@ function noProcessProof() {
 
   const firstErr = first.stderr || '';
   if (/process is not defined/.test(firstErr)) {
-    fail(`NO-PROCESS FAIL: importing @willramdev/kit, @willramdev/router or @willramdev/devtools threw "process is not defined".\n${firstErr}`);
+    fail(`NO-PROCESS FAIL: importing @willramdev/kit, @willramdev/http, @willramdev/router or @willramdev/devtools threw "process is not defined".\n${firstErr}`);
   }
 
   // The plain-Node import failed for a reason UNRELATED to process (e.g. a
@@ -187,7 +188,7 @@ function noProcessProof() {
 
   const secondErr = second.stderr || '';
   if (/process is not defined/.test(secondErr)) {
-    fail(`NO-PROCESS FAIL: importing @willramdev/kit, @willramdev/router or @willramdev/devtools threw "process is not defined" (jsdom path).\n${secondErr}`);
+    fail(`NO-PROCESS FAIL: importing @willramdev/kit, @willramdev/http, @willramdev/router or @willramdev/devtools threw "process is not defined" (jsdom path).\n${secondErr}`);
   }
   fail(
     `NO-PROCESS FAIL: import probe failed for a non-process reason.\n` +
