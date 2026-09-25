@@ -2,10 +2,11 @@
 // verify-consumer.mjs — consumer-install verification harness for @willramdev/*.
 //
 // Scaffolds a THROWAWAY consumer in os.tmpdir() (OUTSIDE the monorepo so npm
-// workspace resolution cannot shadow the registry), installs the five published
-// packages from GitHub Packages, and asserts they resolve from the installed
-// tarball (not the workspace source). This is the only real proof that the
-// published @willramdev/*@1.0.0 artifacts work in a clean consumer.
+// workspace resolution cannot shadow the registry), installs the six published
+// packages from GitHub Packages at the versions pinned in
+// tools/verify-consumer/package.json.tmpl, and asserts they resolve from the
+// installed tarball (not the workspace source). This is the only real proof that
+// the published @willramdev/* artifacts work in a clean consumer.
 //
 // Cross-platform: pure Node ESM (node:fs/os/path/child_process/url). No bash,
 // no POSIX-only paths, no symlinks — the dev box is win32.
@@ -17,7 +18,7 @@
 // Usage:
 //   node scripts/verify-consumer.mjs --dry-run        # offline scaffold + token-safety check, NO network, NO token
 //   node scripts/verify-consumer.mjs --check install  # VER-01: real install from GitHub Packages (needs GITHUB_TOKEN)
-//   node scripts/verify-consumer.mjs --check resolve  # VER-04: 8 subpaths resolve for tsc (node16+bundler) + runtime (needs warm install)
+//   node scripts/verify-consumer.mjs --check resolve  # VER-04: 10 subpaths resolve for tsc (node16+bundler) + runtime (needs warm install)
 //   node scripts/verify-consumer.mjs --check treeshake       # VER-02: production vite build + jsdom element-registration proof (needs warm install)
 //   node scripts/verify-consumer.mjs --check single-instance # VER-03: @tanstack/query-core class-identity + shared-cache dedupe proof (needs warm install)
 //   node scripts/verify-consumer.mjs                  # full runner: install -> resolve -> treeshake -> single-instance
@@ -137,7 +138,7 @@ function runNpmInstall() {
   }
 }
 
-// VER-01: install five packages from the real registry, prove they resolve from
+// VER-01: install six packages from the real registry, prove they resolve from
 // the temp consumer's node_modules (not the workspace), and smoke-import kit.
 async function checkInstall() {
   scaffoldConsumer();
@@ -193,7 +194,7 @@ async function checkInstall() {
   log('VER-01 PASS');
 }
 
-// VER-04: prove all eight published entries/subpaths resolve for tsc under BOTH
+// VER-04: prove all ten published entries/subpaths resolve for tsc under BOTH
 // node16 and bundler module resolution AND import at runtime, from the installed
 // tarball (not the workspace). Reads the warm consumer left by `--check install`.
 function checkResolve() {
@@ -244,7 +245,7 @@ function checkResolve() {
     log(`tsc -p ${tsconfig}: OK`);
   }
 
-  // Runtime layer: import all eight targets from the consumer.
+  // Runtime layer: import all ten targets from the consumer.
   const smoke = spawnSync(process.execPath, [path.join('src', 'subpath-smoke.mjs')], {
     cwd: consumerDir,
     env: process.env,
