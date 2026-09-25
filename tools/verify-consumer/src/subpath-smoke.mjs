@@ -1,4 +1,4 @@
-// VER-04 runtime smoke: dynamically import each of the eight published
+// VER-04 runtime smoke: dynamically import each of the ten published
 // @willramdev entries/subpaths from the INSTALLED tarball and touch one real
 // export from each, so the ESM loader actually resolves every `exports`
 // condition (a missing/broken subpath becomes a hard throw, not a silent skip).
@@ -8,9 +8,11 @@
 // consumer dir (cwd = consumerDir) so @willramdev/* resolve from its
 // node_modules, not the workspace.
 
-// [target specifier, expected named export] for all eight published entries.
+// [target specifier, expected named export] for all ten published entries.
 const targets = [
   ['@willramdev/kit', 'KitElement'],
+  ['@willramdev/kit/context', 'createContext'],
+  ['@willramdev/http', 'createHttpClient'],
   ['@willramdev/store', 'createStore'],
   ['@willramdev/query', 'createQueryClient'],
   ['@willramdev/forms', 'form'],
