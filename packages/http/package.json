@@ -1,6 +1,6 @@
 {
   "name": "@willramdev/http",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A fetch-based HTTP client with interceptors, timeouts, retries, schema validation, and typed errors. JavaScript-first, fully typed, framework-neutral",
   "keywords": [
     "http",
