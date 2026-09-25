@@ -1,18 +1,20 @@
 # litkit
 
-A set of five composable [Lit](https://lit.dev) web-component packages — an ergonomic base class plus routing, data fetching, forms, and state, all built on Lit Reactive Controllers. Each package pairs a framework-neutral core with a thin Lit integration, so a Lit app gets routing, TanStack-Query data fetching, TanStack-Form forms, and lightweight state without prop drilling or boilerplate.
+A set of composable [Lit](https://lit.dev) packages — an ergonomic base class plus routing, data fetching, forms, and state, all built on Lit Reactive Controllers, and a framework-neutral HTTP client. Each package pairs a framework-neutral core with a thin Lit integration, so a Lit app gets routing, TanStack-Query data fetching, TanStack-Form forms, and lightweight state without prop drilling or boilerplate.
 
 ## Packages
 
 | Package | Purpose | Install |
 |---------|---------|---------|
-| [`@willramdev/kit`](packages/kit)       | Ergonomic Lit base class, controllers, decorators, and a fetch-based HTTP client | `npm i @willramdev/kit lit` |
+| [`@willramdev/kit`](packages/kit)       | Ergonomic Lit base class, controllers, decorators, and context | `npm i @willramdev/kit lit` |
+| [`@willramdev/http`](packages/http)     | Fetch-based HTTP client: interceptors, retries, typed errors | `npm i @willramdev/http` |
 | [`@willramdev/router`](packages/router) | SPA router: guards, lazy loading, nested routes         | `npm i @willramdev/router lit` |
 | [`@willramdev/query`](packages/query)   | Lit controllers for TanStack Query data fetching        | `npm i @willramdev/query @tanstack/query-core lit` |
 | [`@willramdev/forms`](packages/forms)   | Type-safe form state, validation, and binding           | `npm i @willramdev/forms @tanstack/form-core lit` |
 | [`@willramdev/store`](packages/store)   | Lightweight reactive store with slice subscriptions     | `npm i @willramdev/store lit` |
 
-`lit@^3.0.0` is a required peer dependency of every package. `@willramdev/query` also needs
+`lit@^3.0.0` is a required peer dependency of every package except `@willramdev/http`, which has no
+framework dependency. `@willramdev/query` also needs
 `@tanstack/query-core`, and `@willramdev/forms` needs `@tanstack/form-core`; `@willramdev/forms/zod`
 additionally requires `zod`. See each package's README for its own Quickstart and Core API.
 

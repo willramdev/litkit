@@ -53,11 +53,10 @@ const ENTRIES = [
     outFile: 'tools/type-snapshots/kit.d.ts',
     tsconfig: 'packages/kit/tsconfig.build.json',
   },
-  // kit ./http subpath -> framework-neutral HTTP client surface
   {
-    filePath: 'packages/kit/src/http/index.ts',
-    outFile: 'tools/type-snapshots/kit-http.d.ts',
-    tsconfig: 'packages/kit/tsconfig.build.json',
+    filePath: 'packages/http/src/index.ts',
+    outFile: 'tools/type-snapshots/http.d.ts',
+    tsconfig: 'packages/http/tsconfig.build.json',
   },
   // kit ./context subpath -> framework-neutral Context Protocol surface
   {

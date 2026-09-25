@@ -1,6 +1,6 @@
 /**
- * Public types for the kit HTTP client. Framework-neutral: no Lit imports, so the
- * `@willramdev/kit/http` entry works in browsers, workers, Node, and SSR.
+ * Public types for the HTTP client. Framework-neutral: no Lit imports, so
+ * `@willramdev/http` works in browsers, workers, Node, and SSR.
  */
 
 import type { HttpError } from './errors.ts';

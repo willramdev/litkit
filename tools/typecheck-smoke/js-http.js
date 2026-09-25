@@ -1,4 +1,4 @@
-// TYPE-03 plain-JS smoke consumer for @willramdev/kit/http.
+// TYPE-03 plain-JS smoke consumer for @willramdev/http.
 //
 // Type-checked (never executed) by tsc under `tsconfig.checkjs.json`
 // (allowJs + checkJs, strict, node16 resolution). It exercises the HTTP client
@@ -6,7 +6,7 @@
 // with unannotated callbacks, a JSDoc-typed parser as `schema`, and error
 // narrowing — so a clean checkJs compile proves the JS-first surface never
 // forces a generic or a cast. Precise inference is asserted separately by
-// packages/kit/src/http/types.test.ts.
+// packages/http/src/types.test.ts.
 //
 // Do NOT add `allowImportingTsExtensions` to tsconfig.checkjs.json: that would
 // let tsc fall back to resolving the workspace `src/*.ts` and defeat the
@@ -14,7 +14,7 @@
 // value bindings from the published @willramdev/* specifier — never a relative
 // src path. No type-only imports, no expectType, no @ts-expect-error.
 
-import { createHttpClient, http, isHttpError } from "@willramdev/kit/http";
+import { createHttpClient, http, isHttpError } from "@willramdev/http";
 
 const api = createHttpClient({ baseURL: "/api", timeout: 10_000, retry: 2 });
 
