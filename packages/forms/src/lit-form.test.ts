@@ -122,6 +122,43 @@ describe('lit-form', () => {
     form.hostDisconnected();
   });
 
+  it('keeps wiring submit and reset after <lit-form> is moved', async () => {
+    const onSubmit = vi.fn();
+    const host = createMockHost();
+    const form = createForm(host as any, {
+      initialValues: { name: 'Alice' },
+      onSubmit,
+    });
+    form.hostConnected();
+
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    render(html`
+      <lit-form .form=${form}>
+        <form>
+          <input ${bind('name')} />
+        </form>
+      </lit-form>
+    `, container);
+
+    // Moving an element disconnects and reconnects it.
+    const litForm = container.querySelector('lit-form')!;
+    litForm.remove();
+    container.appendChild(litForm);
+
+    const nativeForm = container.querySelector('form') as HTMLFormElement;
+    nativeForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    expect(onSubmit).toHaveBeenCalledWith({ value: { name: 'Alice' } });
+
+    form.setValue('name', 'Bob');
+    nativeForm.dispatchEvent(new Event('reset', { bubbles: true, cancelable: true }));
+    expect(form.value.name).toBe('Alice');
+
+    form.hostDisconnected();
+    container.remove();
+  });
+
 });
 
 
